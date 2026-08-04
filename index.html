@@ -4,48 +4,92 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#f8efe8">
+
   <title>Mein Lernwald</title>
+
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+
+  <!-- LOGIN -->
   <div id="loginView" class="center-screen">
     <section class="login-card">
       <div class="brand">🌿</div>
+
       <h1>Mein Lernwald</h1>
+
       <p>Gemeinsam wachsen – Blatt für Blatt.</p>
+
       <form id="loginForm">
-        <label>E-Mail
-          <input id="loginEmail" type="email" autocomplete="email" required>
+        <label>
+          E-Mail
+          <input
+            id="loginEmail"
+            type="email"
+            autocomplete="email"
+            required
+          >
         </label>
-        <label>Passwort
-          <input id="loginPassword" type="password" autocomplete="current-password" required>
+
+        <label>
+          Passwort
+          <input
+            id="loginPassword"
+            type="password"
+            autocomplete="current-password"
+            required
+          >
         </label>
-        <button class="primary" type="submit">Anmelden</button>
+
+        <button class="primary" type="submit">
+          Anmelden
+        </button>
+
         <p id="loginMessage" class="message"></p>
       </form>
     </section>
   </div>
 
+
+  <!-- LERNWALD -->
   <div id="appView" class="hidden">
+
     <header class="topbar">
       <div>
         <div class="eyebrow">Finas &amp; Lous</div>
         <h1>Mein Lernwald</h1>
       </div>
+
       <div class="top-actions">
-        <button id="openMama" class="soft">⚙️ Mama-Bereich</button>
-        <button id="logoutBtn" class="ghost">Abmelden</button>
+        <button id="openMama" class="soft">
+          ⚙️ Baumpfleger-Bereich
+        </button>
+
+        <button id="logoutBtn" class="ghost">
+          Abmelden
+        </button>
       </div>
     </header>
 
+
     <main class="page">
+
+      <!-- BEGRÜSSUNG -->
       <section class="welcome card">
         <p class="eyebrow" id="todayLabel"></p>
-        <h2 id="welcomeText">Schön, dass ihr da seid.</h2>
+
+        <h2 id="welcomeText">
+          Schön, dass ihr da seid.
+        </h2>
+
         <blockquote id="dailyQuote"></blockquote>
       </section>
 
+
+      <!-- AUFGABEN DER KINDER -->
       <section class="children-grid">
+
         <article class="card child-card">
           <div class="child-heading">
             <div>
@@ -53,8 +97,10 @@
               <h2>🌸 Fina</h2>
             </div>
           </div>
+
           <div id="finaTasks" class="task-list"></div>
         </article>
+
 
         <article class="card child-card">
           <div class="child-heading">
@@ -63,63 +109,187 @@
               <h2>🌺 Lou</h2>
             </div>
           </div>
+
           <div id="louTasks" class="task-list"></div>
         </article>
+
       </section>
 
+
+      <!-- GEMEINSAMER BAUM -->
       <section class="card tree-section">
+
         <div class="section-heading">
           <div>
-            <div class="eyebrow">Unser gemeinsamer Baum</div>
-            <h2 id="treeTitle">Wochenbaum</h2>
+            <div class="eyebrow">
+              Unser gemeinsamer Baum
+            </div>
+
+            <h2 id="treeTitle">
+              Wochenbaum
+            </h2>
           </div>
-          <button id="openForest" class="soft">🌲 Lernwald ansehen</button>
+
+          <button id="openForest" class="soft">
+            🌲 Lernwald ansehen
+          </button>
         </div>
 
+
         <div class="tree-layout">
+
           <div class="tree-wrap">
-            <svg id="treeSvg" viewBox="0 0 560 500" role="img" aria-label="Lernbaum">
+
+            <svg
+              id="treeSvg"
+              viewBox="0 0 560 500"
+              role="img"
+              aria-label="Lernbaum"
+            >
+
               <defs>
-                <linearGradient id="trunkGrad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#a27b5f"/>
-                  <stop offset="60%" stop-color="#84634d"/>
-                  <stop offset="100%" stop-color="#694c3b"/>
+                <linearGradient
+                  id="trunkGrad"
+                  x1="0"
+                  y1="0"
+                  x2="1"
+                  y2="1"
+                >
+                  <stop
+                    offset="0%"
+                    stop-color="#a27b5f"
+                  />
+
+                  <stop
+                    offset="60%"
+                    stop-color="#84634d"
+                  />
+
+                  <stop
+                    offset="100%"
+                    stop-color="#694c3b"
+                  />
                 </linearGradient>
               </defs>
-              <ellipse cx="280" cy="396" rx="150" ry="23" fill="#eadfd2"/>
-              <path d="M235 389 C244 345 247 304 251 263 C255 220 249 181 254 145 C258 112 270 82 286 52 C294 91 297 127 292 163 C287 201 295 237 304 272 C313 311 317 348 326 389 C306 382 294 376 280 376 C264 376 253 382 235 389Z" fill="url(#trunkGrad)"/>
-              <path d="M257 363 C252 319 261 281 258 240 C256 199 265 156 278 105" fill="none" stroke="#b48e70" stroke-width="4" opacity=".55" stroke-linecap="round"/>
-              <path class="branch" d="M255 289 C211 276 168 251 124 205"/>
-              <path class="branch" d="M305 274 C351 257 393 226 427 180"/>
-              <path class="branch" d="M258 235 C216 214 184 178 168 133"/>
-              <path class="branch" d="M299 219 C340 198 371 162 383 117"/>
-              <path class="branch" d="M267 176 C239 147 226 108 234 69"/>
-              <path class="branch" d="M292 163 C326 133 342 94 334 55"/>
+
+
+              <ellipse
+                cx="280"
+                cy="396"
+                rx="150"
+                ry="23"
+                fill="#eadfd2"
+              />
+
+
+              <path
+                d="M235 389 C244 345 247 304 251 263 C255 220 249 181 254 145 C258 112 270 82 286 52 C294 91 297 127 292 163 C287 201 295 237 304 272 C313 311 317 348 326 389 C306 382 294 376 280 376 C264 376 253 382 235 389Z"
+                fill="url(#trunkGrad)"
+              />
+
+
+              <path
+                d="M257 363 C252 319 261 281 258 240 C256 199 265 156 278 105"
+                fill="none"
+                stroke="#b48e70"
+                stroke-width="4"
+                opacity=".55"
+                stroke-linecap="round"
+              />
+
+
+              <path
+                class="branch"
+                d="M255 289 C211 276 168 251 124 205"
+              />
+
+              <path
+                class="branch"
+                d="M305 274 C351 257 393 226 427 180"
+              />
+
+              <path
+                class="branch"
+                d="M258 235 C216 214 184 178 168 133"
+              />
+
+              <path
+                class="branch"
+                d="M299 219 C340 198 371 162 383 117"
+              />
+
+              <path
+                class="branch"
+                d="M267 176 C239 147 226 108 234 69"
+              />
+
+              <path
+                class="branch"
+                d="M292 163 C326 133 342 94 334 55"
+              />
+
+
               <g id="leafLayer"></g>
               <g id="flowerLayer"></g>
               <g id="rootLayer"></g>
+
             </svg>
           </div>
 
+
           <div class="tree-story">
-            <p class="tree-mantra"><strong>Lernaufgaben</strong> lassen oben Blätter wachsen.</p>
-            <p class="tree-mantra"><strong>Herzmomente</strong> lassen unten Wurzeln entstehen.</p>
+
+            <p class="tree-mantra">
+              <strong>Lernaufgaben</strong>
+              lassen oben Blätter wachsen.
+            </p>
+
+            <p class="tree-mantra">
+              <strong>Herzmomente</strong>
+              lassen unten Wurzeln entstehen.
+            </p>
+
             <p id="treeStatus" class="muted"></p>
-            <button id="finishTreeBtn" class="primary hidden">🌳 Baum in den Lernwald setzen</button>
+
+            <button
+              id="finishTreeBtn"
+              class="primary hidden"
+            >
+              🌳 Baum in den Lernwald setzen
+            </button>
+
           </div>
         </div>
       </section>
 
+
+      <!-- HERZMOMENTE -->
       <section class="card hearts">
+
         <div class="section-heading">
           <div>
-            <div class="eyebrow">Abendritual</div>
-            <h2>Welche Herzmomente möchtet ihr festhalten?</h2>
+            <div class="eyebrow">
+              Abendritual
+            </div>
+
+            <h2>
+              Welche Herzmomente möchtet ihr festhalten?
+            </h2>
           </div>
         </div>
-        <div id="heartChoices" class="heart-grid"></div>
+
+
+        <div
+          id="heartChoices"
+          class="heart-grid"
+        ></div>
+
+
         <div class="heart-form">
-          <label>Von wem?
+
+          <label>
+            Von wem?
+
             <select id="heartAuthor">
               <option>Mama</option>
               <option>Fina</option>
@@ -127,87 +297,290 @@
               <option>Gemeinsam</option>
             </select>
           </label>
-          <label>Warum ist dieser Moment wichtig?
-            <textarea id="heartReason" rows="3" placeholder="Zum Beispiel: Fina hat heute Lou getröstet."></textarea>
+
+
+          <label>
+            Warum ist dieser Moment wichtig?
+
+            <textarea
+              id="heartReason"
+              rows="3"
+              placeholder="Zum Beispiel: Fina hat heute Lou getröstet."
+            ></textarea>
           </label>
-          <button id="addRootBtn" class="primary">🌱 Eine Wurzel wachsen lassen</button>
+
+
+          <button
+            id="addRootBtn"
+            class="primary"
+          >
+            🌱 Eine Wurzel wachsen lassen
+          </button>
+
         </div>
-        <div id="rootMemory" class="root-memory"></div>
+
+
+        <div
+          id="rootMemory"
+          class="root-memory"
+        ></div>
+
       </section>
 
-      <section id="forestSection" class="card hidden">
+
+      <!-- LERNWALD-ARCHIV -->
+      <section
+        id="forestSection"
+        class="card hidden"
+      >
+
         <div class="section-heading">
           <div>
-            <div class="eyebrow">Unsere Erinnerungen</div>
+            <div class="eyebrow">
+              Unsere Erinnerungen
+            </div>
+
             <h2>Der Lernwald</h2>
           </div>
-          <button id="closeForest" class="ghost">Schließen</button>
+
+          <button
+            id="closeForest"
+            class="ghost"
+          >
+            Schließen
+          </button>
         </div>
-        <div id="forestGrid" class="forest-grid"></div>
+
+        <div
+          id="forestGrid"
+          class="forest-grid"
+        ></div>
+
       </section>
+
     </main>
 
+
+    <!-- BAUMPFLEGER-BEREICH -->
     <dialog id="mamaDialog">
-      <form method="dialog" class="dialog-shell">
-        <button class="dialog-close" value="cancel" aria-label="Schließen">×</button>
+
+      <form
+        method="dialog"
+        class="dialog-shell"
+      >
+
+        <button
+          class="dialog-close"
+          value="cancel"
+          aria-label="Schließen"
+        >
+          ×
+        </button>
+
+
+        <!-- PASSWORTABFRAGE -->
         <div id="mamaUnlock">
-          <div class="eyebrow">Geschützter Bereich</div>
-          <h2>Mama-Bereich öffnen</h2>
-          <p>Bitte gib dein Firebase-Passwort noch einmal ein.</p>
-          <label>Passwort
-            <input id="mamaPassword" type="password" autocomplete="current-password">
-          </label>
-          <button id="unlockMamaBtn" type="button" class="primary">Öffnen</button>
-          <p id="mamaUnlockMessage" class="message"></p>
-        </div>
 
-        <div id="mamaPanel" class="hidden">
-          <div class="eyebrow">Planen und begleiten</div>
-          <h2>Mama-Bereich</h2>
-
-          <div class="tabs">
-            <button type="button" class="tab active" data-tab="tasksTab">Heute planen</button>
-            <button type="button" class="tab" data-tab="treeTab">Baum begleiten</button>
+          <div class="eyebrow">
+            Geschützter Bereich
           </div>
 
-          <section id="tasksTab" class="tab-panel">
+          <h2>
+            Baumpfleger-Bereich öffnen
+          </h2>
+
+          <p>
+            Bitte gib dein Passwort noch einmal ein.
+          </p>
+
+
+          <label>
+            Passwort
+
+            <input
+              id="mamaPassword"
+              type="password"
+              autocomplete="current-password"
+            >
+          </label>
+
+
+          <button
+            id="unlockMamaBtn"
+            type="button"
+            class="primary"
+          >
+            Öffnen
+          </button>
+
+
+          <p
+            id="mamaUnlockMessage"
+            class="message"
+          ></p>
+
+        </div>
+
+
+        <!-- BAUMPFLEGER-INHALT -->
+        <div
+          id="mamaPanel"
+          class="hidden"
+        >
+
+          <div class="eyebrow">
+            Planen und begleiten
+          </div>
+
+          <h2>
+            Baumpfleger-Bereich
+          </h2>
+
+
+          <div class="tabs">
+
+            <button
+              type="button"
+              class="tab active"
+              data-tab="tasksTab"
+            >
+              Heute planen
+            </button>
+
+            <button
+              type="button"
+              class="tab"
+              data-tab="treeTab"
+            >
+              Baum begleiten
+            </button>
+
+          </div>
+
+
+          <!-- AUFGABEN PLANEN -->
+          <section
+            id="tasksTab"
+            class="tab-panel"
+          >
+
             <div class="admin-grid">
+
               <div>
                 <h3>🌸 Fina</h3>
+
                 <div id="adminFinaTasks"></div>
-                <button type="button" class="soft" data-add-task="fina">+ Aufgabe</button>
+
+                <button
+                  type="button"
+                  class="soft"
+                  data-add-task="fina"
+                >
+                  + Aufgabe
+                </button>
               </div>
+
+
               <div>
                 <h3>🌺 Lou</h3>
+
                 <div id="adminLouTasks"></div>
-                <button type="button" class="soft" data-add-task="lou">+ Aufgabe</button>
+
+                <button
+                  type="button"
+                  class="soft"
+                  data-add-task="lou"
+                >
+                  + Aufgabe
+                </button>
               </div>
+
             </div>
+
+
             <div class="dialog-actions">
-              <button id="saveTasksBtn" type="button" class="primary">Änderungen veröffentlichen</button>
+
+              <button
+                id="saveTasksBtn"
+                type="button"
+                class="primary"
+              >
+                Änderungen veröffentlichen
+              </button>
+
             </div>
+
           </section>
 
-          <section id="treeTab" class="tab-panel hidden">
-            <label>Name des aktuellen Baums
-              <input id="treeNameInput" type="text" maxlength="40">
+
+          <!-- BAUM EINSTELLEN -->
+          <section
+            id="treeTab"
+            class="tab-panel hidden"
+          >
+
+            <label>
+              Name des aktuellen Baums
+
+              <input
+                id="treeNameInput"
+                type="text"
+                maxlength="40"
+              >
             </label>
-            <label>Wann ist die Krone fertig?
+
+
+            <label>
+              Wann ist die Krone fertig?
+
               <select id="treeTargetInput">
-                <option value="12">nach 12 Lernblättern</option>
-                <option value="16">nach 16 Lernblättern</option>
-                <option value="20">nach 20 Lernblättern</option>
-                <option value="24">nach 24 Lernblättern</option>
+                <option value="12">
+                  nach 12 Lernblättern
+                </option>
+
+                <option value="16">
+                  nach 16 Lernblättern
+                </option>
+
+                <option value="20">
+                  nach 20 Lernblättern
+                </option>
+
+                <option value="24">
+                  nach 24 Lernblättern
+                </option>
               </select>
             </label>
-            <p class="muted">Die Kinder sehen keine Zahl. Sie erleben nur, wie der Baum wächst und schließlich in den Lernwald wandert.</p>
-            <button id="saveTreeSettings" type="button" class="primary">Baum-Einstellungen speichern</button>
+
+
+            <p class="muted">
+              Die Kinder sehen keine Zahl. Sie erleben nur,
+              wie der Baum wächst und schließlich in den
+              Lernwald wandert.
+            </p>
+
+
+            <button
+              id="saveTreeSettings"
+              type="button"
+              class="primary"
+            >
+              Baum-Einstellungen speichern
+            </button>
+
           </section>
+
         </div>
       </form>
     </dialog>
+
   </div>
 
-  <script type="module" src="app.js"></script>
+
+  <script
+    type="module"
+    src="app.js"
+  ></script>
+
 </body>
 </html>
