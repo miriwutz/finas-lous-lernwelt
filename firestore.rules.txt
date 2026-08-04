@@ -1,0 +1,12 @@
+// Firestore-Regeln für Mein Lernwald 2.0
+// In Firebase: Firestore → Regeln → gesamten Inhalt ersetzen → Veröffentlichen
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /spaces/{spaceId} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}

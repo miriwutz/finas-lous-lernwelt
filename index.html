@@ -1,1007 +1,213 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Finas & Lous Lernwelt</title>
-<!-- Version 1.0 – Veröffentlichung -->
-<style>
-:root{
-  --bg:#f8efe8;
-  --card:#fffdf9;
-  --text:#49382f;
-  --muted:#7d6e64;
-  --sage:#9fb58f;
-  --sage-dark:#6f8a63;
-  --clay:#d58f7d;
-  --clay-dark:#b96558;
-  --gold:#e6bd62;
-  --lav:#b7a0cf;
-  --blue:#86b7c9;
-  --sand:#ead8c5;
-  --line:#e8d6c9;
-  --shadow:0 10px 28px rgba(92,66,49,.10);
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  color:var(--text);
-  background:
-    radial-gradient(circle at 8% 8%, rgba(213,143,125,.18), transparent 28%),
-    radial-gradient(circle at 92% 16%, rgba(159,181,143,.20), transparent 26%),
-    linear-gradient(180deg,#fff9f4 0%,var(--bg) 100%);
-}
-.wrap{max-width:1120px;margin:auto;padding:22px}
-.hero,.editor,.person,.treecard,.reflection,.forest{
-  background:rgba(255,253,249,.97);
-  border:1px solid var(--line);
-  border-radius:26px;
-  box-shadow:var(--shadow);
-}
-.hero{padding:28px;margin-bottom:20px}
-h1{margin:0;font-size:clamp(2rem,4vw,3.25rem);letter-spacing:-.025em}
-.heroquote{
-  margin:14px 0 0;
-  font-family:Georgia,"Times New Roman",serif;
-  font-size:clamp(1.55rem,3vw,2.35rem);
-  line-height:1.35;
-  color:var(--clay-dark);
-  max-width:900px;
-}
-.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:18px}
-.date{font-weight:700;color:var(--muted)}
-button,.button{
-  border:none;border-radius:14px;padding:11px 15px;font-weight:700;cursor:pointer;font:inherit
-}
-.editbtn{background:var(--sand);color:var(--text)}
-.savebtn{background:var(--sage-dark);color:#fff}
-.resetbtn{background:#eee5dd;color:var(--text)}
-.dangerbtn{background:#f0d9d3;color:#7b4b41}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.person{padding:22px}
-.person h2{margin:0 0 4px;font-size:1.8rem}
-.subtitle{margin:0 0 16px;color:var(--muted)}
-.tasks{display:grid;gap:12px}
-.task{
-  display:flex;align-items:center;gap:13px;padding:14px 15px;border-radius:17px;
-  background:#f7e7e1;text-decoration:none;color:var(--text);min-height:76px;
-  border:1px solid rgba(185,101,88,.12)
-}
-.task:nth-child(2n){background:#eaf1e6}
-.task:nth-child(3n){background:#f8edcf}
-.task:nth-child(4n){background:#e9eef6}
-.task.paper{outline:1px solid rgba(111,138,99,.10)}
-.tasktext{flex:1}
-.type{font-size:.76rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:800}
-.tasktitle{font-size:1.06rem;font-weight:800;margin-top:2px}
-.tasknote{font-size:.9rem;color:var(--muted);margin-top:2px}
-.leafcheck{width:46px;height:46px;position:relative;flex:0 0 auto;cursor:pointer}
-.leafcheck svg{width:46px;height:46px;display:block}
-.leafcheck .fill{fill:#fffaf4;stroke:#b59582;stroke-width:1.8}
-.leafcheck .vein{stroke:#b59582;stroke-width:1.3;fill:none}
-.leafcheck.done .fill{fill:var(--sage);stroke:var(--sage-dark)}
-.leafcheck.done .vein{stroke:#fffaf4}
-.progress{height:10px;background:#efe4dc;border-radius:999px;overflow:hidden;margin-top:16px}
-.bar{height:100%;background:linear-gradient(90deg,var(--sage),var(--sage-dark));width:0;transition:width .25s}
-.progresslabel{font-size:.9rem;color:var(--muted);margin-top:7px}
-.mainlower{display:grid;grid-template-columns:1.25fr .75fr;gap:20px;margin-top:20px}
-.treecard,.forest{padding:24px;text-align:center}
-.treecard{
-  background:
-    radial-gradient(circle at 50% 18%, rgba(230,189,98,.10), transparent 28%),
-    linear-gradient(180deg,#fffdf9 0%,#fbf3ea 100%);
-  position:relative;
-  overflow:hidden;
-}
-.treecard:before,.treecard:after{
-  content:"";
-  position:absolute;
-  width:120px;height:120px;border-radius:50%;
-  background:rgba(159,181,143,.08);
-  pointer-events:none;
-}
-.treecard:before{left:-45px;top:35px}
-.treecard:after{right:-50px;bottom:25px}
-.treecard h2,.forest h2,.reflection h2{margin:0 0 6px;font-size:1.85rem}
-.treehint,.forest p,.reflection p{color:var(--muted);margin-top:0}
-#treeSvg{max-width:480px;width:100%;height:auto}
-.branch{
-  stroke:#8d684e;
-  stroke-width:11;
-  fill:none;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-  opacity:.16;
-  transition:opacity .25s ease;
-}
-.branch.active,.branch.done{opacity:1}
-.treeleaf{opacity:0;transition:opacity .2s}
-.treeleaf.visible{opacity:1}
-.treeflower{opacity:0;transition:opacity .2s}
-.treeflower.visible{opacity:1}
-.rootpath{
-  fill:none;
-  stroke:#7d5b46;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-  cursor:pointer;
-  filter:drop-shadow(0 2px 2px rgba(73,56,47,.10));
-  transition:opacity .2s ease, stroke-width .2s ease;
-}
-.rootpath:hover{opacity:.78}
-.root-tip{fill:#9f7659;opacity:.9;pointer-events:none}
-.root-label{
-  font-size:11px;
-  fill:#7d6e64;
-  text-anchor:middle;
-  pointer-events:none;
-}
-.rootlist{
-  max-width:520px;
-  margin:14px auto 0;
-}
-.rootcarousel{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:12px;
-  border:1px solid var(--line);
-  border-radius:16px;
-  background:#faf4ee;
-}
-.rootnav{
-  flex:0 0 auto;
-  width:40px;height:40px;
-  border-radius:50%;
-  background:#eadfce;
-  color:var(--text);
-  padding:0;
-  font-size:1.2rem;
-}
-.rootcardcontent{
-  flex:1;
-  text-align:center;
-  min-width:0;
-}
-.rootcardcontent strong{display:block}
-.rootcardcontent small{
-  display:block;
-  color:var(--muted);
-  margin-top:4px;
-  line-height:1.35;
-}
-.rootactions{
-  display:flex;
-  justify-content:center;
-  gap:8px;
-  margin-top:10px;
-}
-.rootremove{
-  background:#f0d7d1;
-  color:#7b4a40;
-  padding:8px 12px;
-  border-radius:10px;
-}
-.rootcancel{
-  background:#eee5dd;
-  color:var(--text);
-  padding:8px 12px;
-  border-radius:10px;
-}
-.treename{
-  margin-top:12px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap;align-items:center
-}
-.treename input{max-width:260px}
-.reflection{padding:24px;margin-top:20px}
-.prompt{
-  font-family:Georgia,"Times New Roman",serif;
-  font-size:clamp(1.45rem,2.8vw,2.15rem);
-  color:var(--clay-dark);
-  text-align:center;
-  margin:8px auto 18px;
-  max-width:850px;
-}
-.moments{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.moment{
-  border:1px solid var(--line);
-  background:#fffaf6;
-  border-radius:18px;
-  padding:14px;
-  text-align:left;
-  cursor:pointer;
-  min-height:112px;
-  transition:.18s;
-}
-.moment:hover{transform:translateY(-1px)}
-.moment.selected{outline:3px solid rgba(159,181,143,.55);background:#f1f6ee}
-.momenticon{font-size:1.55rem}
-.momenttitle{font-weight:800;margin-top:6px}
-.momenttext{font-size:.9rem;color:var(--muted);margin-top:4px}
-.givebar{text-align:center;margin-top:18px}
-.givebtn{background:var(--sage-dark);color:white;padding:13px 18px}
-.note{font-size:.88rem;color:var(--muted);text-align:center;margin-top:10px}
-.forestgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}
-.treebadge{
-  background:#faf4ee;border:1px solid var(--line);border-radius:16px;padding:14px
-}
-.treebadge .emoji{font-size:2.5rem}
-.treebadge strong{display:block;margin-top:4px}
-.editor{display:none;padding:22px;margin-bottom:20px}
-.editor.active{display:block}
-.editgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-.editsection{background:#faf4ee;border-radius:18px;padding:15px}
-.editrow{display:grid;grid-template-columns:1.1fr .8fr auto;gap:8px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--line)}
-input,select{width:100%;padding:10px;border:1px solid #dcc9bb;border-radius:10px;background:#fff;font:inherit}
-.wide{grid-column:1/-1}
-.small{color:var(--muted);font-size:.88rem}
-.addbtn{background:#eadfce}
-.deletebtn{background:#f0d7d1;color:#7b4a40;padding:8px 11px}
-.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-.empty{color:var(--muted);font-style:italic;padding:10px}
-@media(max-width:900px){
-  .mainlower{grid-template-columns:1fr}
-  .moments{grid-template-columns:repeat(2,1fr)}
-}
-@media(max-width:760px){
-  .grid,.editgrid{grid-template-columns:1fr}
-  .wrap{padding:14px}
-  .hero,.person,.treecard,.reflection,.forest,.editor{padding:18px}
-  .editrow{grid-template-columns:1fr}
-  .wide{grid-column:auto}
-}
-@media(max-width:520px){
-  .moments{grid-template-columns:1fr}
-}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f8efe8">
+  <title>Mein Lernwald</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="wrap">
-
-<section class="hero">
-  <h1>🌿 Finas &amp; Lous Lernwelt</h1>
-  <div class="heroquote" id="heroQuote"></div>
-  <div class="topbar">
-    <div class="date" id="today"></div>
-    <button class="editbtn" id="toggleEdit">⚙️ Aufgaben ändern</button>
-  </div>
-</section>
-
-<section class="editor" id="editor">
-  <h2>Aufgaben für heute bearbeiten</h2>
-  <p class="small">Online-Aufgaben können direkt verlinkt werden. Papieraufgaben zeigen nur den Hinweis an.</p>
-  <div class="editgrid">
-    <div class="editsection">
-      <h3>🌸 Fina</h3>
-      <div id="editFina"></div>
-      <button class="addbtn button" onclick="addTask('fina')">+ Aufgabe</button>
-    </div>
-    <div class="editsection">
-      <h3>🌺 Lou</h3>
-      <div id="editLou"></div>
-      <button class="addbtn button" onclick="addTask('lou')">+ Aufgabe</button>
-    </div>
-  </div>
-  <div class="actions">
-    <button class="savebtn" onclick="saveTasks()">Speichern</button>
-    <button class="resetbtn" onclick="resetDay()">Tagesblätter zurücksetzen</button>
-    <button class="dangerbtn" onclick="resetTree()">Aktuellen Baum neu beginnen</button>
-  </div>
-</section>
-
-<main class="grid">
-  <section class="person">
-    <h2>🌸 Fina</h2>
-    <p class="subtitle">Heute für dich</p>
-    <div class="tasks" id="finaTasks"></div>
-    <div class="progress"><div class="bar" id="finaBar"></div></div>
-    <div class="progresslabel" id="finaProgress"></div>
-  </section>
-
-  <section class="person">
-    <h2>🌺 Lou</h2>
-    <p class="subtitle">Heute für dich</p>
-    <div class="tasks" id="louTasks"></div>
-    <div class="progress"><div class="bar" id="louBar"></div></div>
-    <div class="progresslabel" id="louProgress"></div>
-  </section>
-</main>
-
-<section class="reflection">
-  <h2>Welche Schatzmomente hast du heute entdeckt?</h2>
-  <div class="prompt" id="reflectionPrompt"></div>
-
-  <div class="moments" id="moments">
-    <div class="moment" data-kind="help">
-      <div class="momenticon">💗</div>
-      <div class="momenttitle">Hilfsbereitschaft</div>
-      <div class="momenttext">Ist dir ein Moment eingefallen, in dem du geholfen hast?</div>
-    </div>
-    <div class="moment" data-kind="comfort">
-      <div class="momenticon">🌸</div>
-      <div class="momenttitle">Mitgefühl</div>
-      <div class="momenttext">Gab es heute einen Moment voller Mitgefühl?</div>
-    </div>
-    <div class="moment" data-kind="courage">
-      <div class="momenticon">⭐</div>
-      <div class="momenttitle">Mut</div>
-      <div class="momenttext">Gab es etwas, worauf du stolz sein kannst?</div>
-    </div>
-    <div class="moment" data-kind="persist">
-      <div class="momenticon">🌱</div>
-      <div class="momenttitle">Dranbleiben</div>
-      <div class="momenttext">Woran bist du heute ein kleines Stück weitergekommen?</div>
-    </div>
-    <div class="moment" data-kind="beauty">
-      <div class="momenticon">🍊</div>
-      <div class="momenttitle">Schöner Moment</div>
-      <div class="momenttext">Welchen schönen Moment möchtest du festhalten?</div>
-    </div>
-    <div class="moment" data-kind="curious">
-      <div class="momenticon">🎒</div>
-      <div class="momenttitle">Neugier</div>
-      <div class="momenttext">Was hat heute deine Neugier geweckt?</div>
-    </div>
-    <div class="moment" data-kind="kindness">
-      <div class="momenticon">🤝</div>
-      <div class="momenttitle">Freundlichkeit</div>
-      <div class="momenttext">Wo hast du Freundlichkeit erlebt oder verschenkt?</div>
-    </div>
-    <div class="moment" data-kind="smile">
-      <div class="momenticon">🌈</div>
-      <div class="momenttitle">Freude</div>
-      <div class="momenttext">Gab es einen Moment, über den du lachen kannst?</div>
-    </div>
+  <div id="loginView" class="center-screen">
+    <section class="login-card">
+      <div class="brand">🌿</div>
+      <h1>Mein Lernwald</h1>
+      <p>Gemeinsam wachsen – Blatt für Blatt.</p>
+      <form id="loginForm">
+        <label>E-Mail
+          <input id="loginEmail" type="email" autocomplete="email" required>
+        </label>
+        <label>Passwort
+          <input id="loginPassword" type="password" autocomplete="current-password" required>
+        </label>
+        <button class="primary" type="submit">Anmelden</button>
+        <p id="loginMessage" class="message"></p>
+      </form>
+    </section>
   </div>
 
-  <div class="givebar">
-    <button class="givebtn" id="giveLeaf">🌱 Wurzel wachsen lassen</button>
-  </div>
-  <div class="note">Mehrere ausgewählte Schatzmomente lassen gemeinsam eine neue Wurzel wachsen. Es darf auch Tage ohne neue Wurzel geben.</div>
-</section>
-
-<div class="mainlower">
-  <section class="treecard">
-    <h2>Unser Lernbaum</h2>
-    <p class="treehint">Oben wachsen Lernblätter. Unten wachsen Wurzeln aus den kleinen Schatzmomenten des Tages.</p>
-
-    <svg id="treeSvg" viewBox="0 0 540 430" role="img" aria-label="Organisch wachsender Lern- und Lebensbaum mit Wurzeln">
-      <defs>
-        <linearGradient id="trunkGrad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#a27b5f"/>
-          <stop offset="55%" stop-color="#84634d"/>
-          <stop offset="100%" stop-color="#6f513f"/>
-        </linearGradient>
-        <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#6b4f3d" flood-opacity=".15"/>
-        </filter>
-      </defs>
-
-      <!-- soft ground -->
-      <ellipse cx="270" cy="368" rx="150" ry="22" fill="#eadfd2"/>
-      <ellipse cx="270" cy="365" rx="108" ry="13" fill="#dccbbb"/>
-
-      <!-- wider, softly spreading trunk -->
-      <path d="M226 362
-               C236 324 238 288 244 252
-               C250 217 246 183 250 150
-               C254 118 263 91 278 63
-               C285 98 288 130 283 164
-               C279 199 286 228 294 259
-               C302 292 304 326 314 362
-               C293 355 284 350 270 350
-               C255 350 246 356 226 362 Z"
-            fill="url(#trunkGrad)" filter="url(#softShadow)"/>
-
-      <!-- bark lines -->
-      <path d="M250 347 C247 310 254 278 253 241 C252 202 258 162 269 116"
-            fill="none" stroke="#b38c6d" stroke-width="3.2" stroke-linecap="round" opacity=".55"/>
-      <path d="M286 347 C293 310 283 277 288 240 C293 202 283 165 282 127"
-            fill="none" stroke="#684b3b" stroke-width="2.5" stroke-linecap="round" opacity=".36"/>
-
-      <!-- organic branches -->
-      <path class="branch" id="branch1" d="M250 276 C210 264 170 242 128 200"/>
-      <path class="branch" id="branch2" d="M291 260 C333 246 370 219 402 179"/>
-      <path class="branch" id="branch3" d="M251 224 C214 204 186 174 171 136"/>
-      <path class="branch" id="branch4" d="M288 208 C326 188 355 157 366 117"/>
-      <path class="branch" id="branch5" d="M260 169 C236 142 224 109 231 77"/>
-      <path class="branch" id="branch6" d="M279 156 C309 130 325 96 319 62"/>
-
-      <!-- fine twigs -->
-      <path d="M167 237 C151 228 141 218 132 204" fill="none" stroke="#8d684e" stroke-width="3" opacity=".28" stroke-linecap="round"/>
-      <path d="M360 217 C375 207 389 193 400 179" fill="none" stroke="#8d684e" stroke-width="3" opacity=".28" stroke-linecap="round"/>
-      <path d="M194 175 C186 160 178 147 172 136" fill="none" stroke="#8d684e" stroke-width="3" opacity=".28" stroke-linecap="round"/>
-      <path d="M345 158 C355 144 362 130 366 117" fill="none" stroke="#8d684e" stroke-width="3" opacity=".28" stroke-linecap="round"/>
-
-      <g id="treeLeaves"></g>
-      <g id="treeFlowers"></g>
-
-      <!-- Wurzeln wachsen erst durch Schatzmomente -->
-      <g id="treeRoots"></g>
-    </svg>
-
-    <div class="progresslabel" id="treeText"></div>
-    <div id="rootList" class="rootlist"></div>
-    <div id="finishTreeWrap" style="display:none;margin-top:14px">
-      <button class="savebtn" id="finishTreeBtn">🌳 Fertigen Baum in den Lernwald setzen</button>
-    </div>
-    <div style="color:#7d6e64;margin-top:6px;font-size:.95rem">🌿 Lernaufgaben lassen die Krone wachsen. Schatzmomente lassen unten organische Wurzeln entstehen.</div>
-    <div style="margin-top:10px;font-family:Georgia,serif;font-size:1.05rem;color:var(--clay-dark)">
-      Starke Wurzeln tragen große Bäume.
-    </div>
-    
-
-    <div class="treename">
-      <input id="treeName" placeholder="Gebt eurem Baum einen Namen">
-      <button class="savebtn" id="saveTreeName">Namen speichern</button>
-    </div>
-  </section>
-
-  <section class="forest">
-    <h2>Unser Lernwald</h2>
-    <p>Jeder fertige Baum erzählt von eurer gemeinsamen Reise.</p>
-    <div class="forestgrid" id="forestGrid"></div>
-  </section>
-</div>
-
-</div>
-
-<script>
-const heroQuotes=[
-"Schön, dass ihr da seid. Heute gibt es wieder etwas zu entdecken.",
-"Die Welt steckt voller kleiner Wunder – schaut, welches ihr heute entdeckt.",
-"Neugier ist ein wunderbarer Anfang.",
-"Jeder kleine Schritt zählt.",
-"Heute darf etwas Neues wachsen."
-];
-
-const reflectionPrompts=[
-"Vielleicht erinnerst du dich an einen Moment, in dem du geholfen hast.",
-"Vielleicht ist dir heute jemand besonders wichtig gewesen.",
-"Vielleicht hast du heute etwas Mutiges ausprobiert.",
-"Vielleicht bist du heute bei etwas drangeblieben.",
-"Vielleicht hast du heute etwas Schönes entdeckt.",
-"Vielleicht hat dich heute etwas neugierig gemacht.",
-"Vielleicht hast du heute Freundlichkeit geschenkt oder bekommen.",
-"Vielleicht gab es heute einen Moment, über den du lachen kannst."
-];
-
-const defaults={
-fina:[
-{title:"Schreiben nach Gehör",note:"1 Video + 1 Übung",url:"",type:"online"},
-{title:"Lernwörter",note:"5–8 Wörter ins Heft",url:"",type:"paper"},
-{title:"Lesen",note:"10 Minuten im Lesebuch",url:"",type:"paper"},
-{title:"Mathe-Spaß",note:"Bonusaufgabe",url:"",type:"online"}
-],
-lou:[
-{title:"Simple Present",note:"Video + Übungen",url:"",type:"online"},
-{title:"Present Progressive",note:"kurz vergleichen",url:"",type:"online"},
-{title:"Englisch-Heft",note:"3 eigene Beispielsätze",url:"",type:"paper"},
-{title:"Latein – Einstieg",note:"erste Wörter ansehen",url:"",type:"paper"}
-]
-};
-
-let data=JSON.parse(localStorage.getItem("lernweltTasksV15")||"null")||defaults;
-let done=JSON.parse(localStorage.getItem("lernweltDoneV15")||"{}");
-let roots=JSON.parse(localStorage.getItem("lernweltRootsV15")||"[]");
-let learningLeaves=JSON.parse(localStorage.getItem("lernweltLearningLeavesV15")||"[]");
-let treeName=localStorage.getItem("lernweltTreeNameV15")||"";
-let forest=JSON.parse(localStorage.getItem("lernweltForestV15")||"[]");
-let selectedKinds=[];
-let selectedRootIndex=0;
-let rootDeleteArmed=false;
-
-
-
-if(!localStorage.getItem("lernweltV15Initialized")){
-  localStorage.setItem("lernweltRootsV15","[]");
-  localStorage.setItem("lernweltDoneV15","{}");
-  localStorage.setItem("lernweltLearningLeavesV15","[]");
-  localStorage.setItem("lernweltV15Initialized","1");
-  roots=[];
-  done={};
-  learningLeaves=[];
-}
-
-function keyFor(person,i){return person+"_"+i}
-
-function leafSvg(){
-return `<svg viewBox="0 0 46 46" aria-hidden="true">
-<path class="fill" d="M8 33 C9 17 20 7 36 8 C34 24 24 35 8 33 Z"/>
-<path class="vein" d="M12 30 C18 24 25 18 32 12"/>
-<path class="vein" d="M18 24 C17 19 17 16 18 13"/>
-<path class="vein" d="M23 20 C27 22 31 22 34 21"/>
-</svg>`;
-}
-
-function render(){
-["fina","lou"].forEach(person=>{
-const box=document.getElementById(person+"Tasks");
-box.innerHTML="";
-const tasks=data[person].filter(t=>t.title.trim());
-if(!tasks.length) box.innerHTML='<div class="empty">Heute ist ein freier Tag.</div>';
-tasks.forEach((t,i)=>{
-const online=t.type==="online"&&t.url;
-const item=document.createElement(online?"a":"div");
-item.className="task"+(t.type==="paper"?" paper":"");
-if(online){item.href=t.url;item.target="_blank"}
-const checked=!!done[keyFor(person,i)];
-item.innerHTML=`
-<div class="leafcheck ${checked?"done":""}">${leafSvg()}</div>
-<div class="tasktext">
-<div class="type">${t.type==="paper"?"Papier":"Online"}</div>
-<div class="tasktitle">${escapeHtml(t.title)}</div>
-<div class="tasknote">${escapeHtml(t.note||"")}</div>
-</div>
-<div>${online?"↗":""}</div>`;
-item.querySelector(".leafcheck").addEventListener("click",e=>{
-e.preventDefault();e.stopPropagation();
-const key=keyFor(person,i);
-const wasDone=!!done[key];
-done[key]=!wasDone;
-
-if(!wasDone){
-  learningLeaves.push({
-    key,
-    person,
-    title:t.title,
-    date:new Date().toISOString()
-  });
-}else{
-  learningLeaves=learningLeaves.filter(x=>x.key!==key);
-}
-
-localStorage.setItem("lernweltDoneV15",JSON.stringify(done));
-localStorage.setItem("lernweltLearningLeavesV15",JSON.stringify(learningLeaves));
-render();
-});
-box.appendChild(item);
-});
-updateProgress(person,tasks.length);
-});
-updateTree();
-renderForest();
-}
-
-function updateProgress(person,total){
-let count=0;
-for(let i=0;i<total;i++) if(done[keyFor(person,i)]) count++;
-document.getElementById(person+"Bar").style.width=(total?Math.round(count/total*100):0)+"%";
-document.getElementById(person+"Progress").textContent=total?`${count} von ${total} geschafft`:"Heute frei";
-}
-
-function addSvgLeaf(group,x,y,rot,color,visible,mirror=1){
-const ns="http://www.w3.org/2000/svg";
-const g=document.createElementNS(ns,"g");
-g.setAttribute("class","treeleaf "+(visible?"visible":""));
-g.setAttribute("transform",`translate(${x} ${y}) rotate(${rot}) scale(1 ${mirror})`);
-g.innerHTML=`
-<path d="M0 0 C8 -15 24 -17 34 -4 C25 9 10 11 0 0 Z"
-      fill="${color}" stroke="#765f52" stroke-width="1.15"/>
-<path d="M3 0 C13 -1 23 -2 31 -4"
-      fill="none" stroke="#fff9f2" stroke-width="1.1" opacity=".9"/>
-<path d="M12 -1 C11 -5 11 -8 13 -11"
-      fill="none" stroke="#fff9f2" stroke-width=".85" opacity=".7"/>
-<path d="M20 -2 C22 0 25 1 28 1"
-      fill="none" stroke="#fff9f2" stroke-width=".85" opacity=".7"/>`;
-group.appendChild(g);
-}
-
-function addFlower(group,x,y,color,visible){
-const ns="http://www.w3.org/2000/svg";
-const g=document.createElementNS(ns,"g");
-g.setAttribute("class","treeflower "+(visible?"visible":""));
-g.setAttribute("transform",`translate(${x} ${y})`);
-g.innerHTML=`
-<g>
-  <ellipse cx="0" cy="-11" rx="7" ry="11" fill="${color}" opacity=".96"/>
-  <ellipse cx="9" cy="-3" rx="6.5" ry="10" fill="${color}" transform="rotate(55 9 -3)"/>
-  <ellipse cx="6" cy="8" rx="6.5" ry="10" fill="${color}" transform="rotate(115 6 8)"/>
-  <ellipse cx="-6" cy="8" rx="6.5" ry="10" fill="${color}" transform="rotate(-115 -6 8)"/>
-  <ellipse cx="-9" cy="-3" rx="6.5" ry="10" fill="${color}" transform="rotate(-55 -9 -3)"/>
-  <circle r="6" fill="#e6bd62" stroke="#c99a43" stroke-width=".8"/>
-  <circle cx="-1.8" cy="-1.5" r="1.2" fill="#fff6dc"/>
-  <circle cx="2.0" cy="1.0" r="1.0" fill="#fff6dc"/>
-  <circle cx="-1.0" cy="2.0" r="0.9" fill="#fff6dc"/>
-</g>`;
-group.appendChild(g);
-}
-
-function kindColor(kind){
-return {
-help:"#d58f7d",comfort:"#b7a0cf",courage:"#e6bd62",persist:"#9fb58f",
-beauty:"#e3a64f",curious:"#c78fa8",kindness:"#e4b458",smile:"#86b7c9"
-}[kind]||"#9fb58f";
-}
-
-
-const rootDesigns=[
-  {d:"M250 350 C225 359 206 373 178 388", tip:[176,389], width:7},
-  {d:"M258 354 C239 372 225 389 210 407", tip:[208,408], width:6.5},
-  {d:"M269 354 C266 374 265 392 266 414", tip:[266,416], width:6},
-  {d:"M280 354 C294 374 308 392 324 408", tip:[326,409], width:6.5},
-  {d:"M290 350 C315 360 339 374 367 388", tip:[369,389], width:7},
-  {d:"M235 357 C211 365 188 366 158 365", tip:[156,365], width:5.5},
-  {d:"M303 356 C329 363 355 364 386 360", tip:[388,360], width:5.5},
-  {d:"M244 362 C223 380 198 397 174 412", tip:[172,413], width:5},
-  {d:"M296 361 C319 379 344 397 371 411", tip:[373,412], width:5},
-  {d:"M257 362 C248 384 244 400 242 420", tip:[242,422], width:4.8},
-  {d:"M282 362 C290 383 294 401 296 420", tip:[296,422], width:4.8},
-  {d:"M228 361 C205 375 181 382 151 388", tip:[149,389], width:4.6},
-  {d:"M310 360 C335 374 359 382 390 388", tip:[392,389], width:4.6},
-  {d:"M267 360 C258 378 252 390 249 404 C246 415 239 423 230 429", tip:[228,430], width:4.3},
-  {d:"M276 360 C286 378 292 390 296 403 C300 415 308 423 318 429", tip:[320,430], width:4.3},
-  {d:"M270 364 C271 382 274 396 281 410 C286 420 286 427 283 434", tip:[282,435], width:4}
-];
-
-function rootKindsText(kinds){
-  const names={
-    help:"Hilfsbereitschaft",
-    comfort:"Mitgefühl",
-    courage:"Mut",
-    persist:"Dranbleiben",
-    beauty:"schöner Moment",
-    curious:"Neugier",
-    kindness:"Freundlichkeit",
-    smile:"Freude"
-  };
-  return (kinds||[]).map(k=>names[k]||k).join(", ");
-}
-
-function removeRootAt(index){
-  if(index<0 || index>=roots.length) return;
-  roots.splice(index,1);
-  localStorage.setItem("lernweltRootsV15",JSON.stringify(roots));
-  selectedRootIndex=Math.max(0,Math.min(index,roots.length-1));
-  rootDeleteArmed=false;
-  render();
-}
-
-function drawRootCarousel(){
-  const list=document.getElementById("rootList");
-  if(!list) return;
-  list.innerHTML="";
-
-  if(roots.length===0){
-    list.innerHTML='<div class="empty">Noch keine Wurzel gewachsen.</div>';
-    selectedRootIndex=0;
-    rootDeleteArmed=false;
-    return;
-  }
-
-  selectedRootIndex=(selectedRootIndex+roots.length)%roots.length;
-  const root=roots[selectedRootIndex];
-  const date=root.date
-    ? new Date(root.date).toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit",year:"numeric"})
-    : "";
-  const text=rootKindsText(root.kinds)||"Schatzmoment";
-
-  const card=document.createElement("div");
-  card.className="rootcarousel";
-  card.innerHTML=`
-    <button type="button" class="rootnav" id="rootPrev" aria-label="Vorherige Wurzel">‹</button>
-    <div class="rootcardcontent">
-      <strong>🌱 Wurzel ${selectedRootIndex+1} von ${roots.length}</strong>
-      <small>${escapeHtml(text)}${date ? " · "+date : ""}</small>
-      <div class="rootactions">
-        ${
-          rootDeleteArmed
-          ? '<button type="button" class="rootremove" id="rootDeleteConfirm">Ja, entfernen</button><button type="button" class="rootcancel" id="rootDeleteCancel">Abbrechen</button>'
-          : '<button type="button" class="rootremove" id="rootDeleteStart">Entfernen</button>'
-        }
+  <div id="appView" class="hidden">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Finas &amp; Lous</div>
+        <h1>Mein Lernwald</h1>
       </div>
-    </div>
-    <button type="button" class="rootnav" id="rootNext" aria-label="Nächste Wurzel">›</button>`;
+      <div class="top-actions">
+        <button id="openMama" class="soft">⚙️ Mama-Bereich</button>
+        <button id="logoutBtn" class="ghost">Abmelden</button>
+      </div>
+    </header>
 
-  list.appendChild(card);
+    <main class="page">
+      <section class="welcome card">
+        <p class="eyebrow" id="todayLabel"></p>
+        <h2 id="welcomeText">Schön, dass ihr da seid.</h2>
+        <blockquote id="dailyQuote"></blockquote>
+      </section>
 
-  card.querySelector("#rootPrev").onclick=()=>{
-    selectedRootIndex=(selectedRootIndex-1+roots.length)%roots.length;
-    rootDeleteArmed=false;
-    drawRootCarousel();
-  };
-  card.querySelector("#rootNext").onclick=()=>{
-    selectedRootIndex=(selectedRootIndex+1)%roots.length;
-    rootDeleteArmed=false;
-    drawRootCarousel();
-  };
+      <section class="children-grid">
+        <article class="card child-card">
+          <div class="child-heading">
+            <div>
+              <div class="eyebrow">Heute für dich</div>
+              <h2>🌸 Fina</h2>
+            </div>
+          </div>
+          <div id="finaTasks" class="task-list"></div>
+        </article>
 
-  const startBtn=card.querySelector("#rootDeleteStart");
-  if(startBtn) startBtn.onclick=()=>{
-    rootDeleteArmed=true;
-    drawRootCarousel();
-  };
+        <article class="card child-card">
+          <div class="child-heading">
+            <div>
+              <div class="eyebrow">Heute für dich</div>
+              <h2>🌺 Lou</h2>
+            </div>
+          </div>
+          <div id="louTasks" class="task-list"></div>
+        </article>
+      </section>
 
-  const confirmBtn=card.querySelector("#rootDeleteConfirm");
-  if(confirmBtn) confirmBtn.onclick=()=>removeRootAt(selectedRootIndex);
+      <section class="card tree-section">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">Unser gemeinsamer Baum</div>
+            <h2 id="treeTitle">Wochenbaum</h2>
+          </div>
+          <button id="openForest" class="soft">🌲 Lernwald ansehen</button>
+        </div>
 
-  const cancelBtn=card.querySelector("#rootDeleteCancel");
-  if(cancelBtn) cancelBtn.onclick=()=>{
-    rootDeleteArmed=false;
-    drawRootCarousel();
-  };
-}
+        <div class="tree-layout">
+          <div class="tree-wrap">
+            <svg id="treeSvg" viewBox="0 0 560 500" role="img" aria-label="Lernbaum">
+              <defs>
+                <linearGradient id="trunkGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#a27b5f"/>
+                  <stop offset="60%" stop-color="#84634d"/>
+                  <stop offset="100%" stop-color="#694c3b"/>
+                </linearGradient>
+              </defs>
+              <ellipse cx="280" cy="396" rx="150" ry="23" fill="#eadfd2"/>
+              <path d="M235 389 C244 345 247 304 251 263 C255 220 249 181 254 145 C258 112 270 82 286 52 C294 91 297 127 292 163 C287 201 295 237 304 272 C313 311 317 348 326 389 C306 382 294 376 280 376 C264 376 253 382 235 389Z" fill="url(#trunkGrad)"/>
+              <path d="M257 363 C252 319 261 281 258 240 C256 199 265 156 278 105" fill="none" stroke="#b48e70" stroke-width="4" opacity=".55" stroke-linecap="round"/>
+              <path class="branch" d="M255 289 C211 276 168 251 124 205"/>
+              <path class="branch" d="M305 274 C351 257 393 226 427 180"/>
+              <path class="branch" d="M258 235 C216 214 184 178 168 133"/>
+              <path class="branch" d="M299 219 C340 198 371 162 383 117"/>
+              <path class="branch" d="M267 176 C239 147 226 108 234 69"/>
+              <path class="branch" d="M292 163 C326 133 342 94 334 55"/>
+              <g id="leafLayer"></g>
+              <g id="flowerLayer"></g>
+              <g id="rootLayer"></g>
+            </svg>
+          </div>
 
-function drawRoots(){
-  const group=document.getElementById("treeRoots");
-  if(!group) return;
-  group.innerHTML="";
-  const ns="http://www.w3.org/2000/svg";
+          <div class="tree-story">
+            <p class="tree-mantra"><strong>Lernaufgaben</strong> lassen oben Blätter wachsen.</p>
+            <p class="tree-mantra"><strong>Herzmomente</strong> lassen unten Wurzeln entstehen.</p>
+            <p id="treeStatus" class="muted"></p>
+            <button id="finishTreeBtn" class="primary hidden">🌳 Baum in den Lernwald setzen</button>
+          </div>
+        </div>
+      </section>
 
-  roots.slice(0,rootDesigns.length).forEach((root,index)=>{
-    const design=rootDesigns[index];
+      <section class="card hearts">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">Abendritual</div>
+            <h2>Welche Herzmomente möchtet ihr festhalten?</h2>
+          </div>
+        </div>
+        <div id="heartChoices" class="heart-grid"></div>
+        <div class="heart-form">
+          <label>Von wem?
+            <select id="heartAuthor">
+              <option>Mama</option>
+              <option>Fina</option>
+              <option>Lou</option>
+              <option>Gemeinsam</option>
+            </select>
+          </label>
+          <label>Warum ist dieser Moment wichtig?
+            <textarea id="heartReason" rows="3" placeholder="Zum Beispiel: Fina hat heute Lou getröstet."></textarea>
+          </label>
+          <button id="addRootBtn" class="primary">🌱 Eine Wurzel wachsen lassen</button>
+        </div>
+        <div id="rootMemory" class="root-memory"></div>
+      </section>
 
-    const hit=document.createElementNS(ns,"path");
-    hit.setAttribute("d",design.d);
-    hit.setAttribute("fill","none");
-    hit.setAttribute("stroke","rgba(0,0,0,0.001)");
-    hit.setAttribute("stroke-width","32");
-    hit.setAttribute("stroke-linecap","round");
-    hit.style.cursor="pointer";
-    hit.style.pointerEvents="stroke";
-    hit.addEventListener("click",(event)=>{
-      event.preventDefault();
-      event.stopPropagation();
-      selectedRootIndex=index;
-      rootDeleteArmed=false;
-      drawRootCarousel();
-      document.getElementById("rootList")?.scrollIntoView({behavior:"smooth",block:"nearest"});
-    });
-    group.appendChild(hit);
+      <section id="forestSection" class="card hidden">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">Unsere Erinnerungen</div>
+            <h2>Der Lernwald</h2>
+          </div>
+          <button id="closeForest" class="ghost">Schließen</button>
+        </div>
+        <div id="forestGrid" class="forest-grid"></div>
+      </section>
+    </main>
 
-    const path=document.createElementNS(ns,"path");
-    path.setAttribute("d",design.d);
-    path.setAttribute("class","rootpath");
-    path.setAttribute("stroke-width",design.width);
-    path.style.pointerEvents="none";
-    group.appendChild(path);
+    <dialog id="mamaDialog">
+      <form method="dialog" class="dialog-shell">
+        <button class="dialog-close" value="cancel" aria-label="Schließen">×</button>
+        <div id="mamaUnlock">
+          <div class="eyebrow">Geschützter Bereich</div>
+          <h2>Mama-Bereich öffnen</h2>
+          <p>Bitte gib dein Firebase-Passwort noch einmal ein.</p>
+          <label>Passwort
+            <input id="mamaPassword" type="password" autocomplete="current-password">
+          </label>
+          <button id="unlockMamaBtn" type="button" class="primary">Öffnen</button>
+          <p id="mamaUnlockMessage" class="message"></p>
+        </div>
 
-    const tip=document.createElementNS(ns,"circle");
-    tip.setAttribute("cx",design.tip[0]);
-    tip.setAttribute("cy",design.tip[1]);
-    tip.setAttribute("r",Math.max(2.5,design.width/2.4));
-    tip.setAttribute("class","root-tip");
-    group.appendChild(tip);
-  });
+        <div id="mamaPanel" class="hidden">
+          <div class="eyebrow">Planen und begleiten</div>
+          <h2>Mama-Bereich</h2>
 
-  drawRootCarousel();
-}
+          <div class="tabs">
+            <button type="button" class="tab active" data-tab="tasksTab">Heute planen</button>
+            <button type="button" class="tab" data-tab="treeTab">Baum begleiten</button>
+          </div>
 
-function updateTree(){
-const leafGroup=document.getElementById("treeLeaves");
-const flowerGroup=document.getElementById("treeFlowers");
-leafGroup.innerHTML=""; flowerGroup.innerHTML="";
-drawRoots();
+          <section id="tasksTab" class="tab-panel">
+            <div class="admin-grid">
+              <div>
+                <h3>🌸 Fina</h3>
+                <div id="adminFinaTasks"></div>
+                <button type="button" class="soft" data-add-task="fina">+ Aufgabe</button>
+              </div>
+              <div>
+                <h3>🌺 Lou</h3>
+                <div id="adminLouTasks"></div>
+                <button type="button" class="soft" data-add-task="lou">+ Aufgabe</button>
+              </div>
+            </div>
+            <div class="dialog-actions">
+              <button id="saveTasksBtn" type="button" class="primary">Änderungen veröffentlichen</button>
+            </div>
+          </section>
 
-const branches=[
-{id:1,leaves:[
- [126,194,-32,1],[137,210,148,-1],
- [151,214,-24,1],[164,229,156,-1],
- [181,232,-20,1],[196,246,160,-1],
- [214,249,-16,1],[229,262,164,-1]
-],flower:[116,187]},
-{id:2,leaves:[
- [404,174,30,1],[392,192,210,-1],
- [378,197,24,1],[364,214,204,-1],
- [348,220,20,1],[333,235,200,-1],
- [316,241,16,1],[301,255,196,-1]
-],flower:[413,166]},
-{id:3,leaves:[
- [169,131,-24,1],[178,147,156,-1],
- [187,153,-20,1],[197,169,160,-1],
- [208,175,-18,1],[219,190,162,-1],
- [231,196,-16,1],[242,211,164,-1]
-],flower:[162,122]},
-{id:4,leaves:[
- [368,112,24,1],[360,130,204,-1],
- [353,137,20,1],[344,154,200,-1],
- [333,161,18,1],[322,177,198,-1],
- [309,183,16,1],[297,199,196,-1]
-],flower:[376,103]},
-{id:5,leaves:[
- [231,72,-14,1],[227,89,166,-1],
- [230,97,-14,1],[234,114,166,-1],
- [241,121,-14,1],[247,138,166,-1],
- [254,144,-12,1],[262,161,168,-1]
-],flower:[230,62]},
-{id:6,leaves:[
- [321,57,14,1],[326,75,194,-1],
- [326,82,14,1],[322,100,194,-1],
- [317,106,14,1],[310,123,194,-1],
- [301,130,12,1],[293,147,192,-1]
-],flower:[327,47]}
-];
-const perBranch=8;
-const max=branches.length*perBranch;
+          <section id="treeTab" class="tab-panel hidden">
+            <label>Name des aktuellen Baums
+              <input id="treeNameInput" type="text" maxlength="40">
+            </label>
+            <label>Wann ist die Krone fertig?
+              <select id="treeTargetInput">
+                <option value="12">nach 12 Lernblättern</option>
+                <option value="16">nach 16 Lernblättern</option>
+                <option value="20">nach 20 Lernblättern</option>
+                <option value="24">nach 24 Lernblättern</option>
+              </select>
+            </label>
+            <p class="muted">Die Kinder sehen keine Zahl. Sie erleben nur, wie der Baum wächst und schließlich in den Lernwald wandert.</p>
+            <button id="saveTreeSettings" type="button" class="primary">Baum-Einstellungen speichern</button>
+          </section>
+        </div>
+      </form>
+    </dialog>
+  </div>
 
-const combinedLeaves=[
-  ...learningLeaves.map((x,index)=>({
-    type:"learning",
-    person:x.person,
-    color:index%2===0 ? "#9fb58f" : "#86b7c9"
-  }))
-];
-
-const count=Math.min(combinedLeaves.length,max);
-
-branches.forEach((b,bi)=>{
-const branch=document.getElementById("branch"+b.id);
-const start=bi*perBranch;
-const filled=Math.max(0,Math.min(perBranch,count-start));
-branch.classList.toggle("active",count>start);
-branch.classList.toggle("done",filled===perBranch);
-b.leaves.forEach((pos,li)=>{
-const leafIndex=start+li;
-const visible=leafIndex<count;
-let color="#9fb58f";
-if(visible){
-  const item=combinedLeaves[leafIndex];
-  color=item.color;
-}
-addSvgLeaf(leafGroup,pos[0],pos[1],pos[2],color,visible,pos[3]||1);
-});
-addFlower(flowerGroup,b.flower[0],b.flower[1],["#efb6ad","#c6afe0","#f1cc76","#b8cda9","#e8a76f","#9ec6d4"][bi],filled===perBranch);
-});
-
-document.getElementById("treeName").value=treeName;
-const treeText=document.getElementById("treeText");
-const finishWrap=document.getElementById("finishTreeWrap");
-treeText.textContent=
-count>=max
-? `Die Krone ist vollständig gewachsen. ${roots.length} ${roots.length===1?"Wurzel trägt":"Wurzeln tragen"} den Baum.`
-: `${count} von ${max} Lernblättern sind gewachsen. Unter dem Baum wachsen ${roots.length} ${roots.length===1?"Wurzel":"Wurzeln"}.`;
-if(finishWrap) finishWrap.style.display=count>=max ? "block" : "none";
-}
-
-function renderForest(){
-const grid=document.getElementById("forestGrid");
-grid.innerHTML="";
-if(!forest.length){
-grid.innerHTML='<div class="empty">Hier wartet euer erster fertiger Baum.</div>';
-return;
-}
-forest.slice().reverse().forEach(item=>{
-const d=document.createElement("div");
-d.className="treebadge";
-d.innerHTML=`<div class="emoji">🌳</div><strong>${escapeHtml(item.name||"Unser Baum")}</strong><span>${escapeHtml(item.date)}</span><small style="display:block;color:var(--muted);margin-top:4px">${item.leaves||48} Lernblätter · ${item.roots||0} Wurzeln</small>`;
-grid.appendChild(d);
-});
-}
-
-document.querySelectorAll(".moment").forEach(m=>{
-m.addEventListener("click",()=>{
-const kind=m.dataset.kind;
-if(selectedKinds.includes(kind)){
-  selectedKinds=selectedKinds.filter(x=>x!==kind);
-  m.classList.remove("selected");
-}else{
-  selectedKinds.push(kind);
-  m.classList.add("selected");
-}
-});
-});
-
-document.getElementById("giveLeaf").addEventListener("click",()=>{
-if(!selectedKinds.length){
-alert("Wählt zuerst mindestens einen Schatzmoment aus, den ihr festhalten möchtet.");
-return;
-}
-if(roots.length>=rootDesigns.length){
-alert("Das Wurzelnetz dieses Baums ist vollständig gewachsen.");
-return;
-}
-
-roots.push({
-  kinds:[...selectedKinds],
-  date:new Date().toISOString()
-});
-localStorage.setItem("lernweltRootsV15",JSON.stringify(roots));
-document.querySelectorAll(".moment").forEach(x=>x.classList.remove("selected"));
-selectedKinds=[];
-render();
-});
-
-
-document.getElementById("finishTreeBtn").addEventListener("click",()=>{
-  const maxLeaves=48;
-  if(learningLeaves.length<maxLeaves){
-    alert("Die Krone ist noch nicht vollständig gewachsen.");
-    return;
-  }
-
-  const name=(document.getElementById("treeName").value.trim() || treeName || "Unser Baum");
-  if(!window.confirm(`Soll „${name}“ in den Lernwald wandern?`)) return;
-
-  forest.push({
-    name,
-    date:new Date().toLocaleDateString("de-AT",{month:"long",year:"numeric"}),
-    leaves:learningLeaves.length,
-    roots:roots.length
-  });
-
-  localStorage.setItem("lernweltForestV15",JSON.stringify(forest));
-
-  learningLeaves=[];
-  roots=[];
-  done={};
-  treeName="";
-
-  localStorage.setItem("lernweltLearningLeavesV15","[]");
-  localStorage.setItem("lernweltRootsV15","[]");
-  localStorage.setItem("lernweltDoneV15","{}");
-  localStorage.setItem("lernweltTreeNameV15","");
-
-  render();
-});
-
-document.getElementById("saveTreeName").addEventListener("click",()=>{
-treeName=document.getElementById("treeName").value.trim();
-localStorage.setItem("lernweltTreeNameV15",treeName);
-render();
-});
-
-function renderEditor(){
-["fina","lou"].forEach(person=>{
-const box=document.getElementById(person==="fina"?"editFina":"editLou");
-box.innerHTML="";
-data[person].forEach((t,i)=>{
-const row=document.createElement("div");
-row.className="editrow";
-row.innerHTML=`
-<input placeholder="Aufgabe" value="${escapeAttr(t.title)}" data-field="title" data-person="${person}" data-index="${i}">
-<select data-field="type" data-person="${person}" data-index="${i}">
-<option value="online" ${t.type==="online"?"selected":""}>Online</option>
-<option value="paper" ${t.type==="paper"?"selected":""}>Papier</option>
-</select>
-<button class="deletebtn" onclick="deleteTask('${person}',${i})">✕</button>
-<input class="wide" placeholder="Hinweis, z. B. Arbeitsblatt 2" value="${escapeAttr(t.note||"")}" data-field="note" data-person="${person}" data-index="${i}">
-<input class="wide" placeholder="Link nur bei Online-Aufgaben" value="${escapeAttr(t.url||"")}" data-field="url" data-person="${person}" data-index="${i}">`;
-box.appendChild(row);
-});
-});
-}
-
-function addTask(person){data[person].push({title:"",note:"",url:"",type:"paper"});renderEditor()}
-function deleteTask(person,index){data[person].splice(index,1);renderEditor()}
-function saveTasks(){
-document.querySelectorAll("#editor input,#editor select").forEach(el=>{
-const p=el.dataset.person,i=Number(el.dataset.index),f=el.dataset.field;
-if(data[p]&&data[p][i]) data[p][i][f]=el.value.trim();
-});
-localStorage.setItem("lernweltTasksV15",JSON.stringify(data));
-document.getElementById("editor").classList.remove("active");
-render();
-}
-function resetDay(){
-done={};
-localStorage.setItem("lernweltDoneV15","{}");
-render();
-}
-function resetTree(){
-if(confirm("Soll der aktuelle Baum wirklich neu beginnen?")){
-roots=[];
-learningLeaves=[];
-treeName="";
-done={};
-localStorage.setItem("lernweltRootsV15","[]");
-localStorage.setItem("lernweltLearningLeavesV15","[]");
-localStorage.setItem("lernweltTreeNameV15","");
-localStorage.setItem("lernweltDoneV15","{}");
-render();
-}
-}
-function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
-function escapeAttr(s){return escapeHtml(s)}
-
-document.getElementById("toggleEdit").addEventListener("click",()=>{
-renderEditor();document.getElementById("editor").classList.toggle("active")
-});
-
-const now=new Date();
-document.getElementById("today").textContent=now.toLocaleDateString("de-AT",{weekday:"long",day:"2-digit",month:"long",year:"numeric"});
-document.getElementById("heroQuote").textContent=heroQuotes[Math.floor(Math.random()*heroQuotes.length)];
-document.getElementById("reflectionPrompt").textContent=reflectionPrompts[Math.floor(Math.random()*reflectionPrompts.length)];
-render();
-</script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>
