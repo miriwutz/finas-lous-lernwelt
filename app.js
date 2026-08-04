@@ -256,21 +256,7 @@ $("#addRootBtn").onclick = async () => {
   }catch(err){ alert("Die Wurzel konnte nicht gespeichert werden: "+err.message); }
 };
 
-function renderRootMemories(){
-  const box=$("#rootMemory");
-  const roots=(state.roots||[]).slice().reverse().slice(0,4);
-  box.innerHTML="";
-  if(!roots.length) return;
-  roots.forEach(root=>{
-    const labels=(root.kinds||[]).map(k=>heartOptions.find(x=>x.key===k)?.title||k).join(", ");
-    box.insertAdjacentHTML("beforeend",`
-      <div class="memory-card">
-        <strong>🌱 ${escapeHtml(root.author||"Gemeinsam")}: ${escapeHtml(labels)}</strong>
-        ${root.reason?`<div>${escapeHtml(root.reason)}</div>`:""}
-        <small>${new Date(root.createdAt).toLocaleDateString("de-AT")}</small>
-      </div>`);
-  });
-}
+
 
 $("#finishTreeBtn").onclick = async () => {
   const target=Number(state.tree?.targetLeaves||20);
