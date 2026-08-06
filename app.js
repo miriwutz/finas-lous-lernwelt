@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.2 Attention";
+const APP_VERSION = "2.2b Stable";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -146,6 +146,8 @@ async function prepareLearningDay() {
 }
 
 
+const MAX_SESSION_SECONDS = 120 * 60;
+
 function currentAttentionSeconds(task) {
   const saved = Number(task.attentionSeconds || 0);
   if (!task.activeSince) return saved;
@@ -153,34 +155,95 @@ function currentAttentionSeconds(task) {
   const started = new Date(task.activeSince).getTime();
   if (!Number.isFinite(started)) return saved;
 
-  return saved + Math.max(0, Math.floor((Date.now() - started) / 1000));
+  const runningSeconds = Math.max(0, Math.floor((Date.now() - started) / 1000));
+  return saved + Math.min(runningSeconds, MAX_SESSION_SECONDS);
 }
 
-function formatAttention(seconds) {
-  const total = Math.max(0, Math.floor(Number(seconds || 0)));
-  const hours = Math.floor(total / 3600);
-  const minutes = Math.floor((total % 3600) / 60);
-  const secs = total % 60;
+function currentSessionSeconds(task) {
+  if (!task.activeSince) return 0;
+
+  const started = new Date(task.activeSince).getTime();
+  if (!Number.isFinite(started)) return 0;
+
+  return Math.max(0, Math.floor((Date.now() - started) / 1000));
+}
+
+function formatAttentionMinutes(seconds) {
+  const totalMinutes = Math.max(0, Math.floor(Number(seconds || 0) / 60));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
 
   if (hours > 0) {
-    return `${hours}:${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+    return `${hours} Std. ${minutes} Min.`;
   }
 
-  return `${minutes}:${String(secs).padStart(2, "0")}`;
+  return `${totalMinutes} Min.`;
 }
 
 function updateAttentionDisplays() {
+  let needsRender = false;
+
   $$("[data-attention-task]").forEach(element => {
     const task = (state.tasks || []).find(item => item.id === element.dataset.attentionTask);
     if (!task) return;
-    element.textContent = `💛 ${formatAttention(currentAttentionSeconds(task))}`;
+
+    element.textContent = `💛 ${formatAttentionMinutes(currentAttentionSeconds(task))}`;
+
+    if (task.activeSince && currentSessionSeconds(task) >= MAX_SESSION_SECONDS) {
+      needsRender = true;
+    }
   });
+
+  if (needsRender) {
+    stopExpiredAttentionSessions();
+  }
 }
 
 function startAttentionTicker() {
   if (attentionTicker) clearInterval(attentionTicker);
-  attentionTicker = setInterval(updateAttentionDisplays, 1000);
+  attentionTicker = setInterval(updateAttentionDisplays, 15000);
   updateAttentionDisplays();
+}
+
+async function stopExpiredAttentionSessions() {
+  try {
+    await runTransaction(db, async tx => {
+      const snap = await tx.get(spaceRef);
+      if (!snap.exists()) return;
+
+      const tasks = [...(snap.data().tasks || [])];
+      let changed = false;
+
+      const updatedTasks = tasks.map(task => {
+        if (!task.activeSince) return task;
+
+        const started = new Date(task.activeSince).getTime();
+        if (!Number.isFinite(started)) {
+          changed = true;
+          return { ...task, activeSince: null };
+        }
+
+        const elapsed = Math.max(0, Math.floor((Date.now() - started) / 1000));
+        if (elapsed < MAX_SESSION_SECONDS) return task;
+
+        changed = true;
+        return {
+          ...task,
+          attentionSeconds: Number(task.attentionSeconds || 0) + MAX_SESSION_SECONDS,
+          activeSince: null
+        };
+      });
+
+      if (changed) {
+        tx.update(spaceRef, {
+          tasks: updatedTasks,
+          updatedAt: serverTimestamp()
+        });
+      }
+    });
+  } catch (err) {
+    console.error("Automatische Aufmerksamkeitspause fehlgeschlagen:", err);
+  }
 }
 
 async function toggleAttention(taskId) {
@@ -196,14 +259,26 @@ async function toggleAttention(taskId) {
       const task = { ...tasks[index] };
 
       if (task.activeSince) {
-        task.attentionSeconds = currentAttentionSeconds(task);
+        const started = new Date(task.activeSince).getTime();
+        const elapsed = Number.isFinite(started)
+          ? Math.max(0, Math.floor((Date.now() - started) / 1000))
+          : 0;
+
+        task.attentionSeconds =
+          Number(task.attentionSeconds || 0) +
+          Math.min(elapsed, MAX_SESSION_SECONDS);
+
         task.activeSince = null;
       } else {
         task.activeSince = new Date().toISOString();
       }
 
       tasks[index] = task;
-      tx.update(spaceRef, { tasks, updatedAt: serverTimestamp() });
+
+      tx.update(spaceRef, {
+        tasks,
+        updatedAt: serverTimestamp()
+      });
     });
   } catch (err) {
     alert("Die Aufmerksamkeitszeit konnte nicht gespeichert werden: " + err.message);
@@ -246,7 +321,7 @@ function renderTreeAttention() {
     .reduce((sum, leaf) => sum + Number(leaf.attentionSeconds || 0), 0);
 
   line.textContent = seconds > 0
-    ? `💛 Dieser Baum hat schon ${formatAttention(seconds)} Aufmerksamkeit bekommen.`
+    ? `💛 Dieser Baum hat schon ${formatAttentionMinutes(seconds)} Aufmerksamkeit bekommen.`
     : "💛 Dieser Baum wartet auf seine erste geschenkte Aufmerksamkeit.";
 }
 
@@ -331,6 +406,7 @@ function renderTasks(child) {
 
     const running = Boolean(task.activeSince);
     const attention = currentAttentionSeconds(task);
+    const hasAttention = attention > 0;
 
     row.innerHTML = `
       <button class="leaf-toggle ${task.done ? "done" : ""}"
@@ -343,12 +419,17 @@ function renderTasks(child) {
         <div class="task-note">${escapeHtml(task.note || "")}</div>
 
         <div class="attention-row">
-          <button type="button" class="attention-toggle ${running ? "running" : ""}">
-           ${running ? "⏸ Pause" : attention > 0 ? "▶ Weiter" : "▶ Aufmerksamkeit"}
+          <button
+            type="button"
+            class="attention-toggle ${running ? "running" : ""}"
+            aria-label="${running ? "Aufmerksamkeit pausieren" : hasAttention ? "Aufmerksamkeit fortsetzen" : "Aufmerksamkeit starten"}"
+            title="${running ? "Pause" : hasAttention ? "Weiter" : "Aufmerksamkeit"}"
+          >
+            ${running ? "⏸" : "▶"}
           </button>
 
           <span class="attention-time" data-attention-task="${task.id}">
-            💛 ${formatAttention(attention)}
+            💛 ${formatAttentionMinutes(attention)}
           </span>
         </div>
       </div>
@@ -382,7 +463,15 @@ async function toggleTask(taskId) {
       const willBeDone = !task.done;
 
       if (willBeDone && task.activeSince) {
-        task.attentionSeconds = currentAttentionSeconds(task);
+        const started = new Date(task.activeSince).getTime();
+        const elapsed = Number.isFinite(started)
+          ? Math.max(0, Math.floor((Date.now() - started) / 1000))
+          : 0;
+
+        task.attentionSeconds =
+          Number(task.attentionSeconds || 0) +
+          Math.min(elapsed, MAX_SESSION_SECONDS);
+
         task.activeSince = null;
       }
 
@@ -821,17 +910,45 @@ function renderAdminTasks(child) {
     const row = document.createElement("div");
     row.className = "admin-task";
 
+    const totalMinutes = Math.max(
+      0,
+      Math.floor(currentAttentionSeconds(task) / 60)
+    );
+
     row.innerHTML = `
       <input data-field="title" value="${escapeHtml(task.title)}" placeholder="Aufgabe">
+
       <select data-field="type">
         <option value="paper" ${task.type === "paper" ? "selected" : ""}>Papier</option>
         <option value="online" ${task.type === "online" ? "selected" : ""}>Lernhomepage</option>
       </select>
-      <button type="button" class="remove-task">✕</button>
+
+      <button type="button" class="remove-task" title="Aufgabe entfernen">✕</button>
+
       <input class="full" data-field="note" value="${escapeHtml(task.note || "")}"
         placeholder="Kurze Anweisung">
+
       <input class="full" data-field="url" value="${escapeHtml(task.url || "")}"
         placeholder="Link – nur bei Lernhomepage">
+
+      <div class="attention-admin full">
+        <label>
+          💛 Aufmerksamkeit in Minuten
+          <input
+            type="number"
+            min="0"
+            max="9999"
+            step="1"
+            data-attention-minutes
+            value="${totalMinutes}"
+          >
+        </label>
+
+        ${task.activeSince
+          ? '<span class="attention-running-note">⏸ Läuft gerade</span>'
+          : ""
+        }
+      </div>
     `;
 
     row.querySelectorAll("[data-field]").forEach(el => {
@@ -839,6 +956,13 @@ function renderAdminTasks(child) {
         adminDraft[child][index][el.dataset.field] = el.value;
       };
     });
+
+    const minutesInput = row.querySelector("[data-attention-minutes]");
+    minutesInput.oninput = () => {
+      const minutes = Math.max(0, Math.floor(Number(minutesInput.value || 0)));
+      adminDraft[child][index].attentionSeconds = minutes * 60;
+      adminDraft[child][index].activeSince = null;
+    };
 
     row.querySelector(".remove-task").onclick = () => {
       adminDraft[child].splice(index, 1);
@@ -872,8 +996,12 @@ $$("[data-add-task]").forEach(btn => {
 
 if ($("#saveTasksBtn")) {
   $("#saveTasksBtn").onclick = async () => {
-    const finaTasks = ensureMinimumTaskSlots(adminDraft.fina, "fina");
-    const louTasks = ensureMinimumTaskSlots(adminDraft.lou, "lou");
+    const finaTasks = ensureMinimumTaskSlots(adminDraft.fina, "fina")
+      .map(task => ({ ...task, activeSince: null }));
+
+    const louTasks = ensureMinimumTaskSlots(adminDraft.lou, "lou")
+      .map(task => ({ ...task, activeSince: null }));
+
     const tasks = [...finaTasks, ...louTasks];
 
     try {
