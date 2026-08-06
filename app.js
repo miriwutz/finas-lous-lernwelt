@@ -344,7 +344,7 @@ function renderTasks(child) {
 
         <div class="attention-row">
           <button type="button" class="attention-toggle ${running ? "running" : ""}">
-            ${running ? "⏹ Aufmerksamkeit beenden" : "▶ Aufmerksamkeit schenken"}
+           ${running ? "⏸ Pause" : attention > 0 ? "▶ Weiter" : "▶ Aufmerksamkeit"}
           </button>
 
           <span class="attention-time" data-attention-task="${task.id}">
