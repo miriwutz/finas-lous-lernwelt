@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.1 Stable";
+const APP_VERSION = "2.2 Attention";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -13,6 +13,7 @@ let state = structuredClone(defaultState);
 let unsubscribe = null;
 let selectedHearts = [];
 let adminDraft = { fina: [], lou: [] };
+let attentionTicker = null;
 
 const dailyMissions = [
   "🌸 Nimm heute einmal bewusst etwas Schönes wahr.",
@@ -103,7 +104,7 @@ function learningDayKey(date = new Date()) {
 }
 
 function emptyTask(child) {
-  return { id: crypto.randomUUID(), child, title:"", note:"", type:"paper", url:"", done:false };
+  return { id: crypto.randomUUID(), child, title:"", note:"", type:"paper", url:"", done:false, attentionSeconds:0, activeSince:null };
 }
 
 function ensureMinimumTaskSlots(tasks, child, minimum = 4) {
@@ -142,6 +143,111 @@ async function prepareLearningDay() {
       roots, forest, dailyMission, lastLearningDay:today, appVersion:APP_VERSION, updatedAt:serverTimestamp()
     });
   });
+}
+
+
+function currentAttentionSeconds(task) {
+  const saved = Number(task.attentionSeconds || 0);
+  if (!task.activeSince) return saved;
+
+  const started = new Date(task.activeSince).getTime();
+  if (!Number.isFinite(started)) return saved;
+
+  return saved + Math.max(0, Math.floor((Date.now() - started) / 1000));
+}
+
+function formatAttention(seconds) {
+  const total = Math.max(0, Math.floor(Number(seconds || 0)));
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const secs = total % 60;
+
+  if (hours > 0) {
+    return `${hours}:${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+  }
+
+  return `${minutes}:${String(secs).padStart(2, "0")}`;
+}
+
+function updateAttentionDisplays() {
+  $$("[data-attention-task]").forEach(element => {
+    const task = (state.tasks || []).find(item => item.id === element.dataset.attentionTask);
+    if (!task) return;
+    element.textContent = `💛 ${formatAttention(currentAttentionSeconds(task))}`;
+  });
+}
+
+function startAttentionTicker() {
+  if (attentionTicker) clearInterval(attentionTicker);
+  attentionTicker = setInterval(updateAttentionDisplays, 1000);
+  updateAttentionDisplays();
+}
+
+async function toggleAttention(taskId) {
+  try {
+    await runTransaction(db, async tx => {
+      const snap = await tx.get(spaceRef);
+      if (!snap.exists()) return;
+
+      const tasks = [...(snap.data().tasks || [])];
+      const index = tasks.findIndex(task => task.id === taskId);
+      if (index < 0) return;
+
+      const task = { ...tasks[index] };
+
+      if (task.activeSince) {
+        task.attentionSeconds = currentAttentionSeconds(task);
+        task.activeSince = null;
+      } else {
+        task.activeSince = new Date().toISOString();
+      }
+
+      tasks[index] = task;
+      tx.update(spaceRef, { tasks, updatedAt: serverTimestamp() });
+    });
+  } catch (err) {
+    alert("Die Aufmerksamkeitszeit konnte nicht gespeichert werden: " + err.message);
+  }
+}
+
+function showSunbeam() {
+  const section = $(".tree-section");
+  if (!section) return;
+
+  let beam = $("#sunbeamEffect");
+  if (!beam) {
+    beam = document.createElement("div");
+    beam.id = "sunbeamEffect";
+    beam.setAttribute("aria-hidden", "true");
+    beam.innerHTML = '<div class="sunbeam-ray"></div><div class="sunbeam-glow">☀️</div>';
+    section.appendChild(beam);
+  }
+
+  beam.classList.remove("shine");
+  void beam.offsetWidth;
+  beam.classList.add("shine");
+
+  setTimeout(() => beam.classList.remove("shine"), 1400);
+}
+
+function renderTreeAttention() {
+  const story = $(".tree-story");
+  if (!story) return;
+
+  let line = $("#treeAttention");
+  if (!line) {
+    line = document.createElement("p");
+    line.id = "treeAttention";
+    line.className = "tree-attention";
+    story.insertBefore(line, $("#treeStatus"));
+  }
+
+  const seconds = (state.learningLeaves || [])
+    .reduce((sum, leaf) => sum + Number(leaf.attentionSeconds || 0), 0);
+
+  line.textContent = seconds > 0
+    ? `💛 Dieser Baum hat schon ${formatAttention(seconds)} Aufmerksamkeit bekommen.`
+    : "💛 Dieser Baum wartet auf seine erste geschenkte Aufmerksamkeit.";
 }
 
 onAuthStateChanged(auth, async user => {
@@ -203,6 +309,8 @@ function renderAll() {
   renderRootMemories();
   renderForest();
   renderAdminRoots();
+  renderTreeAttention();
+  startAttentionTicker();
 }
 
 function renderTasks(child) {
@@ -220,15 +328,31 @@ function renderTasks(child) {
   tasks.forEach(task => {
     const row = document.createElement("div");
     row.className = "task";
+
+    const running = Boolean(task.activeSince);
+    const attention = currentAttentionSeconds(task);
+
     row.innerHTML = `
       <button class="leaf-toggle ${task.done ? "done" : ""}"
         aria-label="Aufgabe ${task.done ? "wieder öffnen" : "abschließen"}">
         ${leafSvg()}
       </button>
+
       <div class="task-main">
         <div class="task-title">${escapeHtml(task.title)}</div>
         <div class="task-note">${escapeHtml(task.note || "")}</div>
+
+        <div class="attention-row">
+          <button type="button" class="attention-toggle ${running ? "running" : ""}">
+            ${running ? "⏹ Aufmerksamkeit beenden" : "▶ Aufmerksamkeit schenken"}
+          </button>
+
+          <span class="attention-time" data-attention-task="${task.id}">
+            💛 ${formatAttention(attention)}
+          </span>
+        </div>
       </div>
+
       ${task.type === "online" && task.url
         ? `<a class="task-link" href="${escapeHtml(task.url)}"
              target="_blank" rel="noopener">Öffnen ↗</a>`
@@ -236,11 +360,14 @@ function renderTasks(child) {
     `;
 
     row.querySelector(".leaf-toggle").onclick = () => toggleTask(task.id);
+    row.querySelector(".attention-toggle").onclick = () => toggleAttention(task.id);
     box.appendChild(row);
   });
 }
 
 async function toggleTask(taskId) {
+  let completedNow = false;
+
   try {
     await runTransaction(db, async tx => {
       const snap = await tx.get(spaceRef);
@@ -252,7 +379,14 @@ async function toggleTask(taskId) {
       if (index < 0) return;
 
       const task = { ...tasks[index] };
-      task.done = !task.done;
+      const willBeDone = !task.done;
+
+      if (willBeDone && task.activeSince) {
+        task.attentionSeconds = currentAttentionSeconds(task);
+        task.activeSince = null;
+      }
+
+      task.done = willBeDone;
       tasks[index] = task;
 
       const leafIndex = leaves.findIndex(l => l.taskId === taskId);
@@ -263,8 +397,10 @@ async function toggleTask(taskId) {
           taskId,
           child: task.child,
           title: task.title,
+          attentionSeconds: Number(task.attentionSeconds || 0),
           createdAt: new Date().toISOString()
         });
+        completedNow = true;
       }
 
       if (!task.done && leafIndex >= 0) {
@@ -277,6 +413,8 @@ async function toggleTask(taskId) {
         updatedAt: serverTimestamp()
       });
     });
+
+    if (completedNow) showSunbeam();
   } catch (err) {
     alert("Die Aufgabe konnte nicht gespeichert werden: " + err.message);
   }
@@ -723,7 +861,9 @@ $$("[data-add-task]").forEach(btn => {
       note: "",
       type: "paper",
       url: "",
-      done: false
+      done: false,
+      attentionSeconds: 0,
+      activeSince: null
     });
 
     renderAdminTasks(child);
