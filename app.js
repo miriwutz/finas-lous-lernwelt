@@ -4,6 +4,8 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
+const APP_VERSION = "2.1 Stable";
+
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
 
@@ -12,12 +14,36 @@ let unsubscribe = null;
 let selectedHearts = [];
 let adminDraft = { fina: [], lou: [] };
 
-const quotes = [
-  "Die Welt steckt voller kleiner Wunder – schaut, welches ihr heute entdeckt.",
-  "Neugier ist ein wunderbarer Anfang.",
-  "Jeder kleine Schritt zählt.",
-  "Heute darf etwas Neues wachsen.",
-  "Nimm ein Lächeln mit in deinen Tag. Es passt überall hin."
+const dailyMissions = [
+  "🌸 Nimm heute einmal bewusst etwas Schönes wahr.",
+  "🌞 Vielleicht wartet heute irgendwo ein kleiner Glücksmoment auf dich.",
+  "🍀 Halte Ausschau nach etwas, das dir ein Lächeln schenkt.",
+  "🌈 Manchmal sind die schönsten Dinge ganz klein.",
+  "💛 Schau heute, was dein Herz froh macht.",
+  "🦋 Entdecke etwas, das du gestern noch nicht gesehen hast.",
+  "🌼 Lass dich heute von etwas Schönem überraschen.",
+  "😊 Vielleicht zauberst du heute auch jemandem ein Lächeln ins Gesicht.",
+  "✨ Jeder Tag hält kleine Schätze bereit.",
+  "🌻 Öffne deine Augen für die schönen Farben des Tages.",
+  "🍃 Höre einmal ganz genau hin – vielleicht entdeckst du ein schönes Geräusch.",
+  "🐦 Vielleicht begegnet dir heute etwas, das dich staunen lässt.",
+  "🌺 Sammle heute drei schöne Momente.",
+  "💚 Es gibt jeden Tag etwas, worüber man sich freuen kann.",
+  "🌟 Die Welt steckt voller kleiner Wunder.",
+  "🌸 Heute ist ein guter Tag, um etwas Schönes zu entdecken.",
+  "☀️ Genieße einen Moment ganz bewusst.",
+  "🍎 Vielleicht macht dir heute etwas ganz Einfaches Freude.",
+  "🌈 Achte darauf, was heute gut gelingt.",
+  "🕊️ Lass dein Herz kleine Freuden sammeln.",
+  "🌼 Manchmal beginnt ein schöner Tag mit einem einzigen Lächeln.",
+  "🍀 Finde heute etwas, wofür du dankbar sein kannst.",
+  "🌷 Entdecke etwas, das dir guttut.",
+  "✨ Jeder neue Tag bringt neue Möglichkeiten zum Staunen.",
+  "🌞 Lass die schönen Momente heute besonders hell leuchten.",
+  "🦉 Schau neugierig auf die Welt – sie hat viel zu zeigen.",
+  "💐 Vielleicht findest du heute deinen Lieblingsmoment des Tages.",
+  "🌸 Freude versteckt sich oft in den kleinen Dingen.",
+  "🌻 Behalte die schönen Augenblicke gut in deinem Herzen."
 ];
 
 const heartOptions = [
@@ -27,7 +53,7 @@ const heartOptions = [
   { key: "persist", icon: "🌱", title: "Dranbleiben", text: "Nicht aufgegeben" },
   { key: "beauty", icon: "☀️", title: "Schöner Moment", text: "Etwas Schönes entdeckt" },
   { key: "curious", icon: "🦋", title: "Neugier", text: "Etwas wissen wollen" },
-  { key: "kindness", icon: "🤝", title: "Freundlichkeit", text: "Freundlichkeit gelebt" },
+  { key: "kindness", icon: "🤝", title: "Freundlichkeit", text: "Freundlichkeit erlebt" },
   { key: "respect", icon: "🤍", title: "Rücksicht", text: "Auf jemanden Rücksicht genommen" }
 ];
 
@@ -73,82 +99,47 @@ function escapeHtml(value = "") {
 function learningDayKey(date = new Date()) {
   const shifted = new Date(date);
   shifted.setHours(shifted.getHours() - 1);
-
-  const year = shifted.getFullYear();
-  const month = String(shifted.getMonth() + 1).padStart(2, "0");
-  const day = String(shifted.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
+  return `${shifted.getFullYear()}-${String(shifted.getMonth()+1).padStart(2,"0")}-${String(shifted.getDate()).padStart(2,"0")}`;
 }
 
 function emptyTask(child) {
-  return {
-    id: crypto.randomUUID(),
-    child,
-    title: "",
-    note: "",
-    type: "paper",
-    url: "",
-    done: false
-  };
+  return { id: crypto.randomUUID(), child, title:"", note:"", type:"paper", url:"", done:false };
 }
 
 function ensureMinimumTaskSlots(tasks, child, minimum = 4) {
-  const slots = tasks
-    .filter(task => task.child === child)
-    .map(task => ({ ...task }));
-
-  while (slots.length < minimum) {
-    slots.push(emptyTask(child));
-  }
-
+  const slots = (tasks || []).filter(t => t.child === child).map(t => ({...t}));
+  while (slots.length < minimum) slots.push(emptyTask(child));
   return slots;
 }
 
-function migrateRootKinds(root) {
-  return {
-    ...root,
-    kinds: (root.kinds || []).map(kind =>
-      kind === "joy" || kind === "consideration" ? "respect" : kind
-    )
-  };
+function migrateRoot(root) {
+  return { ...root, kinds:(root.kinds || []).map(k => (k === "joy" || k === "consideration") ? "respect" : k) };
 }
 
-async function prepareNewLearningDay() {
-  const today = learningDayKey();
+function chooseDailyMission(previous = "") {
+  const choices = dailyMissions.filter(m => m !== previous);
+  const pool = choices.length ? choices : dailyMissions;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
 
+async function prepareLearningDay() {
+  const today = learningDayKey();
   await runTransaction(db, async tx => {
     const snap = await tx.get(spaceRef);
     if (!snap.exists()) return;
-
     const data = snap.data();
     const previousDay = data.lastLearningDay || null;
-
-    const migratedRoots = (data.roots || []).map(migrateRootKinds);
-    const migratedForest = (data.forest || []).map(tree => ({
-      ...tree,
-      roots: (tree.roots || []).map(migrateRootKinds)
-    }));
-
+    const isNewDay = previousDay !== today;
     let tasks = [...(data.tasks || [])];
-
-    if (previousDay && previousDay !== today) {
-      tasks = tasks.map(task =>
-        task.done
-          ? emptyTask(task.child)
-          : { ...task, done: false }
-      );
+    if (previousDay && isNewDay) {
+      tasks = tasks.map(task => task.done ? emptyTask(task.child) : {...task, done:false});
     }
-
-    const finaTasks = ensureMinimumTaskSlots(tasks, "fina");
-    const louTasks = ensureMinimumTaskSlots(tasks, "lou");
-
+    const roots = (data.roots || []).map(migrateRoot);
+    const forest = (data.forest || []).map(tree => ({...tree, roots:(tree.roots || []).map(migrateRoot)}));
+    const dailyMission = (!data.dailyMission || isNewDay) ? chooseDailyMission(data.dailyMission || "") : data.dailyMission;
     tx.update(spaceRef, {
-      tasks: [...finaTasks, ...louTasks],
-      roots: migratedRoots,
-      forest: migratedForest,
-      lastLearningDay: today,
-      updatedAt: serverTimestamp()
+      tasks:[...ensureMinimumTaskSlots(tasks,"fina"), ...ensureMinimumTaskSlots(tasks,"lou")],
+      roots, forest, dailyMission, lastLearningDay:today, appVersion:APP_VERSION, updatedAt:serverTimestamp()
     });
   });
 }
@@ -159,7 +150,7 @@ onAuthStateChanged(auth, async user => {
     $("#appView")?.classList.remove("hidden");
 
     await ensureSpace();
-    await prepareNewLearningDay();
+    await prepareLearningDay();
 
     if (unsubscribe) unsubscribe();
     unsubscribe = onSnapshot(spaceRef, snap => {
@@ -202,7 +193,7 @@ function renderAll() {
   $("#todayLabel").textContent = now.toLocaleDateString("de-AT", {
     weekday: "long", day: "2-digit", month: "long", year: "numeric"
   });
-  $("#dailyQuote").textContent = quotes[now.getDate() % quotes.length];
+  $("#dailyQuote").textContent = state.dailyMission || dailyMissions[0];
   $("#treeTitle").textContent = state.tree?.name || "Unser Wochenbaum";
 
   renderTasks("fina");
