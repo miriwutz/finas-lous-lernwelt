@@ -28,7 +28,7 @@ const heartOptions = [
   { key: "beauty", icon: "☀️", title: "Schöner Moment", text: "Etwas Schönes entdeckt" },
   { key: "curious", icon: "🦋", title: "Neugier", text: "Etwas wissen wollen" },
   { key: "kindness", icon: "🤝", title: "Freundlichkeit", text: "Freundlichkeit erlebt" },
-  { key: "joy", icon: "🌈", title: "Freude", text: "Gemeinsam gelacht" }
+  { key: "joy", icon: "🌈", title: "Rücksicht", text: "Auf jemanden Rücksicht genommen" }
 ];
 
 const leafPositions = [
