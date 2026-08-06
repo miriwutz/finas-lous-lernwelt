@@ -27,8 +27,8 @@ const heartOptions = [
   { key: "persist", icon: "🌱", title: "Dranbleiben", text: "Nicht aufgegeben" },
   { key: "beauty", icon: "☀️", title: "Schöner Moment", text: "Etwas Schönes entdeckt" },
   { key: "curious", icon: "🦋", title: "Neugier", text: "Etwas wissen wollen" },
-  { key: "kindness", icon: "🤝", title: "Freundlichkeit", text: "Freundlichkeit erlebt" },
-{ key: "joy", icon: "🤍", title: "Rücksicht", text: "Auf jemanden Rücksicht genommen" }
+  { key: "kindness", icon: "🤝", title: "Freundlichkeit", text: "Freundlichkeit gelebt" },
+  { key: "respect", icon: "🤍", title: "Rücksicht", text: "Auf jemanden Rücksicht genommen" }
 ];
 
 const leafPositions = [
@@ -70,12 +70,96 @@ function escapeHtml(value = "") {
   }[c]));
 }
 
+function learningDayKey(date = new Date()) {
+  const shifted = new Date(date);
+  shifted.setHours(shifted.getHours() - 1);
+
+  const year = shifted.getFullYear();
+  const month = String(shifted.getMonth() + 1).padStart(2, "0");
+  const day = String(shifted.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function emptyTask(child) {
+  return {
+    id: crypto.randomUUID(),
+    child,
+    title: "",
+    note: "",
+    type: "paper",
+    url: "",
+    done: false
+  };
+}
+
+function ensureMinimumTaskSlots(tasks, child, minimum = 4) {
+  const slots = tasks
+    .filter(task => task.child === child)
+    .map(task => ({ ...task }));
+
+  while (slots.length < minimum) {
+    slots.push(emptyTask(child));
+  }
+
+  return slots;
+}
+
+function migrateRootKinds(root) {
+  return {
+    ...root,
+    kinds: (root.kinds || []).map(kind =>
+      kind === "joy" || kind === "consideration" ? "respect" : kind
+    )
+  };
+}
+
+async function prepareNewLearningDay() {
+  const today = learningDayKey();
+
+  await runTransaction(db, async tx => {
+    const snap = await tx.get(spaceRef);
+    if (!snap.exists()) return;
+
+    const data = snap.data();
+    const previousDay = data.lastLearningDay || null;
+
+    const migratedRoots = (data.roots || []).map(migrateRootKinds);
+    const migratedForest = (data.forest || []).map(tree => ({
+      ...tree,
+      roots: (tree.roots || []).map(migrateRootKinds)
+    }));
+
+    let tasks = [...(data.tasks || [])];
+
+    if (previousDay && previousDay !== today) {
+      tasks = tasks.map(task =>
+        task.done
+          ? emptyTask(task.child)
+          : { ...task, done: false }
+      );
+    }
+
+    const finaTasks = ensureMinimumTaskSlots(tasks, "fina");
+    const louTasks = ensureMinimumTaskSlots(tasks, "lou");
+
+    tx.update(spaceRef, {
+      tasks: [...finaTasks, ...louTasks],
+      roots: migratedRoots,
+      forest: migratedForest,
+      lastLearningDay: today,
+      updatedAt: serverTimestamp()
+    });
+  });
+}
+
 onAuthStateChanged(auth, async user => {
   if (user) {
     $("#loginView")?.classList.add("hidden");
     $("#appView")?.classList.remove("hidden");
 
     await ensureSpace();
+    await prepareNewLearningDay();
 
     if (unsubscribe) unsubscribe();
     unsubscribe = onSnapshot(spaceRef, snap => {
@@ -134,7 +218,7 @@ function renderTasks(child) {
   const box = $("#" + child + "Tasks");
   if (!box) return;
 
-  const tasks = (state.tasks || []).filter(t => t.child === child);
+  const tasks = (state.tasks || []).filter(t => t.child === child && t.title?.trim());
   box.innerHTML = "";
 
   if (!tasks.length) {
@@ -584,8 +668,8 @@ if ($("#unlockMamaBtn")) {
 
 function prepareAdmin() {
   adminDraft = {
-    fina: (state.tasks || []).filter(t => t.child === "fina").map(t => ({ ...t })),
-    lou: (state.tasks || []).filter(t => t.child === "lou").map(t => ({ ...t }))
+    fina: ensureMinimumTaskSlots(state.tasks || [], "fina"),
+    lou: ensureMinimumTaskSlots(state.tasks || [], "lou")
   };
 
   if ($("#treeNameInput")) $("#treeNameInput").value = state.tree?.name || "";
@@ -629,6 +713,7 @@ function renderAdminTasks(child) {
 
     row.querySelector(".remove-task").onclick = () => {
       adminDraft[child].splice(index, 1);
+      adminDraft[child] = ensureMinimumTaskSlots(adminDraft[child], child);
       renderAdminTasks(child);
     };
 
@@ -656,8 +741,9 @@ $$("[data-add-task]").forEach(btn => {
 
 if ($("#saveTasksBtn")) {
   $("#saveTasksBtn").onclick = async () => {
-    const tasks = [...adminDraft.fina, ...adminDraft.lou]
-      .filter(t => t.title.trim());
+    const finaTasks = ensureMinimumTaskSlots(adminDraft.fina, "fina");
+    const louTasks = ensureMinimumTaskSlots(adminDraft.lou, "lou");
+    const tasks = [...finaTasks, ...louTasks];
 
     try {
       await updateDoc(spaceRef, {
