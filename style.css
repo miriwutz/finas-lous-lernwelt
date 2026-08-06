@@ -259,3 +259,45 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
     align-items:flex-start;
   }
 }
+/* Aufmerksamkeit – warme, ruhige Gestaltung */
+
+.attention-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:9px;
+}
+
+.attention-toggle{
+  width:auto;
+  min-width:0;
+  padding:7px 12px;
+  border:1px solid #d6c0ab;
+  border-radius:11px;
+  background:#ead8c5;
+  color:#49382f;
+  font-size:.84rem;
+  font-weight:800;
+  line-height:1.2;
+  box-shadow:none;
+}
+
+.attention-toggle:hover{
+  background:#f0dfb4;
+  border-color:#d5b76e;
+}
+
+.attention-toggle.running{
+  background:#f3dfae;
+  border-color:#d5b76e;
+  color:#604b24;
+}
+
+.attention-time{
+  color:#8b6826;
+  font-weight:800;
+  font-size:.9rem;
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
