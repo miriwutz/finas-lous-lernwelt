@@ -391,3 +391,23 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
     max-width:none;
   }
 }
+.task-order-buttons{
+  display:flex;
+  gap:4px;
+  align-items:center;
+}
+
+.task-order-buttons button{
+  min-width:32px;
+  height:32px;
+  padding:4px 7px;
+  border-radius:9px;
+  background:#ead8c5;
+  color:#49382f;
+  font-weight:800;
+}
+
+.task-order-buttons .remove-task{
+  background:#f0d7d1;
+  color:#7b4a40;
+}
