@@ -921,6 +921,7 @@ function renderAdminTasks(child) {
       <select data-field="type">
         <option value="paper" ${task.type === "paper" ? "selected" : ""}>Papier</option>
         <option value="online" ${task.type === "online" ? "selected" : ""}>Lernhomepage</option>
+        <option value="free" ${task.type === "free" ? "selected" : ""}>Freie Aufgabe</option>
       </select>
 
       <button type="button" class="remove-task" title="Aufgabe entfernen">✕</button>
@@ -1010,6 +1011,7 @@ if ($("#saveTasksBtn")) {
         updatedAt: serverTimestamp()
       });
       alert("Die Aufgaben sind jetzt auf allen Geräten veröffentlicht.");
+      $("#mamaDialog")?.close();
     } catch (err) {
       alert("Speichern nicht möglich: " + err.message);
     }
