@@ -608,17 +608,11 @@ function renderHearts() {
 }
 
 function updateHeartNoteVisibility() {
-  const author = $("#heartAuthor");
   const noteField = $("#heartNoteField");
 
-  if (!author || !noteField) return;
+  if (!noteField) return;
 
-  const show = author.value === "Baumpfleger";
-  noteField.classList.toggle("hidden", !show);
-
-  if (!show && $("#heartReason")) {
-    $("#heartReason").value = "";
-  }
+  noteField.classList.remove("hidden");
 }
 
 if ($("#heartAuthor")) {
