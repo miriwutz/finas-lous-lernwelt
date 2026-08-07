@@ -924,7 +924,11 @@ function renderAdminTasks(child) {
         <option value="free" ${task.type === "free" ? "selected" : ""}>Freie Aufgabe</option>
       </select>
 
-      <button type="button" class="remove-task" title="Aufgabe entfernen">✕</button>
+      <div class="task-order-buttons">
+  <button type="button" class="move-task-up" title="Nach oben">↑</button>
+  <button type="button" class="move-task-down" title="Nach unten">↓</button>
+  <button type="button" class="remove-task" title="Aufgabe entfernen">✕</button>
+</div>
 
       <input class="full" data-field="note" value="${escapeHtml(task.note || "")}"
         placeholder="Kurze Anweisung">
