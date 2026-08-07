@@ -425,7 +425,7 @@ function renderTasks(child) {
             aria-label="${running ? "Aufmerksamkeit pausieren" : hasAttention ? "Aufmerksamkeit fortsetzen" : "Aufmerksamkeit starten"}"
             title="${running ? "Pause" : hasAttention ? "Weiter" : "Aufmerksamkeit"}"
           >
-            ${running ? "⏸" : "▶"}
+            ${running ? "⏸ Pause" : hasAttention ? "▶ Weiter" : "▶ Aufmerksamkeit schenken"}
           </button>
 
           <span class="attention-time" data-attention-task="${task.id}">
