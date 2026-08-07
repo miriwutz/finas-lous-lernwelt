@@ -968,7 +968,23 @@ function renderAdminTasks(child) {
       adminDraft[child][index].attentionSeconds = minutes * 60;
       adminDraft[child][index].activeSince = null;
     };
+row.querySelector(".move-task-up").onclick = () => {
+  if (index === 0) return;
 
+  [adminDraft[child][index - 1], adminDraft[child][index]] =
+    [adminDraft[child][index], adminDraft[child][index - 1]];
+
+  renderAdminTasks(child);
+};
+
+row.querySelector(".move-task-down").onclick = () => {
+  if (index === adminDraft[child].length - 1) return;
+
+  [adminDraft[child][index + 1], adminDraft[child][index]] =
+    [adminDraft[child][index], adminDraft[child][index + 1]];
+
+  renderAdminTasks(child);
+};
     row.querySelector(".remove-task").onclick = () => {
       adminDraft[child].splice(index, 1);
       adminDraft[child] = ensureMinimumTaskSlots(adminDraft[child], child);
