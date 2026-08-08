@@ -433,3 +433,41 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
 #startNextDayBtn:hover{
   background:#ead8c5;
 }
+/* =========================
+   AUFGABENARCHIV
+   ========================= */
+
+#taskArchiveList {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+  margin-bottom: 24px;
+}
+
+.archive-task {
+  padding: 14px 16px;
+  border: 1px solid #ead7c7;
+  border-radius: 14px;
+  background: #fffaf5;
+}
+
+.archive-task-meta {
+  margin-bottom: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #9a6555;
+}
+
+.archive-task strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 1rem;
+  color: #49382f;
+}
+
+.archive-task-time {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #8b7049;
+}
