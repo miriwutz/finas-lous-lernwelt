@@ -1032,6 +1032,12 @@ if ($("#saveTasksBtn")) {
   };
 }
 
+if ($("#startNextDayBtn")) {
+  $("#startNextDayBtn").onclick = async () => {
+    alert("Der nächste Lerntag wird später hier gestartet.");
+  };
+}
+
 if ($("#saveTreeSettings")) {
   $("#saveTreeSettings").onclick = async () => {
     try {
