@@ -1036,13 +1036,15 @@ if ($("#startNextDayBtn")) {
   $("#startNextDayBtn").onclick = async () => {
 
     const ok = confirm(
-      "Seid ihr für heute wirklich fertig?\n\n" +
-      "Der nächste Lerntag wird vorbereitet."
+      "Möchtest du den Lerntag wirklich abschließen?\n\n" +
+      "Erledigte Aufgaben werden geleert.\n" +
+      "Unerledigte Aufgaben bleiben erhalten.\n" +
+      "Der Baum, seine Blätter und Wurzeln bleiben bestehen."
     );
 
     if (!ok) return;
 
-    alert("Jetzt kommt im nächsten Schritt der echte Tageswechsel.");
+    alert("Der Tagesabschluss ist bereit – noch wurden keine Daten verändert.");
 
   };
 }
