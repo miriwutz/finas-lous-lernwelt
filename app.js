@@ -1055,12 +1055,6 @@ if ($("#closeDayClosingBtn")) {
   };
 }
 
-if ($("#closeDayClosingBtn")) {
-  $("#closeDayClosingBtn").onclick = () => {
-    $("#dayClosingDialog")?.close();
-  };
-}
-
 if ($("#saveTreeSettings")) {
   $("#saveTreeSettings").onclick = async () => {
     try {
