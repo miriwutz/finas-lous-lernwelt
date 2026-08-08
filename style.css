@@ -411,3 +411,23 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   background:#f0d7d1;
   color:#7b4a40;
 }
+.dialog-actions{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:18px;
+  margin-top:28px;
+  margin-bottom:26px;
+}
+
+#startNextDayBtn{
+  background:#f2e5cf;
+  color:#49382f;
+  padding:11px 16px;
+  border-radius:14px;
+  font-weight:800;
+}
+
+#startNextDayBtn:hover{
+  background:#ead8c5;
+}
