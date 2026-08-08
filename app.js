@@ -456,6 +456,7 @@ async function toggleTask(taskId) {
       const tasks = [...(data.tasks || [])];
       const leaves = [...(data.learningLeaves || [])];
       const index = tasks.findIndex(t => t.id === taskId);
+      const archive = [...(data.taskArchive || [])];
 
       if (index < 0) return;
 
