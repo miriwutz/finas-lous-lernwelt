@@ -478,7 +478,23 @@ async function toggleTask(taskId) {
 
       task.done = willBeDone;
       tasks[index] = task;
+if (task.done) {
+  const alreadyArchived = archive.some(entry => entry.taskId === task.id);
 
+  if (!alreadyArchived) {
+    archive.push({
+      id: crypto.randomUUID(),
+      taskId: task.id,
+      child: task.child,
+      title: task.title || "",
+      note: task.note || "",
+      type: task.type || "paper",
+      url: task.url || "",
+      attentionSeconds: Number(task.attentionSeconds || 0),
+      completedAt: new Date().toISOString()
+    });
+  }
+}
       const leafIndex = leaves.findIndex(l => l.taskId === taskId);
 
       if (task.done && leafIndex < 0) {
@@ -497,11 +513,12 @@ async function toggleTask(taskId) {
         leaves.splice(leafIndex, 1);
       }
 
-      tx.update(spaceRef, {
-        tasks,
-        learningLeaves: leaves,
-        updatedAt: serverTimestamp()
-      });
+   tx.update(spaceRef, {
+  tasks,
+  learningLeaves: leaves,
+  taskArchive: archive,
+  updatedAt: serverTimestamp()
+});
     });
 
     if (completedNow) showSunbeam();
