@@ -1005,8 +1005,58 @@ row.querySelector(".move-task-down").onclick = () => {
       renderAdminTasks(child);
     };
 
-    box.appendChild(row);
-  });
+  box.appendChild(row);
+});
+}
+
+function renderTaskArchive() {
+  const box = $("#taskArchiveList");
+  if (!box) return;
+
+  const archive = [...(state.taskArchive || [])]
+    .sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt));
+
+  if (!archive.length) {
+    box.innerHTML = `
+      <p class="muted">
+        Noch keine archivierten Aufgaben.
+      </p>
+    `;
+    return;
+  }
+
+  box.innerHTML = archive.map(entry => {
+    const childName =
+      entry.child === "fina" ? "🌸 Fina" :
+      entry.child === "lou" ? "🌺 Lou" :
+      entry.child || "";
+
+    const minutes = Math.floor(Number(entry.attentionSeconds || 0) / 60);
+
+    const date = entry.completedAt
+      ? new Date(entry.completedAt).toLocaleDateString("de-AT")
+      : "";
+
+    return `
+      <div class="archive-task">
+        <div class="archive-task-meta">
+          ${escapeHtml(childName)}
+          ${date ? ` · ${escapeHtml(date)}` : ""}
+        </div>
+
+        <strong>${escapeHtml(entry.title || "Aufgabe")}</strong>
+
+        ${entry.note
+          ? `<div>${escapeHtml(entry.note)}</div>`
+          : ""
+        }
+
+        <div class="archive-task-time">
+          💛 ${minutes} Min.
+        </div>
+      </div>
+    `;
+  }).join("");
 }
 
 $$("[data-add-task]").forEach(btn => {
