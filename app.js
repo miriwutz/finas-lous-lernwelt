@@ -1046,7 +1046,12 @@ if ($("#startNextDayBtn")) {
 
     $("#mamaDialog")?.close();
     $("#dayClosingDialog")?.showModal();
+  };
+}
 
+if ($("#closeDayClosingBtn")) {
+  $("#closeDayClosingBtn").onclick = () => {
+    $("#dayClosingDialog")?.close();
   };
 }
 
