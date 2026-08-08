@@ -1088,7 +1088,8 @@ function renderTaskArchive() {
   attentionSeconds: 0,
   activeSince: null
 });
-      renderAdminTasks(child);
+     renderAdminTasks(child);
+alert("✓ Aufgabe wurde zu „Heute planen“ hinzugefügt.");
     };
   });
 }
