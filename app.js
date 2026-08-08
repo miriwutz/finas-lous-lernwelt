@@ -1044,8 +1044,15 @@ if ($("#startNextDayBtn")) {
 
     if (!ok) return;
 
-    alert("Der Tagesabschluss ist bereit – noch wurden keine Daten verändert.");
+    $("#mamaDialog")?.close();
+    $("#dayClosingDialog")?.showModal();
 
+  };
+}
+
+if ($("#closeDayClosingBtn")) {
+  $("#closeDayClosingBtn").onclick = () => {
+    $("#dayClosingDialog")?.close();
   };
 }
 
