@@ -1064,34 +1064,34 @@ function renderTaskArchive() {
 </button>
       </div>
     `;
-}).join("");
+  }).join("");
+
+  box.querySelectorAll(".reuse-archive-task").forEach(btn => {
+    btn.onclick = () => {
+      const entry = (state.taskArchive || []).find(
+        item => item.id === btn.dataset.archiveId
+      );
+
+      if (!entry) return;
+
+      const child = entry.child === "lou" ? "lou" : "fina";
+
+      adminDraft[child].push({
+        id: crypto.randomUUID(),
+        child,
+        title: entry.title || "",
+        note: entry.note || "",
+        type: entry.type || "paper",
+        url: entry.url || "",
+        done: false,
+        attentionSeconds: 0,
+        activeSince: null
+      });
+
+      renderAdminTasks(child);
+    };
+  });
 }
-
-$("#taskArchiveList")?.querySelectorAll(".reuse-archive-task").forEach(btn => {
-  btn.onclick = () => {
-    const entry = (state.taskArchive || []).find(
-      item => item.id === btn.dataset.archiveId
-    );
-
-    if (!entry) return;
-
-    const child = entry.child === "lou" ? "lou" : "fina";
-
-    adminDraft[child].push({
-      id: crypto.randomUUID(),
-      child,
-      title: entry.title || "",
-      note: entry.note || "",
-      type: entry.type || "paper",
-      url: entry.url || "",
-      done: false,
-      attentionSeconds: 0,
-      activeSince: null
-    });
-
-    renderAdminTasks(child);
-  };
-});
 
 $$("[data-add-task]").forEach(btn => {
   btn.onclick = () => {
