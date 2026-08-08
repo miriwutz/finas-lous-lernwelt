@@ -988,7 +988,8 @@ row.querySelector(".move-task-up").onclick = () => {
   [adminDraft[child][index - 1], adminDraft[child][index]] =
     [adminDraft[child][index], adminDraft[child][index - 1]];
 
-  renderAdminTasks(child);
+renderAdminTasks(child);
+alert("✓ Aufgabe wurde zu „Heute planen“ hinzugefügt.");
 };
 
 row.querySelector(".move-task-down").onclick = () => {
