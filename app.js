@@ -1076,18 +1076,17 @@ function renderTaskArchive() {
 
       const child = entry.child === "lou" ? "lou" : "fina";
 
-      adminDraft[child].push({
-        id: crypto.randomUUID(),
-        child,
-        title: entry.title || "",
-        note: entry.note || "",
-        type: entry.type || "paper",
-        url: entry.url || "",
-        done: false,
-        attentionSeconds: 0,
-        activeSince: null
-      });
-
+     adminDraft[child].unshift({
+  id: crypto.randomUUID(),
+  child,
+  title: entry.title || "",
+  note: entry.note || "",
+  type: entry.type || "paper",
+  url: entry.url || "",
+  done: false,
+  attentionSeconds: 0,
+  activeSince: null
+});
       renderAdminTasks(child);
     };
   });
