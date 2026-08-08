@@ -1034,7 +1034,16 @@ if ($("#saveTasksBtn")) {
 
 if ($("#startNextDayBtn")) {
   $("#startNextDayBtn").onclick = async () => {
-    alert("Der nächste Lerntag wird später hier gestartet.");
+
+    const ok = confirm(
+      "Seid ihr für heute wirklich fertig?\n\n" +
+      "Der nächste Lerntag wird vorbereitet."
+    );
+
+    if (!ok) return;
+
+    alert("Jetzt kommt im nächsten Schritt der echte Tageswechsel.");
+
   };
 }
 
