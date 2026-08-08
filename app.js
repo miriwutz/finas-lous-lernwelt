@@ -1051,9 +1051,17 @@ function renderTaskArchive() {
           : ""
         }
 
-        <div class="archive-task-time">
-          💛 ${minutes} Min.
-        </div>
+       <div class="archive-task-time">
+  💛 ${minutes} Min.
+</div>
+
+<button
+  type="button"
+  class="reuse-archive-task"
+  data-archive-id="${escapeHtml(entry.id)}"
+>
+  ↻ Wiederverwenden
+</button>
       </div>
     `;
   }).join("");
