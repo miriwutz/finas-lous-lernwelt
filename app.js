@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.2b Stable";
+const APP_VERSION = "2.3 Lerntag";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -125,22 +125,51 @@ function chooseDailyMission(previous = "") {
 
 async function prepareLearningDay() {
   const today = learningDayKey();
+
   await runTransaction(db, async tx => {
     const snap = await tx.get(spaceRef);
     if (!snap.exists()) return;
+
     const data = snap.data();
     const previousDay = data.lastLearningDay || null;
     const isNewDay = previousDay !== today;
+
     let tasks = [...(data.tasks || [])];
+
     if (previousDay && isNewDay) {
-      tasks = tasks.map(task => task.done ? emptyTask(task.child) : {...task, done:false});
+      tasks = tasks.map(task =>
+        task.done
+          ? emptyTask(task.child)
+          : { ...task, done: false, activeSince: null }
+      );
     }
+
     const roots = (data.roots || []).map(migrateRoot);
-    const forest = (data.forest || []).map(tree => ({...tree, roots:(tree.roots || []).map(migrateRoot)}));
-    const dailyMission = (!data.dailyMission || isNewDay) ? chooseDailyMission(data.dailyMission || "") : data.dailyMission;
+    const forest = (data.forest || []).map(tree => ({
+      ...tree,
+      roots: (tree.roots || []).map(migrateRoot)
+    }));
+
+    const dailyMission =
+      (!data.dailyMission || isNewDay)
+        ? chooseDailyMission(data.dailyMission || "")
+        : data.dailyMission;
+
     tx.update(spaceRef, {
-      tasks:[...ensureMinimumTaskSlots(tasks,"fina"), ...ensureMinimumTaskSlots(tasks,"lou")],
-      roots, forest, dailyMission, lastLearningDay:today, appVersion:APP_VERSION, updatedAt:serverTimestamp()
+      tasks: [
+        ...ensureMinimumTaskSlots(tasks, "fina"),
+        ...ensureMinimumTaskSlots(tasks, "lou")
+      ],
+      roots,
+      forest,
+      dailyMission,
+      lastLearningDay: today,
+      dayClosed: isNewDay ? false : Boolean(data.dayClosed),
+      dayClosedAt: isNewDay ? null : (data.dayClosedAt || null),
+      dayClosedKey: isNewDay ? null : (data.dayClosedKey || null),
+      dayClosingBackup: isNewDay ? null : (data.dayClosingBackup || null),
+      appVersion: APP_VERSION,
+      updatedAt: serverTimestamp()
     });
   });
 }
@@ -369,6 +398,144 @@ if ($("#logoutBtn")) {
   $("#logoutBtn").onclick = () => signOut(auth);
 }
 
+function stopTaskAttention(task, now = Date.now()) {
+  const updated = { ...task };
+
+  if (!updated.activeSince) {
+    updated.activeSince = null;
+    return updated;
+  }
+
+  const started = new Date(updated.activeSince).getTime();
+  const elapsed = Number.isFinite(started)
+    ? Math.max(0, Math.floor((now - started) / 1000))
+    : 0;
+
+  updated.attentionSeconds =
+    Number(updated.attentionSeconds || 0) +
+    Math.min(elapsed, MAX_SESSION_SECONDS);
+
+  updated.activeSince = null;
+  return updated;
+}
+
+function syncLearningDayUi() {
+  const closed = Boolean(state.dayClosed);
+  const closingDialog = $("#dayClosingDialog");
+  const mamaDialog = $("#mamaDialog");
+
+  $("#startNextDayBtn")?.classList.toggle("hidden", closed);
+  $("#reopenLearningDayBtn")?.classList.toggle("hidden", !closed);
+  $("#beginNewLearningDayBtn")?.classList.toggle("hidden", !closed);
+
+  if (!closingDialog) return;
+
+  if (closed) {
+    if (!closingDialog.open && !mamaDialog?.open) {
+      closingDialog.showModal();
+    }
+  } else if (closingDialog.open) {
+    closingDialog.close();
+  }
+}
+
+async function closeLearningDay() {
+  await runTransaction(db, async tx => {
+    const snap = await tx.get(spaceRef);
+    if (!snap.exists()) return;
+
+    const data = snap.data();
+    if (data.dayClosed) return;
+
+    const now = Date.now();
+    const stoppedTasks = (data.tasks || []).map(task => stopTaskAttention(task, now));
+
+    const nextTasks = stoppedTasks.map(task =>
+      task.done
+        ? emptyTask(task.child)
+        : { ...task, done: false, activeSince: null }
+    );
+
+    tx.update(spaceRef, {
+      tasks: [
+        ...ensureMinimumTaskSlots(nextTasks, "fina"),
+        ...ensureMinimumTaskSlots(nextTasks, "lou")
+      ],
+      dayClosed: true,
+      dayClosedAt: new Date(now).toISOString(),
+      dayClosedKey: data.lastLearningDay || learningDayKey(),
+      dayClosingBackup: {
+        tasks: stoppedTasks,
+        dailyMission: data.dailyMission || "",
+        lastLearningDay: data.lastLearningDay || learningDayKey()
+      },
+      updatedAt: serverTimestamp()
+    });
+  });
+}
+
+async function reopenLearningDay() {
+  await runTransaction(db, async tx => {
+    const snap = await tx.get(spaceRef);
+    if (!snap.exists()) return;
+
+    const data = snap.data();
+    const backup = data.dayClosingBackup;
+
+    if (!data.dayClosed || !backup?.tasks) return;
+
+    const restoredTasks = backup.tasks.map(task => ({
+      ...task,
+      activeSince: null
+    }));
+
+    tx.update(spaceRef, {
+      tasks: [
+        ...ensureMinimumTaskSlots(restoredTasks, "fina"),
+        ...ensureMinimumTaskSlots(restoredTasks, "lou")
+      ],
+      dailyMission: backup.dailyMission || data.dailyMission || "",
+      lastLearningDay: backup.lastLearningDay || data.lastLearningDay || learningDayKey(),
+      dayClosed: false,
+      dayClosedAt: null,
+      dayClosedKey: null,
+      dayClosingBackup: null,
+      updatedAt: serverTimestamp()
+    });
+  });
+}
+
+async function beginNewLearningDay() {
+  await runTransaction(db, async tx => {
+    const snap = await tx.get(spaceRef);
+    if (!snap.exists()) return;
+
+    const data = snap.data();
+    const now = Date.now();
+
+    const tasks = (data.tasks || []).map(task => ({
+      ...stopTaskAttention(task, now),
+      done: false,
+      activeSince: null
+    }));
+
+    tx.update(spaceRef, {
+      tasks: [
+        ...ensureMinimumTaskSlots(tasks, "fina"),
+        ...ensureMinimumTaskSlots(tasks, "lou")
+      ],
+      dailyMission: chooseDailyMission(data.dailyMission || ""),
+      lastLearningDay: learningDayKey(),
+      dayClosed: false,
+      dayClosedAt: null,
+      dayClosedKey: null,
+      dayClosingBackup: null,
+      manualDayStartedAt: new Date(now).toISOString(),
+      updatedAt: serverTimestamp()
+    });
+  });
+}
+
 function renderAll() {
   const now = new Date();
   $("#todayLabel").textContent = now.toLocaleDateString("de-AT", {
@@ -385,6 +552,7 @@ function renderAll() {
   renderForest();
   renderAdminRoots();
   renderTreeAttention();
+  syncLearningDayUi();
   startAttentionTicker();
 }
 
@@ -855,21 +1023,37 @@ function renderForest() {
 }
 
 // Baumpfleger-Bereich
-if ($("#openMama")) {
-  $("#openMama").onclick = () => {
-    $("#mamaUnlock")?.classList.remove("hidden");
-    $("#mamaPanel")?.classList.add("hidden");
+function openMamaDialog() {
+  $("#dayClosingDialog")?.close();
 
-    if ($("#mamaEmail") && auth.currentUser?.email) {
-      $("#mamaEmail").value = auth.currentUser.email;
-    }
+  $("#mamaUnlock")?.classList.remove("hidden");
+  $("#mamaPanel")?.classList.add("hidden");
 
-    if ($("#mamaPassword")) $("#mamaPassword").value = "";
-    if ($("#mamaUnlockMessage")) $("#mamaUnlockMessage").textContent = "";
+  if ($("#mamaEmail") && auth.currentUser?.email) {
+    $("#mamaEmail").value = auth.currentUser.email;
+  }
 
-    $("#mamaDialog")?.showModal();
-  };
+  if ($("#mamaPassword")) $("#mamaPassword").value = "";
+  if ($("#mamaUnlockMessage")) $("#mamaUnlockMessage").textContent = "";
+
+  $("#mamaDialog")?.showModal();
 }
+
+if ($("#openMama")) {
+  $("#openMama").onclick = openMamaDialog;
+}
+
+if ($("#openMamaFromClosingBtn")) {
+  $("#openMamaFromClosingBtn").onclick = openMamaDialog;
+}
+
+$("#mamaDialog")?.addEventListener("close", () => {
+  if (state.dayClosed) syncLearningDayUi();
+});
+
+$("#dayClosingDialog")?.addEventListener("cancel", event => {
+  event.preventDefault();
+});
 
 if ($("#unlockMamaBtn")) {
   $("#unlockMamaBtn").onclick = async () => {
@@ -1139,26 +1323,64 @@ if ($("#saveTasksBtn")) {
 
 if ($("#startNextDayBtn")) {
   $("#startNextDayBtn").onclick = async () => {
-
     const ok = confirm(
       "Möchtest du den Lerntag wirklich abschließen?\n\n" +
-      "Erledigte Aufgaben werden geleert.\n" +
+      "Erledigte Aufgaben werden aus dem heutigen Plan entfernt.\n" +
       "Unerledigte Aufgaben bleiben erhalten.\n" +
+      "Laufende Aufmerksamkeit wird gestoppt.\n" +
       "Der Baum, seine Blätter und Wurzeln bleiben bestehen."
     );
 
     if (!ok) return;
 
-    $("#mamaDialog")?.close();
-    $("#dayClosingDialog")?.showModal();
+    try {
+      await closeLearningDay();
+      $("#mamaDialog")?.close();
+      if (!$("#dayClosingDialog")?.open) {
+        $("#dayClosingDialog")?.showModal();
+      }
+    } catch (err) {
+      alert("Der Lerntag konnte nicht abgeschlossen werden: " + err.message);
+    }
   };
 }
 
-if ($("#closeDayClosingBtn")) {
-  $("#closeDayClosingBtn").onclick = () => {
-    $("#dayClosingDialog")?.close();
+if ($("#reopenLearningDayBtn")) {
+  $("#reopenLearningDayBtn").onclick = async () => {
+    const ok = confirm(
+      "Möchtest du den abgeschlossenen Lerntag wieder öffnen?\n\n" +
+      "Die Aufgaben werden auf den Stand vor dem Abschluss zurückgesetzt."
+    );
+
+    if (!ok) return;
+
+    try {
+      await reopenLearningDay();
+      $("#mamaDialog")?.close();
+    } catch (err) {
+      alert("Der Lerntag konnte nicht wieder geöffnet werden: " + err.message);
+    }
   };
 }
+
+if ($("#beginNewLearningDayBtn")) {
+  $("#beginNewLearningDayBtn").onclick = async () => {
+    const ok = confirm(
+      "Möchtest du jetzt wirklich einen neuen Lerntag starten?\n\n" +
+      "Unerledigte Aufgaben bleiben erhalten und ein neuer Tagesimpuls wird gewählt."
+    );
+
+    if (!ok) return;
+
+    try {
+      await beginNewLearningDay();
+      $("#mamaDialog")?.close();
+    } catch (err) {
+      alert("Der neue Lerntag konnte nicht gestartet werden: " + err.message);
+    }
+  };
+}
+
 
 if ($("#saveTreeSettings")) {
   $("#saveTreeSettings").onclick = async () => {
