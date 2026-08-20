@@ -1241,3 +1241,104 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   stroke:var(--tree-bark) !important;
 }
 
+
+/* =========================
+   EBENEN & NATÜRLICHE KRONE 2.3h
+   ========================= */
+
+/* Äste und Wurzeln liegen im SVG nun wirklich hinter dem Stamm.
+   Die Farben bleiben bewusst identisch. */
+.branch,
+.twig,
+.root-main{
+  stroke:var(--tree-bark) !important;
+}
+
+.tree-trunk{
+  position:relative;
+}
+
+/* Noch weichere Übergänge an Ast- und Wurzelansätzen. */
+.branch-main{
+  stroke-width:8.2;
+}
+
+.branch-soft{
+  stroke-width:5.2;
+}
+
+.twig{
+  stroke-width:2.55;
+  opacity:.90;
+}
+
+.root-main{
+  stroke-width:inherit;
+}
+
+.root-light{
+  opacity:.22;
+}
+
+.root-shadow{
+  opacity:.45;
+}
+
+/* Die Blätter sollen wirken, als säßen sie auf dem Ast,
+   nicht wie in einem Raster. */
+.dynamic-leaf{
+  filter:drop-shadow(0 1.2px 1.3px rgba(70,50,38,.07));
+}
+
+.leaf-body{
+  stroke-width:.82;
+}
+
+.leaf-soft-light{
+  opacity:.42;
+}
+
+.leaf-vein{
+  opacity:.66;
+}
+
+
+/* =========================
+   ARCHIV – SCHWIERIGKEIT SICHTBAR
+   ========================= */
+
+.archive-task-details{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+  margin-top:8px;
+}
+
+.archive-task-time{
+  margin-top:0;
+}
+
+.archive-difficulty{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:.84rem;
+  font-weight:800;
+  color:#6f6258;
+}
+
+.archive-difficulty-dot{
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  border:1px solid rgba(73,56,47,.22);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.45);
+}
+
+.archive-difficulty-old{
+  font-weight:600;
+  color:var(--muted);
+  font-style:italic;
+}
+
