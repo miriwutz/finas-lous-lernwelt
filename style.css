@@ -2042,3 +2042,99 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
 .tree-growth-canvas .tree-base-image{
   transform:translateY(-6.5%);
 }
+
+
+/* =========================================================
+   2.3p – Wurzeln als transparente PNG-Ebenen
+   ========================================================= */
+
+/* Alte SVG-Wurzeltechnik vollständig abschalten. */
+.tree-root-overlay,
+#rootLayer,
+.dynamic-root,
+.root-organic-shadow,
+.root-organic-body,
+.root-organic-light,
+.root-main,
+.root-light,
+.root-shadow{
+  display:none !important;
+}
+
+/* PNG-Wurzelebene liegt hinter dem Baum, aber über der Wiese. */
+.tree-root-png-layer{
+  position:absolute;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+}
+
+/* Jede Wurzelgrafik verwendet dieselbe Zeichenfläche wie der Baum.
+   Die PNGs selbst sollen NUR die jeweilige Wurzel enthalten. */
+.root-png{
+  position:absolute;
+  left:0;
+  top:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:center bottom;
+  opacity:0;
+  transform:scale(.94);
+  transform-origin:50% 82%;
+  transition:
+    opacity .75s ease,
+    transform 1.05s cubic-bezier(.18,.82,.25,1);
+  pointer-events:none;
+  user-select:none;
+}
+
+.root-png.visible{
+  opacity:1;
+  transform:scale(1);
+}
+
+/* Etwas unterschiedliche Einblendrichtung, damit das Wachstum lebendiger wirkt. */
+.root-png.root-left{
+  transform-origin:53% 82%;
+}
+
+.root-png.root-right{
+  transform-origin:47% 82%;
+}
+
+.root-png.root-left:not(.visible){
+  transform:translateX(7px) scale(.93);
+}
+
+.root-png.root-right:not(.visible){
+  transform:translateX(-7px) scale(.93);
+}
+
+/* Der Stamm bleibt davor und verdeckt den Wurzelansatz. */
+.tree-base-image{
+  z-index:3;
+}
+
+/* Lernblätter weiterhin ganz vorne. */
+.tree-leaf-overlay{
+  z-index:4;
+}
+
+/* Die weich auslaufende Wiese bleibt ganz hinten. */
+.tree-meadow-layer{
+  z-index:1;
+}
+
+/* Auch im Wachstumsdialog funktionieren dieselben PNG-Wurzeln. */
+.tree-growth-canvas .tree-root-png-layer{
+  z-index:2;
+}
+
+.tree-growth-canvas .tree-base-image{
+  z-index:3;
+}
+
+.tree-growth-canvas .tree-leaf-overlay{
+  z-index:4;
+}
