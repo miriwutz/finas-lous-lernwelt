@@ -835,81 +835,7 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   stroke-width:1.2;
 }
 
-.flying-leaf.fly{
-  animation:leafFlyToTree 1.75s cubic-bezier(.20,.78,.28,1) forwards;
-}
 
-@keyframes leafFlyToTree{
-  0%{
-    opacity:0;
-    transform:translate(0,0) rotate(-18deg) scale(.72);
-  }
-  12%{
-    opacity:1;
-    transform:translate(8px,12px) rotate(-5deg) scale(1.02);
-  }
-  48%{
-    opacity:1;
-    transform:
-      translate(
-        calc((var(--leaf-target-x) - 45px) * .52),
-        calc((var(--leaf-target-y) - 41px) * .42)
-      )
-      rotate(18deg)
-      scale(1.12);
-  }
-  82%{
-    opacity:1;
-    transform:
-      translate(
-        calc(var(--leaf-target-x) - 45px),
-        calc(var(--leaf-target-y) - 41px)
-      )
-      rotate(4deg)
-      scale(.88);
-  }
-  100%{
-    opacity:0;
-    transform:
-      translate(
-        calc(var(--leaf-target-x) - 45px),
-        calc(var(--leaf-target-y) - 41px)
-      )
-      rotate(0deg)
-      scale(.72);
-  }
-}
-
-/* Das echte neue Blatt erscheint erst am Ziel und pulsiert kurz. */
-.tree-growth-svg .new-growth-leaf{
-  opacity:0;
-  transform-box:fill-box;
-  transform-origin:center;
-  animation:newLeafLand 1.15s 1.45s cubic-bezier(.2,.85,.25,1) forwards;
-}
-
-@keyframes newLeafLand{
-  0%{
-    opacity:0;
-    transform:scale(.25);
-    filter:drop-shadow(0 0 0 rgba(255,255,255,0));
-  }
-  50%{
-    opacity:1;
-    transform:scale(1.38);
-    filter:
-      drop-shadow(0 0 8px rgba(255,255,255,.95))
-      drop-shadow(0 0 15px rgba(230,189,98,.85));
-  }
-  74%{
-    transform:scale(.92);
-  }
-  100%{
-    opacity:1;
-    transform:scale(1);
-    filter:drop-shadow(0 2px 2px rgba(60,40,30,.12));
-  }
-}
 
 @media(max-width:520px){
   .flying-leaf{
@@ -918,5 +844,137 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
     left:14px;
     top:12px;
   }
+}
+
+
+/* =========================
+   BLÄTTER & WURZELN 2.3e
+   ========================= */
+
+/* Das fliegende Blatt wird jetzt per Web-Animation bewegt. */
+.flying-leaf{
+  opacity:0;
+  will-change:transform, opacity;
+}
+
+.flying-leaf .leaf-fill{
+  fill:#a9bea0;
+  stroke:#725e51;
+  stroke-width:1.15;
+}
+
+.flying-leaf .vein{
+  stroke:#f8fbf6;
+  stroke-width:1.15;
+}
+
+/* Der äußere Blatt-Container hält ausschließlich die Position am Ast.
+   So kann das Blatt nicht mehr nach links oben springen. */
+.dynamic-leaf{
+  filter:drop-shadow(0 2px 2px rgba(75,55,42,.10));
+}
+
+.leaf-shape{
+  transform-box:fill-box;
+  transform-origin:center;
+}
+
+.leaf-shadow{
+  fill:rgba(82,63,51,.10);
+  transform:translate(1.2px,1.4px);
+}
+
+.leaf-body{
+  stroke:#756052;
+  stroke-width:1.05;
+  stroke-linejoin:round;
+}
+
+.leaf-soft-light{
+  fill:none;
+  stroke-width:1.4;
+  stroke-linecap:round;
+  opacity:.62;
+}
+
+.leaf-vein{
+  fill:none;
+  stroke:#f8fbf6;
+  stroke-width:1.05;
+  stroke-linecap:round;
+  opacity:.9;
+}
+
+.leaf-vein-small{
+  stroke-width:.78;
+  opacity:.72;
+}
+
+/* Nur die innere Blattform pulsiert.
+   Die Position des äußeren <g> bleibt dadurch unangetastet. */
+.tree-growth-svg .new-growth-leaf{
+  opacity:0;
+  animation:newLeafArrive 1.25s 1.72s cubic-bezier(.18,.82,.25,1) forwards;
+}
+
+@keyframes newLeafArrive{
+  0%{
+    opacity:0;
+    transform:scale(.20) rotate(-10deg);
+    filter:drop-shadow(0 0 0 rgba(255,255,255,0));
+  }
+  44%{
+    opacity:1;
+    transform:scale(1.32) rotate(3deg);
+    filter:
+      drop-shadow(0 0 7px rgba(255,255,255,.96))
+      drop-shadow(0 0 14px rgba(230,189,98,.66));
+  }
+  72%{
+    opacity:1;
+    transform:scale(.94) rotate(-1deg);
+  }
+  100%{
+    opacity:1;
+    transform:scale(1) rotate(0);
+    filter:drop-shadow(0 2px 2px rgba(75,55,42,.10));
+  }
+}
+
+/* Wurzeln: weichere, organischere Mehrlinien-Zeichnung. */
+.dynamic-root{
+  fill:none;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  filter:none;
+}
+
+.root-shadow{
+  fill:none;
+  stroke:rgba(78,55,42,.11);
+}
+
+.root-main{
+  fill:none;
+  stroke:#80614d;
+}
+
+.root-light{
+  fill:none;
+  stroke:#b99577;
+  opacity:.58;
+}
+
+/* Im großen Fenster darf alles etwas feiner wirken. */
+.tree-growth-svg .leaf-body{
+  stroke-width:.95;
+}
+
+.tree-growth-svg .root-main{
+  opacity:.94;
+}
+
+.tree-growth-svg .root-light{
+  opacity:.64;
 }
 
