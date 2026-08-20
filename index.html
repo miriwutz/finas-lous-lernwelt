@@ -147,110 +147,146 @@
               aria-label="Lernbaum"
             >
               <defs>
-                <linearGradient id="trunkGrad" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stop-color="#8f6a53"/>
-                  <stop offset="48%" stop-color="#aa8062"/>
-                  <stop offset="100%" stop-color="#765642"/>
+                <linearGradient id="trunkGrad" x1="0" y1="0" x2="1" y2=".15">
+                  <stop offset="0%" stop-color="#795944"/>
+                  <stop offset="28%" stop-color="#9a7256"/>
+                  <stop offset="58%" stop-color="#b08768"/>
+                  <stop offset="100%" stop-color="#74533f"/>
                 </linearGradient>
 
-                <linearGradient id="trunkLight" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#c09a78" stop-opacity=".72"/>
-                  <stop offset="100%" stop-color="#9a7459" stop-opacity=".12"/>
+                <linearGradient id="meadowGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#dce6c2" stop-opacity=".30"/>
+                  <stop offset="38%" stop-color="#c8d8a8" stop-opacity=".58"/>
+                  <stop offset="100%" stop-color="#aebf82" stop-opacity=".78"/>
+                </linearGradient>
+
+                <linearGradient id="meadowGlow" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="#eef2dd" stop-opacity=".15"/>
+                  <stop offset="48%" stop-color="#d7e2ba" stop-opacity=".48"/>
+                  <stop offset="100%" stop-color="#eef2dd" stop-opacity=".12"/>
                 </linearGradient>
               </defs>
 
-              <!-- sanfte Wiese ganz hinten -->
-              <path
-                class="tree-meadow"
-                d="M0 388
-                   C92 370 176 372 244 383
-                   C314 394 405 388 560 370
-                   L560 500
-                   L0 500 Z"
-              />
+              <!-- weich verlaufende Wiese -->
+              <path class="tree-meadow"
+                d="M0 378
+                   C80 365 145 370 211 379
+                   C278 388 347 389 417 380
+                   C469 373 516 366 560 369
+                   L560 500 L0 500 Z"/>
 
-              <path
-                class="tree-meadow-soft"
-                d="M0 414
-                   C110 396 190 399 274 407
-                   C361 416 447 409 560 395
-                   L560 500
-                   L0 500 Z"
-              />
+              <path class="tree-meadow-soft"
+                d="M0 411
+                   C88 397 164 400 235 408
+                   C315 417 393 416 462 405
+                   C499 399 531 397 560 400
+                   L560 500 L0 500 Z"/>
 
-              <!-- Wurzeln liegen HINTER dem Stamm -->
+              <!-- Wurzeln hinten -->
               <g id="rootLayer"></g>
 
-              <!-- Äste und Zweige liegen ebenfalls HINTER dem Stamm.
-                   Dadurch verschwinden die sichtbaren Ansatzkanten. -->
+              <!-- unregelmäßige, organische Äste hinter dem Stamm -->
+              <path class="branch branch-heavy"
+                d="M279 315
+                   C247 303 224 284 202 261
+                   C183 241 164 229 139 222
+                   C116 215 95 202 77 183"/>
 
-              <!-- linke Hauptäste -->
               <path class="branch branch-main"
-                d="M288 309 C266 301 244 291 224 278 C204 265 187 249 171 232 C148 208 128 190 105 177"/>
-              <path class="branch branch-soft"
-                d="M211 270 C189 243 175 216 169 184 C165 163 158 143 145 126"/>
-              <path class="branch branch-soft"
-                d="M181 243 C155 244 131 237 108 224 C92 215 76 210 59 211"/>
+                d="M272 268
+                   C244 249 225 225 213 198
+                   C203 176 192 160 172 148
+                   C151 135 137 118 129 98"/>
 
-              <!-- rechte Hauptäste -->
+              <path class="branch branch-soft"
+                d="M180 153
+                   C157 157 136 154 117 144
+                   C100 135 84 131 67 133"/>
+
+              <path class="branch branch-soft"
+                d="M139 222
+                   C117 231 96 231 76 224
+                   C60 219 46 219 32 225"/>
+
+              <path class="branch branch-heavy"
+                d="M293 305
+                   C323 288 344 267 361 239
+                   C378 211 397 193 422 181
+                   C447 168 468 151 486 128"/>
+
               <path class="branch branch-main"
-                d="M291 306 C315 294 338 279 357 261 C373 246 386 230 398 215 C416 192 433 170 455 151"/>
-              <path class="branch branch-soft"
-                d="M353 261 C376 231 388 201 391 171 C393 150 402 130 418 113"/>
-              <path class="branch branch-soft"
-                d="M390 224 C414 225 438 217 458 202 C473 191 489 184 505 184"/>
+                d="M298 254
+                   C322 233 336 210 343 181
+                   C349 155 361 134 380 117
+                   C399 100 410 81 414 60"/>
 
-              <!-- obere Krone -->
+              <path class="branch branch-soft"
+                d="M361 239
+                   C387 243 410 238 430 225
+                   C447 214 466 209 488 211"/>
+
+              <path class="branch branch-soft"
+                d="M422 181
+                   C445 183 465 178 482 166
+                   C497 155 512 150 529 151"/>
+
+              <!-- asymmetrische obere Gabeln -->
               <path class="branch branch-main"
-                d="M289 248 C272 232 257 215 246 196 C234 176 226 157 219 139 C212 121 202 107 186 98"/>
+                d="M282 218
+                   C261 194 250 169 247 142
+                   C245 118 237 98 222 82
+                   C210 69 205 55 207 40"/>
+
               <path class="branch branch-main"
-                d="M291 247 C308 231 323 214 334 194 C345 174 350 155 354 137 C359 116 368 97 381 83"/>
-              <path class="branch branch-soft"
-                d="M289 190 C278 174 270 157 266 139 C261 119 259 101 260 84 C261 68 257 55 248 44"/>
-              <path class="branch branch-soft"
-                d="M291 190 C303 174 311 157 316 138 C321 119 322 101 321 83 C320 65 324 49 334 35"/>
+                d="M291 217
+                   C306 193 313 169 311 144
+                   C309 119 315 99 328 82
+                   C340 67 345 52 343 36"/>
 
-              <!-- feine Zweige -->
-              <path class="twig twig-natural" d="M145 126 C132 112 120 102 107 96"/>
-              <path class="twig twig-natural" d="M145 126 C143 108 144 94 151 81"/>
-              <path class="twig twig-natural" d="M105 177 C89 165 75 158 61 156"/>
-              <path class="twig twig-natural" d="M105 177 C97 159 94 144 96 130"/>
+              <!-- kleine, aber nicht haarfeine Zweige -->
+              <path class="twig twig-natural" d="M129 98 C116 84 108 70 108 56"/>
+              <path class="twig twig-natural" d="M129 98 C136 80 139 64 136 49"/>
+              <path class="twig twig-natural" d="M172 148 C163 128 161 111 165 95"/>
+              <path class="twig twig-natural" d="M172 148 C187 134 197 120 202 104"/>
 
-              <path class="twig twig-natural" d="M418 113 C431 99 442 89 455 82"/>
-              <path class="twig twig-natural" d="M418 113 C421 95 420 80 414 67"/>
-              <path class="twig twig-natural" d="M455 151 C471 138 485 130 500 127"/>
-              <path class="twig twig-natural" d="M455 151 C463 133 466 118 464 104"/>
+              <path class="twig twig-natural" d="M380 117 C391 99 397 82 396 66"/>
+              <path class="twig twig-natural" d="M380 117 C366 103 357 89 354 74"/>
+              <path class="twig twig-natural" d="M414 60 C425 49 435 43 447 41"/>
+              <path class="twig twig-natural" d="M486 128 C500 114 512 107 525 105"/>
 
-              <path class="twig twig-natural" d="M186 98 C171 87 160 78 151 66"/>
-              <path class="twig twig-natural" d="M186 98 C181 79 181 64 185 51"/>
-              <path class="twig twig-natural" d="M381 83 C394 71 406 63 419 57"/>
-              <path class="twig twig-natural" d="M381 83 C386 65 387 50 384 37"/>
+              <path class="twig twig-natural" d="M77 183 C62 169 50 163 36 162"/>
+              <path class="twig twig-natural" d="M77 183 C76 165 79 151 87 139"/>
+              <path class="twig twig-natural" d="M488 211 C506 202 520 199 535 202"/>
 
-              <!-- Stamm liegt VOR Ästen und Wurzeln -->
-              <path
-                class="tree-trunk"
-                d="M257 408
-                   C263 365 267 326 267 287
-                   C266 246 262 210 266 177
-                   C270 144 279 112 287 76
-                   C296 113 302 145 299 179
-                   C296 214 298 248 305 286
-                   C312 326 316 366 322 408
-                   C304 399 294 396 288 396
-                   C279 396 269 399 257 408 Z"
-                fill="url(#trunkGrad)"
-              />
+              <!-- charaktervoller Stamm vor den Astansätzen -->
+              <path class="tree-trunk"
+                d="M248 405
+                   C256 381 260 354 261 326
+                   C262 298 257 273 263 250
+                   C268 230 276 213 278 193
+                   C280 173 276 154 279 136
+                   C282 116 288 96 291 75
+                   C298 96 305 116 307 136
+                   C309 157 303 176 305 195
+                   C307 216 317 232 320 253
+                   C324 278 318 301 319 327
+                   C320 355 326 381 335 404
+                   C320 398 309 396 299 397
+                   C289 398 279 397 270 396
+                   C261 395 254 399 248 405 Z"
+                fill="url(#trunkGrad)"/>
 
-              <path
-                class="tree-trunk-light"
-                d="M277 389
-                   C278 343 276 302 277 261
-                   C278 217 280 177 286 135"
-                fill="none"
-                stroke="url(#trunkLight)"
-              />
+              <!-- unregelmäßige Rindenlinien -->
+              <path class="bark-line"
+                d="M274 378 C269 343 272 309 270 278 C269 250 278 226 280 203"/>
+              <path class="bark-line bark-line-soft"
+                d="M294 382 C299 350 295 318 299 286 C303 256 296 235 300 213"/>
+              <path class="bark-line bark-line-short"
+                d="M283 347 C288 330 287 314 285 298"/>
+              <path class="bark-line bark-line-short"
+                d="M309 332 C304 314 307 297 311 282"/>
 
-              <!-- Lernblätter liegen ganz vorne -->
+              <!-- Lernblätter ganz vorne -->
               <g id="leafLayer"></g>
             </svg>
           </div>
