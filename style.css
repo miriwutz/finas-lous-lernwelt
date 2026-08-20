@@ -1958,3 +1958,87 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   55%  { opacity:.82; transform:scale(1.04) rotate(2deg); }
   100% { opacity:.72; transform:scale(1) rotate(0deg); }
 }
+
+
+/* =========================================================
+   2.3o – Baum höher + tiefer ansetzende natürliche Wurzeln
+   ========================================================= */
+
+/* Mehr Platz unter dem Stamm für echtes Wurzelwachstum.
+   Nur das PNG wird angehoben; die Wurzelebene bleibt unten. */
+.tree-base-image{
+  transform:translateY(-6.5%);
+  transform-origin:center bottom;
+}
+
+/* Die Wiese bleibt unter Baum und Wurzeln weich sichtbar. */
+.tree-meadow-layer{
+  height:27%;
+  bottom:0;
+}
+
+/* Wurzeln beginnen jetzt erst am unteren Stammfuß.
+   Sie liegen weiterhin HINTER dem PNG-Baum. */
+.tree-root-overlay{
+  z-index:2;
+}
+
+.tree-base-image{
+  z-index:3;
+}
+
+#rootLayer .dynamic-root{
+  stroke:none !important;
+  filter:drop-shadow(0 .8px .8px rgba(61,40,28,.035));
+}
+
+/* Körper etwas dunkler am Ansatz, aber ohne harte Kontur. */
+#rootLayer .root-organic-shadow{
+  fill:#654634;
+  opacity:.08;
+  transform:translateY(.8px);
+}
+
+#rootLayer .root-organic-body{
+  fill:#8b6045;
+  opacity:.84;
+}
+
+#rootLayer .root-organic-light{
+  fill:#c79a74;
+  opacity:.10;
+  transform:translate(-.35px,-.2px) scale(.992);
+  transform-origin:292px 421px;
+}
+
+/* Unterschiedliche Stärke erzeugt weniger Symmetrie. */
+#rootLayer .root-shape-1{ opacity:.96; }
+#rootLayer .root-shape-2{ opacity:.84; }
+#rootLayer .root-shape-3{ opacity:.78; }
+#rootLayer .root-shape-4{ opacity:.91; }
+#rootLayer .root-shape-5{ opacity:.72; }
+#rootLayer .root-shape-6{ opacity:.82; }
+#rootLayer .root-shape-7{ opacity:.86; }
+#rootLayer .root-shape-8{ opacity:.70; }
+#rootLayer .root-shape-9{ opacity:.76; }
+#rootLayer .root-shape-10{ opacity:.88; }
+
+/* Blätter aus 2.3n grundsätzlich beibehalten:
+   fein, leicht transparent, unterschiedliche Winkel,
+   Adern nur subtil sichtbar. */
+#leafLayer .dynamic-leaf{
+  opacity:.72;
+}
+
+#leafLayer .leaf-vein{
+  opacity:.38;
+}
+
+#leafLayer .leaf-vein-small{
+  opacity:.28;
+}
+
+/* Wachstumsfenster verwendet dieselbe angehobene PNG-Position. */
+.tree-growth-canvas .tree-base-image{
+  transform:translateY(-6.5%);
+}
