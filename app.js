@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.3d Regenbogen-Wachstum";
+const APP_VERSION = "2.3e Sanftes Wachstum";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -337,10 +337,11 @@ function showTreeGrowthCelebration() {
   treeClone.removeAttribute("id");
   treeClone.classList.add("tree-growth-svg");
 
+  // Der äußere Block behält IMMER seine echte Position am Ast.
   const newestLeaf = treeClone.querySelector(".dynamic-leaf:last-of-type");
-  newestLeaf?.classList.add("new-growth-leaf");
+  const newestShape = newestLeaf?.querySelector(".leaf-shape");
+  newestShape?.classList.add("new-growth-leaf");
 
-  // Nur den Baum ersetzen, das fliegende Blatt bleibt im Preview erhalten.
   preview.querySelector(".tree-growth-svg")?.remove();
   preview.appendChild(treeClone);
 
@@ -351,28 +352,63 @@ function showTreeGrowthCelebration() {
     void dialog.offsetWidth;
     dialog.classList.add("rainbow-bloom");
 
-    if (flyingLeaf && newestLeaf) {
-      const previewRect = preview.getBoundingClientRect();
-      const leafRect = newestLeaf.getBoundingClientRect();
+    if (!flyingLeaf || !newestLeaf) return;
 
-      const targetX = leafRect.left + leafRect.width / 2 - previewRect.left;
-      const targetY = leafRect.top + leafRect.height / 2 - previewRect.top;
+    const previewRect = preview.getBoundingClientRect();
+    const leafRect = newestLeaf.getBoundingClientRect();
 
-      flyingLeaf.style.setProperty("--leaf-target-x", `${targetX}px`);
-      flyingLeaf.style.setProperty("--leaf-target-y", `${targetY}px`);
+    const startX = 18;
+    const startY = 12;
+    const targetX = leafRect.left + leafRect.width / 2 - previewRect.left;
+    const targetY = leafRect.top + leafRect.height / 2 - previewRect.top;
 
-      flyingLeaf.classList.remove("fly");
-      void flyingLeaf.offsetWidth;
-      flyingLeaf.classList.add("fly");
+    // Alte Animation sicher beenden.
+    flyingLeaf.getAnimations().forEach(animation => animation.cancel());
+    flyingLeaf.style.opacity = "0";
+
+    // Viele kleine Zwischenpunkte ergeben eine weiche, leicht wellige Flugbahn
+    // statt einer zackigen Bewegung von Keyframe zu Keyframe.
+    const frames = [];
+    const steps = 28;
+
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+
+      // Sanfte Kurve: zuerst etwas nach rechts, dann zum Ziel.
+      const curveLift = Math.sin(Math.PI * t) * Math.min(70, Math.max(30, targetY * 0.16));
+      const wave = Math.sin(t * Math.PI * 3.2) * (1 - t) * 13;
+
+      const x = startX + (targetX - startX) * t + wave;
+      const y = startY + (targetY - startY) * t - curveLift;
+
+      frames.push({
+        offset: t,
+        opacity: t < 0.04 ? 0 : (t > 0.94 ? 0 : 1),
+        transform:
+          `translate(${x - startX}px, ${y - startY}px) ` +
+          `rotate(${(-14 + 26 * t + Math.sin(t * Math.PI * 4) * 7)}deg) ` +
+          `scale(${0.78 + Math.sin(Math.PI * t) * 0.18})`
+      });
     }
+
+    flyingLeaf.animate(frames, {
+      duration: 2050,
+      easing: "linear",
+      fill: "forwards"
+    });
   });
 
   treeGrowthTimer = setTimeout(() => {
     if (dialog.open) dialog.close();
     dialog.classList.remove("rainbow-bloom");
-    flyingLeaf?.classList.remove("fly");
+
+    if (flyingLeaf) {
+      flyingLeaf.getAnimations().forEach(animation => animation.cancel());
+      flyingLeaf.style.opacity = "0";
+    }
+
     treeGrowthTimer = null;
-  }, 4300);
+  }, 4550);
 }
 
 function renderTreeAttention() {
@@ -754,33 +790,74 @@ function renderTree() {
 
   leaves.forEach((leaf, i) => {
     const [x, y, rot, mirror] = leafPositions[i];
-    const color = i % 2 === 0 ? "#9fb58f" : "#86b7c9";
+    const color = i % 2 === 0 ? "#a9bea0" : "#8ebdcc";
+    const highlight = i % 2 === 0 ? "#dbe6d7" : "#d7edf3";
 
     leafLayer.insertAdjacentHTML("beforeend", `
-      <g transform="translate(${x} ${y}) rotate(${rot}) scale(1 ${mirror})"
-         class="dynamic-leaf">
-        <path
-          d="M0 0 C7 -13 20 -17 31 -8 C28 6 17 13 0 0Z"
-          fill="${color}"
-          stroke="#7c6759"
-          stroke-width="1"
-        />
-        <path
-          d="M3 0 C12 -1 21 -4 28 -7"
-          fill="none"
-          stroke="#fffaf4"
-          stroke-width="1"
-          opacity=".9"
-        />
+      <g
+        transform="translate(${x} ${y}) rotate(${rot}) scale(1 ${mirror})"
+        class="dynamic-leaf"
+      >
+        <g class="leaf-shape">
+          <path
+            class="leaf-shadow"
+            d="M1 1 C8 -13 21 -18 33 -9 C30 7 17 14 1 1Z"
+          />
+          <path
+            class="leaf-body"
+            d="M0 0
+               C5 -10 13 -16 23 -16
+               C28 -16 33 -13 36 -9
+               C34 -1 30 6 23 10
+               C16 14 8 10 0 0 Z"
+            fill="${color}"
+          />
+          <path
+            class="leaf-soft-light"
+            d="M7 -2 C14 -8 22 -11 29 -10"
+            stroke="${highlight}"
+          />
+          <path
+            class="leaf-vein"
+            d="M4 1 C13 -1 22 -5 31 -10"
+          />
+          <path
+            class="leaf-vein leaf-vein-small"
+            d="M15 -3 C13 -7 13 -10 14 -12"
+          />
+          <path
+            class="leaf-vein leaf-vein-small"
+            d="M20 -5 C24 -4 27 -4 30 -5"
+          />
+        </g>
       </g>
     `);
   });
 
   (state.roots || []).slice(0, rootPaths.length).forEach((root, i) => {
+    const width = Math.max(2.3, 4.7 - i * .15);
+
     rootLayer.insertAdjacentHTML(
       "beforeend",
-      `<path d="${rootPaths[i]}" class="dynamic-root"
-        stroke-width="${Math.max(2.4, 4.8 - i * .16)}"/>`
+      `
+      <g class="dynamic-root">
+        <path
+          d="${rootPaths[i]}"
+          class="root-shadow"
+          stroke-width="${width + 1.8}"
+        />
+        <path
+          d="${rootPaths[i]}"
+          class="root-main"
+          stroke-width="${width}"
+        />
+        <path
+          d="${rootPaths[i]}"
+          class="root-light"
+          stroke-width="${Math.max(1, width * .28)}"
+        />
+      </g>
+      `
     );
   });
 
