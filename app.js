@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.3y Herz exakt & Wurzel deutlich sichtbar";
+const APP_VERSION = "2.3z Herz glitzert & Wurzel dunkler";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -466,7 +466,7 @@ function showRootGrowthCelebration() {
       Die rote Markierung liegt am geschnitzten Herz:
       ca. 50 % Breite / 62,7 % Höhe des sichtbaren Baum-PNGs.
     */
-    const targetX = imageRect.left + imageRect.width * 0.500 - previewRect.left;
+    const targetX = imageRect.left + imageRect.width * 0.520 - previewRect.left;
     const targetY = imageRect.top + imageRect.height * 0.627 - previewRect.top;
 
     heartTarget.style.left = `${targetX}px`;
@@ -484,35 +484,47 @@ function showRootGrowthCelebration() {
       {
         offset:0,
         opacity:0,
-        transform:`translate(${startX}px, ${startY}px) translate(-50%,-50%) scale(.55)`
+        filter:"brightness(1.35) drop-shadow(0 0 0 rgba(255,223,146,0))",
+        transform:`translate(${startX}px, ${startY}px) translate(-50%,-50%) scale(.70)`
       },
       {
-        offset:.12,
+        offset:.10,
         opacity:1,
-        transform:`translate(${startX}px, ${startY}px) translate(-50%,-50%) scale(1.65)`
+        filter:"brightness(1.42) drop-shadow(0 0 10px rgba(255,216,124,.95)) drop-shadow(0 0 22px rgba(244,157,176,.72))",
+        transform:`translate(${startX}px, ${startY}px) translate(-50%,-50%) scale(2.35) rotate(-5deg)`
       },
       {
-        offset:.36,
+        offset:.20,
         opacity:1,
-        transform:`translate(${startX - 30}px, ${startY + (targetY-startY)*.34}px) translate(-50%,-50%) scale(1.36)`
+        filter:"brightness(1.25) drop-shadow(0 0 7px rgba(255,226,151,.86)) drop-shadow(0 0 16px rgba(244,157,176,.55))",
+        transform:`translate(${startX + 5}px, ${startY + 18}px) translate(-50%,-50%) scale(2.05) rotate(4deg)`
       },
       {
-        offset:.62,
+        offset:.38,
         opacity:1,
-        transform:`translate(${targetX + 24}px, ${startY + (targetY-startY)*.69}px) translate(-50%,-50%) scale(1.02)`
+        filter:"brightness(1.12) drop-shadow(0 0 5px rgba(255,220,142,.64))",
+        transform:`translate(${startX - 28}px, ${startY + (targetY-startY)*.34}px) translate(-50%,-50%) scale(1.55) rotate(-3deg)`
       },
       {
-        offset:.88,
+        offset:.64,
         opacity:1,
+        filter:"brightness(1.05) drop-shadow(0 0 3px rgba(255,220,142,.42))",
+        transform:`translate(${targetX + 18}px, ${startY + (targetY-startY)*.70}px) translate(-50%,-50%) scale(1.02) rotate(2deg)`
+      },
+      {
+        offset:.90,
+        opacity:1,
+        filter:"brightness(1) drop-shadow(0 0 2px rgba(255,220,142,.25))",
         transform:`translate(${targetX}px, ${targetY}px) translate(-50%,-50%) scale(.56)`
       },
       {
         offset:1,
         opacity:0,
+        filter:"brightness(1)",
         transform:`translate(${targetX}px, ${targetY}px) translate(-50%,-50%) scale(.15)`
       }
     ], {
-      duration:2750,
+      duration:3000,
       easing:"cubic-bezier(.20,.72,.18,1)",
       fill:"forwards"
     });
@@ -545,7 +557,7 @@ function showRootGrowthCelebration() {
 
     if (flyingLeaf) flyingLeaf.style.display = "block";
     treeGrowthTimer = null;
-  }, 5600);
+  }, 6100);
 }
 
 function renderTreeAttention() {
