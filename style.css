@@ -2138,3 +2138,43 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
 .tree-growth-canvas .tree-leaf-overlay{
   z-index:4;
 }
+
+
+/* =========================================================
+   2.3q – feines Wurzelgeflecht aus 3 PNG-Grundgrafiken
+   ========================================================= */
+.tree-root-png-layer{
+  position:absolute; inset:0 0 -5% 0; z-index:2;
+  pointer-events:none; overflow:visible;
+}
+.root-png.root-growth-piece{
+  position:absolute;
+  left:50%; top:77%;
+  width:42%; height:30%;
+  object-fit:contain; object-position:50% 0%;
+  opacity:0;
+  transform:translate(calc(-50% + var(--root-x)),var(--root-y))
+            rotate(var(--root-rot)) scale(var(--root-scale));
+  transform-origin:50% 0%;
+  pointer-events:none; user-select:none;
+  animation:rootGrowInQ .95s var(--root-delay) cubic-bezier(.18,.82,.25,1) forwards;
+  filter:none;
+}
+@keyframes rootGrowInQ{
+  0%{
+    opacity:0;
+    transform:translate(calc(-50% + var(--root-x)),calc(var(--root-y) - 4px))
+              rotate(var(--root-rot)) scale(calc(var(--root-scale) * .82));
+  }
+  100%{
+    opacity:var(--root-opacity);
+    transform:translate(calc(-50% + var(--root-x)),var(--root-y))
+              rotate(var(--root-rot)) scale(var(--root-scale));
+  }
+}
+.tree-base-image{position:relative;z-index:3;}
+.tree-leaf-overlay{z-index:4;}
+.tree-meadow-layer{z-index:1;}
+@media (max-width:900px){
+  .root-png.root-growth-piece{width:45%;height:29%;top:77%;}
+}
