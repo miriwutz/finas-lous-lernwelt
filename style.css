@@ -724,3 +724,199 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   stroke-width:3.1;
 }
 
+
+/* =========================
+   REGENBOGEN-WACHSTUM 2.3d
+   ========================= */
+
+#treeGrowthDialog{
+  overflow:visible;
+}
+
+#treeGrowthDialog .tree-growth-card{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+}
+
+#treeGrowthDialog .tree-growth-card::before{
+  content:"";
+  position:absolute;
+  inset:-28%;
+  z-index:-2;
+  opacity:0;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(255,169,177,.34), transparent 24%),
+    radial-gradient(circle at 82% 20%, rgba(145,207,255,.30), transparent 24%),
+    radial-gradient(circle at 22% 80%, rgba(255,225,126,.28), transparent 25%),
+    radial-gradient(circle at 78% 82%, rgba(191,157,255,.27), transparent 25%),
+    radial-gradient(circle at 50% 50%, rgba(161,232,190,.25), transparent 34%);
+  filter:blur(26px);
+  transform:scale(.9);
+  pointer-events:none;
+}
+
+#treeGrowthDialog.rainbow-bloom .tree-growth-card::before{
+  animation:rainbowBloom 3.7s ease-out both;
+}
+
+#treeGrowthDialog .tree-growth-card::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  opacity:0;
+  pointer-events:none;
+  background:
+    linear-gradient(125deg,
+      rgba(255,188,194,.10),
+      rgba(255,228,160,.10),
+      rgba(180,231,190,.10),
+      rgba(174,219,255,.10),
+      rgba(204,181,255,.10)
+    );
+}
+
+#treeGrowthDialog.rainbow-bloom .tree-growth-card::after{
+  animation:rainbowWash 3.8s ease-out both;
+}
+
+@keyframes rainbowBloom{
+  0%{opacity:0;transform:scale(.86) rotate(-2deg)}
+  22%{opacity:.9;transform:scale(1.02) rotate(0deg)}
+  72%{opacity:.62;transform:scale(1.08) rotate(1deg)}
+  100%{opacity:0;transform:scale(1.12) rotate(2deg)}
+}
+
+@keyframes rainbowWash{
+  0%{opacity:0}
+  18%{opacity:.7}
+  74%{opacity:.4}
+  100%{opacity:0}
+}
+
+.tree-growth-preview{
+  position:relative;
+}
+
+/* Das neue Blatt startet links oben und fliegt an seine echte Position. */
+.flying-leaf{
+  --leaf-target-x: 50%;
+  --leaf-target-y: 50%;
+  position:absolute;
+  left:22px;
+  top:18px;
+  width:46px;
+  height:46px;
+  z-index:8;
+  opacity:0;
+  pointer-events:none;
+  transform-origin:center;
+  filter:
+    drop-shadow(0 0 7px rgba(255,255,255,.95))
+    drop-shadow(0 0 12px rgba(230,189,98,.65));
+}
+
+.flying-leaf svg{
+  width:100%;
+  height:100%;
+  overflow:visible;
+}
+
+.flying-leaf .leaf-fill{
+  fill:#9fb58f;
+  stroke:#765f52;
+  stroke-width:1.4;
+}
+
+.flying-leaf .vein{
+  fill:none;
+  stroke:#fffaf4;
+  stroke-width:1.2;
+}
+
+.flying-leaf.fly{
+  animation:leafFlyToTree 1.75s cubic-bezier(.20,.78,.28,1) forwards;
+}
+
+@keyframes leafFlyToTree{
+  0%{
+    opacity:0;
+    transform:translate(0,0) rotate(-18deg) scale(.72);
+  }
+  12%{
+    opacity:1;
+    transform:translate(8px,12px) rotate(-5deg) scale(1.02);
+  }
+  48%{
+    opacity:1;
+    transform:
+      translate(
+        calc((var(--leaf-target-x) - 45px) * .52),
+        calc((var(--leaf-target-y) - 41px) * .42)
+      )
+      rotate(18deg)
+      scale(1.12);
+  }
+  82%{
+    opacity:1;
+    transform:
+      translate(
+        calc(var(--leaf-target-x) - 45px),
+        calc(var(--leaf-target-y) - 41px)
+      )
+      rotate(4deg)
+      scale(.88);
+  }
+  100%{
+    opacity:0;
+    transform:
+      translate(
+        calc(var(--leaf-target-x) - 45px),
+        calc(var(--leaf-target-y) - 41px)
+      )
+      rotate(0deg)
+      scale(.72);
+  }
+}
+
+/* Das echte neue Blatt erscheint erst am Ziel und pulsiert kurz. */
+.tree-growth-svg .new-growth-leaf{
+  opacity:0;
+  transform-box:fill-box;
+  transform-origin:center;
+  animation:newLeafLand 1.15s 1.45s cubic-bezier(.2,.85,.25,1) forwards;
+}
+
+@keyframes newLeafLand{
+  0%{
+    opacity:0;
+    transform:scale(.25);
+    filter:drop-shadow(0 0 0 rgba(255,255,255,0));
+  }
+  50%{
+    opacity:1;
+    transform:scale(1.38);
+    filter:
+      drop-shadow(0 0 8px rgba(255,255,255,.95))
+      drop-shadow(0 0 15px rgba(230,189,98,.85));
+  }
+  74%{
+    transform:scale(.92);
+  }
+  100%{
+    opacity:1;
+    transform:scale(1);
+    filter:drop-shadow(0 2px 2px rgba(60,40,30,.12));
+  }
+}
+
+@media(max-width:520px){
+  .flying-leaf{
+    width:40px;
+    height:40px;
+    left:14px;
+    top:12px;
+  }
+}
+
