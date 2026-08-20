@@ -477,6 +477,32 @@
             class="tab-panel"
           >
 
+            <div class="learning-day-actions">
+              <button
+                id="startNextDayBtn"
+                type="button"
+                class="soft"
+              >
+                🌙 Lerntag abschließen
+              </button>
+
+              <button
+                id="reopenLearningDayBtn"
+                type="button"
+                class="soft hidden"
+              >
+                ↩ Lerntag wieder öffnen
+              </button>
+
+              <button
+                id="beginNewLearningDayBtn"
+                type="button"
+                class="soft hidden"
+              >
+                🌅 Neuen Lerntag starten
+              </button>
+            </div>
+
             <div class="admin-grid">
 
               <div>
@@ -519,30 +545,6 @@
     class="primary"
   >
     Änderungen veröffentlichen
-  </button>
-
-  <button
-    id="startNextDayBtn"
-    type="button"
-    class="soft"
-  >
-    🌙 Lerntag abschließen
-  </button>
-
-  <button
-    id="reopenLearningDayBtn"
-    type="button"
-    class="soft hidden"
-  >
-    ↩ Lerntag wieder öffnen
-  </button>
-
-  <button
-    id="beginNewLearningDayBtn"
-    type="button"
-    class="primary hidden"
-  >
-    🌅 Neuen Lerntag starten
   </button>
 
 </div>
@@ -630,6 +632,21 @@
     </dialog>
 
   </div>
+
+
+
+  <!-- SICHTBARES BAUMWACHSTUM -->
+  <dialog id="treeGrowthDialog" aria-labelledby="treeGrowthTitle">
+    <div class="tree-growth-card">
+      <div class="tree-growth-copy">
+        <div class="tree-growth-kicker">🍃 Dein Lernbaum wächst</div>
+        <h2 id="treeGrowthTitle">Dieses Blatt ist gerade dazugekommen.</h2>
+        <p>Schau – dein Baum ist ein Stück weitergewachsen.</p>
+      </div>
+
+      <div id="treeGrowthPreview" class="tree-growth-preview" aria-hidden="true"></div>
+    </div>
+  </dialog>
 
 
   <!-- TAGESABSCHLUSS -->
