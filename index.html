@@ -147,144 +147,106 @@
               aria-label="Lernbaum"
             >
               <defs>
-                <linearGradient id="trunkGrad" x1="0" y1="0" x2="1" y2=".15">
-                  <stop offset="0%" stop-color="#795944"/>
-                  <stop offset="28%" stop-color="#9a7256"/>
-                  <stop offset="58%" stop-color="#b08768"/>
-                  <stop offset="100%" stop-color="#74533f"/>
+                <linearGradient id="modernTrunkGrad" x1="0" y1="0" x2="1" y2=".15">
+                  <stop offset="0%" stop-color="#765a48"/>
+                  <stop offset="45%" stop-color="#9a7358"/>
+                  <stop offset="100%" stop-color="#6f5140"/>
                 </linearGradient>
 
-                <linearGradient id="meadowGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#dce6c2" stop-opacity=".30"/>
-                  <stop offset="38%" stop-color="#c8d8a8" stop-opacity=".58"/>
-                  <stop offset="100%" stop-color="#aebf82" stop-opacity=".78"/>
+                <linearGradient id="modernMeadowGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#dfe8ce" stop-opacity=".12"/>
+                  <stop offset="42%" stop-color="#cad9ad" stop-opacity=".42"/>
+                  <stop offset="100%" stop-color="#aabd82" stop-opacity=".62"/>
                 </linearGradient>
 
-                <linearGradient id="meadowGlow" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stop-color="#eef2dd" stop-opacity=".15"/>
-                  <stop offset="48%" stop-color="#d7e2ba" stop-opacity=".48"/>
-                  <stop offset="100%" stop-color="#eef2dd" stop-opacity=".12"/>
+                <linearGradient id="modernMeadowGlow" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="#f3f6e8" stop-opacity="0"/>
+                  <stop offset="50%" stop-color="#dfe9c7" stop-opacity=".45"/>
+                  <stop offset="100%" stop-color="#f3f6e8" stop-opacity="0"/>
                 </linearGradient>
               </defs>
 
-              <!-- weich verlaufende Wiese -->
-              <path class="tree-meadow"
-                d="M0 378
-                   C80 365 145 370 211 379
-                   C278 388 347 389 417 380
-                   C469 373 516 366 560 369
-                   L560 500 L0 500 Z"/>
+              <!-- sehr weiche Wiese -->
+              <path
+                class="modern-meadow"
+                d="M0 397
+                   C95 381 179 385 250 394
+                   C328 404 415 400 560 382
+                   L560 500 L0 500 Z"
+              />
 
-              <path class="tree-meadow-soft"
-                d="M0 411
-                   C88 397 164 400 235 408
-                   C315 417 393 416 462 405
-                   C499 399 531 397 560 400
-                   L560 500 L0 500 Z"/>
+              <path
+                class="modern-meadow-glow"
+                d="M55 411
+                   C154 399 243 402 322 409
+                   C393 415 465 409 530 401"
+              />
 
-              <!-- Wurzeln hinten -->
+              <!-- dynamische Wurzeln hinter dem Baum -->
               <g id="rootLayer"></g>
 
-              <!-- unregelmäßige, organische Äste hinter dem Stamm -->
-              <path class="branch branch-heavy"
-                d="M279 315
-                   C247 303 224 284 202 261
-                   C183 241 164 229 139 222
-                   C116 215 95 202 77 183"/>
+              <!-- moderner, zusammenhängender Grundbaum:
+                   wenige große Formen statt vieler aufgesetzter Äste -->
 
-              <path class="branch branch-main"
-                d="M272 268
-                   C244 249 225 225 213 198
-                   C203 176 192 160 172 148
-                   C151 135 137 118 129 98"/>
+              <!-- linke Kronenform -->
+              <path
+                class="modern-tree-shape"
+                d="M281 382
+                   C276 346 272 314 271 286
+                   C252 278 234 265 217 249
+                   C198 232 182 214 166 195
+                   C147 173 127 156 104 145
+                   C126 148 147 158 166 171
+                   C183 182 199 196 215 212
+                   C226 223 239 234 252 242
+                   C245 221 238 200 229 181
+                   C220 161 209 144 194 130
+                   C213 141 229 156 242 175
+                   C254 191 264 210 273 229
+                   C270 200 271 171 275 142
+                   C278 118 283 96 289 74
+                   C294 98 298 121 299 145
+                   C301 174 301 201 298 226
+                   C309 205 321 186 336 169
+                   C351 152 368 139 388 130
+                   C372 143 359 160 349 178
+                   C339 196 331 216 325 237
+                   C340 227 356 216 370 203
+                   C389 186 407 173 427 164
+                   C447 155 467 151 487 151
+                   C463 157 442 169 423 184
+                   C403 199 387 218 369 237
+                   C351 256 331 270 309 280
+                   C309 311 313 345 320 382
+                   C306 377 294 375 281 382 Z"
+                fill="url(#modernTrunkGrad)"
+              />
 
-              <path class="branch branch-soft"
-                d="M180 153
-                   C157 157 136 154 117 144
-                   C100 135 84 131 67 133"/>
+              <!-- wenige zusätzliche organische Äste, aber aus derselben Formensprache -->
+              <path
+                class="modern-branch"
+                d="M268 281 C236 269 210 249 189 223 C169 198 147 182 119 175"
+              />
+              <path
+                class="modern-branch"
+                d="M301 277 C334 264 360 245 382 221 C404 197 428 182 457 177"
+              />
+              <path
+                class="modern-branch modern-branch-light"
+                d="M276 231 C255 210 241 186 233 160"
+              />
+              <path
+                class="modern-branch modern-branch-light"
+                d="M298 229 C318 208 333 184 342 157"
+              />
 
-              <path class="branch branch-soft"
-                d="M139 222
-                   C117 231 96 231 76 224
-                   C60 219 46 219 32 225"/>
-
-              <path class="branch branch-heavy"
-                d="M293 305
-                   C323 288 344 267 361 239
-                   C378 211 397 193 422 181
-                   C447 168 468 151 486 128"/>
-
-              <path class="branch branch-main"
-                d="M298 254
-                   C322 233 336 210 343 181
-                   C349 155 361 134 380 117
-                   C399 100 410 81 414 60"/>
-
-              <path class="branch branch-soft"
-                d="M361 239
-                   C387 243 410 238 430 225
-                   C447 214 466 209 488 211"/>
-
-              <path class="branch branch-soft"
-                d="M422 181
-                   C445 183 465 178 482 166
-                   C497 155 512 150 529 151"/>
-
-              <!-- asymmetrische obere Gabeln -->
-              <path class="branch branch-main"
-                d="M282 218
-                   C261 194 250 169 247 142
-                   C245 118 237 98 222 82
-                   C210 69 205 55 207 40"/>
-
-              <path class="branch branch-main"
-                d="M291 217
-                   C306 193 313 169 311 144
-                   C309 119 315 99 328 82
-                   C340 67 345 52 343 36"/>
-
-              <!-- kleine, aber nicht haarfeine Zweige -->
-              <path class="twig twig-natural" d="M129 98 C116 84 108 70 108 56"/>
-              <path class="twig twig-natural" d="M129 98 C136 80 139 64 136 49"/>
-              <path class="twig twig-natural" d="M172 148 C163 128 161 111 165 95"/>
-              <path class="twig twig-natural" d="M172 148 C187 134 197 120 202 104"/>
-
-              <path class="twig twig-natural" d="M380 117 C391 99 397 82 396 66"/>
-              <path class="twig twig-natural" d="M380 117 C366 103 357 89 354 74"/>
-              <path class="twig twig-natural" d="M414 60 C425 49 435 43 447 41"/>
-              <path class="twig twig-natural" d="M486 128 C500 114 512 107 525 105"/>
-
-              <path class="twig twig-natural" d="M77 183 C62 169 50 163 36 162"/>
-              <path class="twig twig-natural" d="M77 183 C76 165 79 151 87 139"/>
-              <path class="twig twig-natural" d="M488 211 C506 202 520 199 535 202"/>
-
-              <!-- charaktervoller Stamm vor den Astansätzen -->
-              <path class="tree-trunk"
-                d="M248 405
-                   C256 381 260 354 261 326
-                   C262 298 257 273 263 250
-                   C268 230 276 213 278 193
-                   C280 173 276 154 279 136
-                   C282 116 288 96 291 75
-                   C298 96 305 116 307 136
-                   C309 157 303 176 305 195
-                   C307 216 317 232 320 253
-                   C324 278 318 301 319 327
-                   C320 355 326 381 335 404
-                   C320 398 309 396 299 397
-                   C289 398 279 397 270 396
-                   C261 395 254 399 248 405 Z"
-                fill="url(#trunkGrad)"/>
-
-              <!-- unregelmäßige Rindenlinien -->
-              <path class="bark-line"
-                d="M274 378 C269 343 272 309 270 278 C269 250 278 226 280 203"/>
-              <path class="bark-line bark-line-soft"
-                d="M294 382 C299 350 295 318 299 286 C303 256 296 235 300 213"/>
-              <path class="bark-line bark-line-short"
-                d="M283 347 C288 330 287 314 285 298"/>
-              <path class="bark-line bark-line-short"
-                d="M309 332 C304 314 307 297 311 282"/>
+              <!-- dezente Lichtkante -->
+              <path
+                class="modern-trunk-highlight"
+                d="M286 365
+                   C285 329 285 298 285 268
+                   C285 231 287 194 290 156"
+              />
 
               <!-- Lernblätter ganz vorne -->
               <g id="leafLayer"></g>
