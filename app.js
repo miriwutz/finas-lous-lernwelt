@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.3q Wurzelgeflecht aus 3 PNGs";
+const APP_VERSION = "2.3r Wurzeln tiefer & zentriert";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -841,21 +841,25 @@ async function toggleTask(taskId) {
 
 
 const ROOT_GROWTH_LAYOUT = [
-  { file:"wurzel-mitte.png",  x:0,   y:0,  rot:0,   scale:.86, opacity:.86 },
-  { file:"wurzel-links.png",  x:-18, y:2,  rot:-5,  scale:.78, opacity:.82 },
-  { file:"wurzel-rechts.png", x:18,  y:2,  rot:5,   scale:.78, opacity:.82 },
-  { file:"wurzel-mitte.png",  x:-8,  y:10, rot:-7,  scale:.72, opacity:.72 },
-  { file:"wurzel-links.png",  x:-38, y:8,  rot:-11, scale:.70, opacity:.72 },
-  { file:"wurzel-rechts.png", x:38,  y:8,  rot:11,  scale:.70, opacity:.72 },
-  { file:"wurzel-mitte.png",  x:10,  y:15, rot:8,   scale:.66, opacity:.66 },
-  { file:"wurzel-links.png",  x:-58, y:15, rot:-16, scale:.64, opacity:.64 },
-  { file:"wurzel-rechts.png", x:58,  y:15, rot:16,  scale:.64, opacity:.64 },
-  { file:"wurzel-mitte.png",  x:-18, y:22, rot:-12, scale:.60, opacity:.58 },
-  { file:"wurzel-links.png",  x:-76, y:23, rot:-20, scale:.58, opacity:.58 },
-  { file:"wurzel-rechts.png", x:76,  y:23, rot:20,  scale:.58, opacity:.58 },
-  { file:"wurzel-mitte.png",  x:20,  y:28, rot:14,  scale:.55, opacity:.54 },
-  { file:"wurzel-links.png",  x:-92, y:30, rot:-24, scale:.53, opacity:.52 },
-  { file:"wurzel-rechts.png", x:92,  y:30, rot:24,  scale:.53, opacity:.52 }
+  { file:"wurzel-mitte.png",  x:8,    y:18, rot:0,   scale:.78, opacity:.84 },
+  { file:"wurzel-links.png",  x:-24,  y:20, rot:-4,  scale:.72, opacity:.80 },
+  { file:"wurzel-rechts.png", x:24,   y:20, rot:4,   scale:.72, opacity:.80 },
+
+  { file:"wurzel-mitte.png",  x:-4,   y:28, rot:-6,  scale:.66, opacity:.68 },
+  { file:"wurzel-links.png",  x:-46,  y:28, rot:-9,  scale:.64, opacity:.68 },
+  { file:"wurzel-rechts.png", x:46,   y:28, rot:9,   scale:.64, opacity:.68 },
+
+  { file:"wurzel-mitte.png",  x:18,   y:38, rot:7,   scale:.60, opacity:.60 },
+  { file:"wurzel-links.png",  x:-68,  y:38, rot:-14, scale:.58, opacity:.60 },
+  { file:"wurzel-rechts.png", x:68,   y:38, rot:14,  scale:.58, opacity:.60 },
+
+  { file:"wurzel-mitte.png",  x:-16,  y:48, rot:-10, scale:.54, opacity:.54 },
+  { file:"wurzel-links.png",  x:-88,  y:48, rot:-18, scale:.52, opacity:.54 },
+  { file:"wurzel-rechts.png", x:88,   y:48, rot:18,  scale:.52, opacity:.54 },
+
+  { file:"wurzel-mitte.png",  x:28,   y:58, rot:12,  scale:.48, opacity:.48 },
+  { file:"wurzel-links.png",  x:-106, y:58, rot:-22, scale:.46, opacity:.48 },
+  { file:"wurzel-rechts.png", x:106,  y:58, rot:22,  scale:.46, opacity:.48 }
 ];
 
 function renderRootPngs() {
