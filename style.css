@@ -1407,3 +1407,102 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   overflow:visible;
 }
 
+
+/* =========================
+   ORGANISCHER CHARAKTERBAUM 2.3j
+   ========================= */
+
+.tree-meadow{
+  fill:url(#meadowGrad) !important;
+  opacity:1 !important;
+}
+
+.tree-meadow-soft{
+  fill:url(#meadowGlow) !important;
+  opacity:1 !important;
+}
+
+.branch,
+.twig,
+.root-main{
+  stroke:#846148 !important;
+  fill:none;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.branch-heavy{
+  stroke-width:9.2;
+}
+
+.branch-main{
+  stroke-width:7.1;
+}
+
+.branch-soft{
+  stroke-width:4.5;
+}
+
+.twig-natural{
+  stroke-width:3.15 !important;
+  opacity:.94;
+}
+
+.root-main{
+  stroke-width:inherit;
+  opacity:.90;
+}
+
+.root-light{
+  stroke:#b38a68 !important;
+  opacity:.32;
+}
+
+.root-shadow{
+  stroke:rgba(74,52,39,.13) !important;
+  opacity:.54;
+}
+
+.bark-line{
+  fill:none;
+  stroke:#6f503e;
+  stroke-width:2.15;
+  stroke-linecap:round;
+  opacity:.42;
+}
+
+.bark-line-soft{
+  stroke:#c09a78;
+  stroke-width:1.65;
+  opacity:.42;
+}
+
+.bark-line-short{
+  stroke-width:1.25;
+  opacity:.30;
+}
+
+/* etwas schmalere, feinere Blätter */
+.leaf-body{
+  stroke-width:.68;
+}
+
+.leaf-soft-light{
+  opacity:.30;
+  stroke-width:.92;
+}
+
+.leaf-vein{
+  stroke-width:.72;
+  opacity:.58;
+}
+
+.leaf-vein-small{
+  stroke-width:.52;
+  opacity:.50;
+}
+
+.dynamic-leaf{
+  filter:drop-shadow(0 .65px .85px rgba(64,45,34,.05));
+}
+
