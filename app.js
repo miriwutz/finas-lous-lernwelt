@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.3s Wurzeln sauber am Stamm";
+const APP_VERSION = "2.3t Wurzeln exakt ausgerichtet";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -841,44 +841,61 @@ async function toggleTask(taskId) {
 
 
 const ROOT_GROWTH_LAYOUT = [
-  { file:"wurzel-mitte.png",  x:6,   y:0,  rot:0,   scale:.72, opacity:.82 },
-  { file:"wurzel-links.png",  x:-18, y:2,  rot:-4,  scale:.68, opacity:.78 },
-  { file:"wurzel-rechts.png", x:18,  y:2,  rot:4,   scale:.68, opacity:.78 },
+  /* 1–3: Grundgerüst – exakt innerhalb der markierten Stammzone */
+  { type:"middle", file:"wurzel-mitte.png",  anchor:50.0, y:0, rot:0,   scale:.94, opacity:.86 },
+  { type:"left",   file:"wurzel-links.png",  anchor:44.0, y:2, rot:-3,  scale:.90, opacity:.80 },
+  { type:"right",  file:"wurzel-rechts.png", anchor:55.0, y:2, rot:3,   scale:.90, opacity:.80 },
 
-  { file:"wurzel-mitte.png",  x:-5,  y:7,  rot:-5,  scale:.61, opacity:.66 },
-  { file:"wurzel-links.png",  x:-36, y:8,  rot:-8,  scale:.59, opacity:.65 },
-  { file:"wurzel-rechts.png", x:36,  y:8,  rot:8,   scale:.59, opacity:.65 },
+  /* 4–6: leicht überlappend – NICHT weiter außen als die roten Linien */
+  { type:"middle", file:"wurzel-mitte.png",  anchor:49.2, y:5, rot:-5,  scale:.82, opacity:.70 },
+  { type:"left",   file:"wurzel-links.png",  anchor:45.0, y:5, rot:-7,  scale:.80, opacity:.68 },
+  { type:"right",  file:"wurzel-rechts.png", anchor:54.2, y:5, rot:7,   scale:.80, opacity:.68 },
 
-  { file:"wurzel-mitte.png",  x:14,  y:13, rot:6,   scale:.55, opacity:.58 },
-  { file:"wurzel-links.png",  x:-52, y:14, rot:-12, scale:.53, opacity:.57 },
-  { file:"wurzel-rechts.png", x:52,  y:14, rot:12,  scale:.53, opacity:.57 },
+  /* 7–9 */
+  { type:"middle", file:"wurzel-mitte.png",  anchor:50.8, y:8, rot:6,   scale:.75, opacity:.62 },
+  { type:"left",   file:"wurzel-links.png",  anchor:46.0, y:8, rot:-10, scale:.73, opacity:.60 },
+  { type:"right",  file:"wurzel-rechts.png", anchor:53.4, y:8, rot:10,  scale:.73, opacity:.60 },
 
-  { file:"wurzel-mitte.png",  x:-14, y:19, rot:-8,  scale:.49, opacity:.51 },
-  { file:"wurzel-links.png",  x:-67, y:20, rot:-15, scale:.47, opacity:.50 },
-  { file:"wurzel-rechts.png", x:67,  y:20, rot:15,  scale:.47, opacity:.50 },
+  /* 10–12 */
+  { type:"middle", file:"wurzel-mitte.png",  anchor:49.6, y:11, rot:-8, scale:.69, opacity:.55 },
+  { type:"left",   file:"wurzel-links.png",  anchor:44.6, y:11, rot:-13,scale:.67, opacity:.53 },
+  { type:"right",  file:"wurzel-rechts.png", anchor:54.7, y:11, rot:13, scale:.67, opacity:.53 },
 
-  { file:"wurzel-mitte.png",  x:21,  y:25, rot:10,  scale:.44, opacity:.45 },
-  { file:"wurzel-links.png",  x:-80, y:26, rot:-18, scale:.42, opacity:.44 },
-  { file:"wurzel-rechts.png", x:80,  y:26, rot:18,  scale:.42, opacity:.44 }
+  /* 13–15: feine Verdichtung */
+  { type:"middle", file:"wurzel-mitte.png",  anchor:50.4, y:14, rot:9,  scale:.63, opacity:.48 },
+  { type:"left",   file:"wurzel-links.png",  anchor:45.5, y:14, rot:-16,scale:.61, opacity:.46 },
+  { type:"right",  file:"wurzel-rechts.png", anchor:53.8, y:14, rot:16, scale:.61, opacity:.46 }
 ];
 
 function renderRootPngs() {
   const layer = $("#rootPngLayer");
   if (!layer) return;
-  const rootCount = Math.min((state.roots || []).length, ROOT_GROWTH_LAYOUT.length);
+
+  const rootCount = Math.min(
+    (state.roots || []).length,
+    ROOT_GROWTH_LAYOUT.length
+  );
+
   layer.innerHTML = "";
+
   ROOT_GROWTH_LAYOUT.slice(0, rootCount).forEach((cfg, index) => {
     const img = document.createElement("img");
-    img.className = "root-png root-growth-piece";
+
+    img.className = `root-png root-growth-piece root-${cfg.type}`;
     img.src = cfg.file;
     img.alt = "";
     img.draggable = false;
-    img.style.setProperty("--root-x", `${cfg.x}px`);
+
+    img.style.left = `${cfg.anchor}%`;
     img.style.setProperty("--root-y", `${cfg.y}px`);
     img.style.setProperty("--root-rot", `${cfg.rot}deg`);
     img.style.setProperty("--root-scale", cfg.scale);
     img.style.setProperty("--root-opacity", cfg.opacity);
-    img.style.setProperty("--root-delay", `${Math.min(index * 35, 180)}ms`);
+    img.style.setProperty(
+      "--root-delay",
+      `${Math.min(index * 30, 160)}ms`
+    );
+
     layer.appendChild(img);
   });
 }
