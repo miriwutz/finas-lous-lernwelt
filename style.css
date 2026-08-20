@@ -2755,3 +2755,114 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
     box-shadow:0 0 0 19px rgba(224,124,118,0);
   }
 }
+
+
+/* =========================================================
+   2.3z – Herz weiter rechts + größer/glitzernd am Start
+   + neue Wurzel dunkler + ALLE Wurzeln sicher hinter Stamm
+   ========================================================= */
+
+/* Wurzelebene zwingend hinter dem PNG-Baum halten. */
+.tree-root-png-layer{
+  z-index:1 !important;
+  isolation:isolate !important;
+}
+
+.tree-root-png-layer .root-png,
+.tree-root-png-layer .root-growth-piece,
+.root-png.root-middle,
+.root-png.root-left,
+.root-png.root-right{
+  z-index:1 !important;
+}
+
+.tree-base-image{
+  position:absolute !important;
+  z-index:5 !important;
+}
+
+.tree-leaf-overlay{
+  z-index:6 !important;
+}
+
+.tree-meadow-layer{
+  z-index:0 !important;
+}
+
+/* Auch im Herzmoment-Fenster dürfen Wurzeln niemals vor dem Stamm stehen. */
+.root-growth-canvas .tree-root-png-layer{
+  z-index:1 !important;
+}
+
+.root-growth-canvas .tree-base-image{
+  z-index:5 !important;
+}
+
+.root-growth-canvas .tree-leaf-overlay{
+  z-index:6 !important;
+}
+
+/* Neue Wurzel: deutlich dunkler und kontrastreicher statt blass/hell. */
+.root-growth-canvas .new-growth-root.root-growing-now{
+  z-index:1 !important;
+  filter:
+    brightness(.72)
+    contrast(1.28)
+    saturate(1.18)
+    drop-shadow(0 0 5px rgba(116,70,39,.34)) !important;
+}
+
+@keyframes rootGrowVeryVisibleZ{
+  0%{
+    opacity:0;
+    clip-path:inset(0 0 100% 0);
+    filter:
+      brightness(.66)
+      contrast(1.35)
+      saturate(1.22)
+      drop-shadow(0 0 8px rgba(116,70,39,.38));
+  }
+  22%{
+    opacity:1;
+    clip-path:inset(0 0 74% 0);
+  }
+  50%{
+    opacity:1;
+    clip-path:inset(0 0 40% 0);
+    filter:
+      brightness(.70)
+      contrast(1.32)
+      saturate(1.20)
+      drop-shadow(0 0 6px rgba(116,70,39,.32));
+  }
+  80%{
+    opacity:1;
+    clip-path:inset(0 0 8% 0);
+  }
+  100%{
+    opacity:var(--root-opacity);
+    clip-path:inset(0 0 0 0);
+    filter:
+      brightness(.82)
+      contrast(1.18)
+      saturate(1.08);
+  }
+}
+
+.root-growth-canvas .new-growth-root.root-growing-now{
+  animation:rootGrowVeryVisibleZ 2.15s cubic-bezier(.14,.78,.18,1) both !important;
+}
+
+/* Alte Wurzeln im Vorschaufenster sichtbar lassen, aber klar zurücknehmen. */
+.root-growth-canvas .root-growth-piece:not(.new-growth-root){
+  opacity:.30 !important;
+  filter:brightness(.82) saturate(.90) !important;
+}
+
+/* Das große Herz bekommt zusätzlich ein sanftes Funkeln über Textschatten. */
+.flying-heart{
+  text-shadow:
+    0 0 5px rgba(255,238,174,.95),
+    0 0 11px rgba(255,211,123,.70),
+    0 0 20px rgba(225,123,146,.38) !important;
+}
