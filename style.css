@@ -1776,3 +1776,94 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
     height:54vh;
   }
 }
+
+
+/* =========================================================
+   2.3m – organische Wurzeln + dezentere Lernblätter
+   ========================================================= */
+
+/* Die Wurzeln sind jetzt FLÄCHEN statt Striche:
+   am Stamm kräftig, nach außen schmal auslaufend. */
+#rootLayer .dynamic-root{
+  fill-rule:nonzero;
+  stroke:none !important;
+  filter:drop-shadow(0 1px 1px rgba(72,46,31,.055));
+}
+
+#rootLayer .root-organic-shadow{
+  fill:#654431;
+  opacity:.13;
+  transform:translateY(1.2px);
+}
+
+#rootLayer .root-organic-body{
+  fill:#8d6247;
+  opacity:.88;
+}
+
+#rootLayer .root-organic-light{
+  fill:#b98a67;
+  opacity:.16;
+  transform:translate(-.8px,-.45px) scale(.985);
+  transform-origin:292px 392px;
+}
+
+/* leichte Unterschiede verhindern einen "Fächer"-Eindruck */
+#rootLayer .root-shape-2,
+#rootLayer .root-shape-5,
+#rootLayer .root-shape-7{
+  opacity:.90;
+}
+
+#rootLayer .root-shape-3,
+#rootLayer .root-shape-8,
+#rootLayer .root-shape-10{
+  opacity:.82;
+}
+
+/* Lernblätter deutlich zurücknehmen:
+   Farbe bleibt erkennbar, aber der schöne PNG-Baum dominiert. */
+#leafLayer .dynamic-leaf{
+  opacity:.74;
+  filter:drop-shadow(0 .4px .55px rgba(64,45,34,.035));
+}
+
+#leafLayer .leaf-body{
+  stroke:rgba(104,84,72,.52);
+  stroke-width:.42;
+}
+
+#leafLayer .leaf-shadow{
+  opacity:.10;
+}
+
+#leafLayer .leaf-soft-light{
+  opacity:.16;
+  stroke-width:.60;
+}
+
+#leafLayer .leaf-vein{
+  opacity:.34;
+  stroke-width:.50;
+}
+
+#leafLayer .leaf-vein-small{
+  opacity:.27;
+  stroke-width:.38;
+}
+
+/* Auch in der Wachstumsansicht dieselbe ruhigere Blattwirkung. */
+.tree-growth-canvas .dynamic-leaf{
+  opacity:.74;
+}
+
+.tree-growth-canvas .new-growth-leaf{
+  opacity:0;
+  animation:newLeafArriveSoft 1.25s 1.72s cubic-bezier(.18,.82,.25,1) forwards;
+}
+
+@keyframes newLeafArriveSoft{
+  0%   { opacity:0; transform:scale(.72); }
+  58%  { opacity:.82; transform:scale(1.05); }
+  100% { opacity:.74; transform:scale(1); }
+}
