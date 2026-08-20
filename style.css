@@ -1342,3 +1342,68 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   font-style:italic;
 }
 
+
+/* =========================
+   WIESE & NATÜRLICHERE KRONE 2.3i
+   ========================= */
+
+.tree-meadow{
+  fill:#cdd9a9;
+  opacity:.72;
+}
+
+.tree-meadow-soft{
+  fill:#b8c98d;
+  opacity:.36;
+}
+
+.twig-natural{
+  stroke-width:3.25 !important;
+  opacity:.94;
+}
+
+/* Wurzeln organischer und etwas sichtbarer. */
+.root-main{
+  stroke:var(--tree-bark) !important;
+  opacity:.96;
+}
+
+.root-light{
+  stroke:var(--tree-bark-light) !important;
+  opacity:.38;
+}
+
+.root-shadow{
+  stroke:rgba(82,58,43,.12) !important;
+  opacity:.58;
+}
+
+/* Feinere, natürlichere Blätter. */
+.leaf-body{
+  stroke-width:.74;
+}
+
+.leaf-soft-light{
+  opacity:.34;
+  stroke-width:1.05;
+}
+
+.leaf-vein{
+  opacity:.62;
+  stroke-width:.82;
+}
+
+.leaf-vein-small{
+  stroke-width:.62;
+  opacity:.56;
+}
+
+.dynamic-leaf{
+  filter:drop-shadow(0 .8px 1px rgba(70,50,38,.055));
+}
+
+/* Etwas mehr Luft zwischen Krone und Wiese. */
+#treeSvg{
+  overflow:visible;
+}
+
