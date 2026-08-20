@@ -2361,3 +2361,86 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
     height:15.5% !important;
   }
 }
+
+
+/* =========================================================
+   2.3u – Wurzeln BREITER statt TIEFER
+   ========================================================= */
+
+.tree-root-png-layer{
+  position:absolute !important;
+  inset:0 !important;
+  z-index:2 !important;
+  overflow:hidden !important;
+  pointer-events:none !important;
+}
+
+.root-png.root-growth-piece{
+  top:84.2% !important;
+  height:12.8% !important;
+  width:auto !important;
+  max-width:none !important;
+  object-fit:contain !important;
+  object-position:50% 0% !important;
+
+  opacity:0;
+  pointer-events:none;
+  user-select:none;
+
+  transform:
+    translateX(var(--asset-shift))
+    translateY(var(--root-y))
+    rotate(var(--root-rot))
+    scale(var(--root-scale)) !important;
+
+  transform-origin:var(--asset-origin) 0% !important;
+
+  animation:
+    rootGrowSidewaysU .9s var(--root-delay)
+    cubic-bezier(.18,.82,.25,1) forwards !important;
+}
+
+.root-png.root-middle{
+  --asset-shift:-51.2%;
+  --asset-origin:51.2%;
+}
+
+.root-png.root-left{
+  --asset-shift:-85%;
+  --asset-origin:85%;
+}
+
+.root-png.root-right{
+  --asset-shift:-10.1%;
+  --asset-origin:10.1%;
+}
+
+@keyframes rootGrowSidewaysU{
+  0%{
+    opacity:0;
+    transform:
+      translateX(var(--asset-shift))
+      translateY(calc(var(--root-y) - 2px))
+      rotate(var(--root-rot))
+      scale(calc(var(--root-scale) * .86)) !important;
+  }
+  100%{
+    opacity:var(--root-opacity);
+    transform:
+      translateX(var(--asset-shift))
+      translateY(var(--root-y))
+      rotate(var(--root-rot))
+      scale(var(--root-scale)) !important;
+  }
+}
+
+.tree-base-image{ z-index:3 !important; }
+.tree-leaf-overlay{ z-index:4 !important; }
+.tree-meadow-layer{ z-index:1 !important; }
+
+@media(max-width:900px){
+  .root-png.root-growth-piece{
+    top:84.0% !important;
+    height:12.5% !important;
+  }
+}
