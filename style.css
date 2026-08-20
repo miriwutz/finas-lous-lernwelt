@@ -2178,3 +2178,33 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
 @media (max-width:900px){
   .root-png.root-growth-piece{width:45%;height:29%;top:77%;}
 }
+
+
+/* =========================================================
+   2.3r – Wurzeln tiefer unter dem Stamm + Mitte korrigiert
+   ========================================================= */
+
+.root-png.root-growth-piece{
+  top:82.5% !important;
+  width:38% !important;
+  height:27% !important;
+  object-position:50% 0%;
+  transform-origin:50% 0%;
+}
+
+.tree-root-png-layer{
+  bottom:-12% !important;
+  overflow:visible !important;
+}
+
+.tree-meadow-layer{
+  height:25% !important;
+}
+
+@media (max-width:900px){
+  .root-png.root-growth-piece{
+    top:82% !important;
+    width:40% !important;
+    height:27% !important;
+  }
+}
