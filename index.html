@@ -146,93 +146,95 @@
               role="img"
               aria-label="Lernbaum"
             >
-
               <defs>
-                <linearGradient
-                  id="trunkGrad"
-                  x1="0"
-                  y1="0"
-                  x2="1"
-                  y2="1"
-                >
-                  <stop
-                    offset="0%"
-                    stop-color="#a27b5f"
-                  />
+                <linearGradient id="trunkGrad" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="#8f6a53"/>
+                  <stop offset="48%" stop-color="#aa8062"/>
+                  <stop offset="100%" stop-color="#765642"/>
+                </linearGradient>
 
-                  <stop
-                    offset="60%"
-                    stop-color="#84634d"
-                  />
-
-                  <stop
-                    offset="100%"
-                    stop-color="#694c3b"
-                  />
+                <linearGradient id="trunkLight" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#c09a78" stop-opacity=".72"/>
+                  <stop offset="100%" stop-color="#9a7459" stop-opacity=".12"/>
                 </linearGradient>
               </defs>
 
-
-              <ellipse
-                cx="280"
-                cy="396"
-                rx="150"
-                ry="23"
-                fill="#eadfd2"
+              <!-- dezenter Boden -->
+              <path
+                class="tree-ground"
+                d="M170 420 C225 407 337 407 392 420"
               />
 
-
+              <!-- schlanker, organischer Stamm -->
               <path
-                d="M235 389 C244 345 247 304 251 263 C255 220 249 181 254 145 C258 112 270 82 286 52 C294 91 297 127 292 163 C287 201 295 237 304 272 C313 311 317 348 326 389 C306 382 294 376 280 376 C264 376 253 382 235 389Z"
+                class="tree-trunk"
+                d="M257 408
+                   C263 365 267 326 267 287
+                   C266 246 262 210 266 177
+                   C270 144 279 112 287 76
+                   C296 113 302 145 299 179
+                   C296 214 298 248 305 286
+                   C312 326 316 366 322 408
+                   C304 399 294 396 288 396
+                   C279 396 269 399 257 408 Z"
                 fill="url(#trunkGrad)"
               />
 
-
+              <!-- ruhige Lichtkante am Stamm -->
               <path
-                d="M257 363 C252 319 261 281 258 240 C256 199 265 156 278 105"
+                class="tree-trunk-light"
+                d="M277 389
+                   C278 343 276 302 277 261
+                   C278 217 280 177 286 135"
                 fill="none"
-                stroke="#b48e70"
-                stroke-width="4"
-                opacity=".55"
-                stroke-linecap="round"
+                stroke="url(#trunkLight)"
               />
 
+              <!-- linke Hauptäste -->
+              <path class="branch branch-main"
+                d="M274 302 C235 289 203 265 174 235 C151 211 130 190 105 177"/>
+              <path class="branch branch-soft"
+                d="M211 270 C189 243 175 216 169 184 C165 163 158 143 145 126"/>
+              <path class="branch branch-soft"
+                d="M181 243 C155 244 131 237 108 224 C92 215 76 210 59 211"/>
 
-              <path
-                class="branch"
-                d="M255 289 C211 276 168 251 124 205"
-              />
+              <!-- rechte Hauptäste -->
+              <path class="branch branch-main"
+                d="M302 289 C338 274 369 250 395 218 C414 195 432 171 455 151"/>
+              <path class="branch branch-soft"
+                d="M353 261 C376 231 388 201 391 171 C393 150 402 130 418 113"/>
+              <path class="branch branch-soft"
+                d="M390 224 C414 225 438 217 458 202 C473 191 489 184 505 184"/>
 
-              <path
-                class="branch"
-                d="M305 274 C351 257 393 226 427 180"
-              />
+              <!-- obere Krone -->
+              <path class="branch branch-main"
+                d="M280 222 C252 204 231 181 219 152 C211 132 202 113 186 98"/>
+              <path class="branch branch-main"
+                d="M297 214 C326 193 345 169 353 140 C359 118 367 99 381 83"/>
+              <path class="branch branch-soft"
+                d="M286 159 C267 137 258 114 259 91 C260 73 257 58 248 44"/>
+              <path class="branch branch-soft"
+                d="M293 151 C311 129 320 106 320 82 C320 65 324 49 334 35"/>
 
-              <path
-                class="branch"
-                d="M258 235 C216 214 184 178 168 133"
-              />
+              <!-- feine Zweige -->
+              <path class="twig" d="M145 126 C132 112 120 102 107 96"/>
+              <path class="twig" d="M145 126 C143 108 144 94 151 81"/>
+              <path class="twig" d="M105 177 C89 165 75 158 61 156"/>
+              <path class="twig" d="M105 177 C97 159 94 144 96 130"/>
 
-              <path
-                class="branch"
-                d="M299 219 C340 198 371 162 383 117"
-              />
+              <path class="twig" d="M418 113 C431 99 442 89 455 82"/>
+              <path class="twig" d="M418 113 C421 95 420 80 414 67"/>
+              <path class="twig" d="M455 151 C471 138 485 130 500 127"/>
+              <path class="twig" d="M455 151 C463 133 466 118 464 104"/>
 
-              <path
-                class="branch"
-                d="M267 176 C239 147 226 108 234 69"
-              />
+              <path class="twig" d="M186 98 C171 87 160 78 151 66"/>
+              <path class="twig" d="M186 98 C181 79 181 64 185 51"/>
+              <path class="twig" d="M381 83 C394 71 406 63 419 57"/>
+              <path class="twig" d="M381 83 C386 65 387 50 384 37"/>
 
-              <path
-                class="branch"
-                d="M292 163 C326 133 342 94 334 55"
-              />
-
-
+              <!-- hier wachsen Lernblätter und Herz-Wurzeln dynamisch -->
               <g id="leafLayer"></g>
-              <g id="flowerLayer"></g>
               <g id="rootLayer"></g>
-
             </svg>
           </div>
 
