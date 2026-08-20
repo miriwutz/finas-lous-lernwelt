@@ -2251,3 +2251,113 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
     height:25% !important;
   }
 }
+
+
+/* =========================================================
+   2.3t – EXAKTE AUSRICHTUNG NACH DEN ROTEN HILFSLINIEN
+
+   Gemessen im Screenshot:
+   links  ≈ x 360
+   mitte  ≈ x 391
+   rechts ≈ x 415
+
+   Daraus ergibt sich für die Baumfläche:
+   links 44 %, mitte 50 %, rechts 55 %.
+   ========================================================= */
+
+.tree-root-png-layer{
+  position:absolute !important;
+  inset:0 !important;
+  z-index:2 !important;
+  overflow:hidden !important;
+  pointer-events:none !important;
+}
+
+/* Der obere Wurzelansatz kommt jetzt auf Höhe der drei roten Linien.
+   Die Grafiken sind bewusst klein genug, um unter dem Baum Platz zu haben. */
+.root-png.root-growth-piece{
+  position:absolute !important;
+  top:84% !important;
+  height:16% !important;
+  width:auto !important;
+  max-width:none !important;
+  object-fit:contain !important;
+  object-position:50% 0 !important;
+
+  opacity:0;
+  pointer-events:none;
+  user-select:none;
+
+  transform:
+    translateX(var(--asset-shift))
+    translateY(var(--root-y))
+    rotate(var(--root-rot))
+    scale(var(--root-scale)) !important;
+
+  transform-origin:var(--asset-origin) 0 !important;
+
+  animation:
+    rootGrowExact .9s var(--root-delay)
+    cubic-bezier(.18,.82,.25,1) forwards !important;
+}
+
+/* Aus den tatsächlichen transparenten PNG-Dateien berechnet:
+   MITTE: sichtbarer Ansatz bei ca. 51.2 % der PNG-Breite
+   LINKS: sichtbarer Ansatz bei ca. 85.0 %
+   RECHTS: sichtbarer Ansatz bei ca. 10.1 %
+   Dadurch liegt nicht der Bildrahmen, sondern der echte Wurzelansatz
+   auf der gewünschten roten Linie. */
+.root-png.root-middle{
+  --asset-shift:-51.2%;
+  --asset-origin:51.2%;
+}
+
+.root-png.root-left{
+  --asset-shift:-85%;
+  --asset-origin:85%;
+}
+
+.root-png.root-right{
+  --asset-shift:-10.1%;
+  --asset-origin:10.1%;
+}
+
+@keyframes rootGrowExact{
+  0%{
+    opacity:0;
+    transform:
+      translateX(var(--asset-shift))
+      translateY(calc(var(--root-y) - 3px))
+      rotate(var(--root-rot))
+      scale(calc(var(--root-scale) * .84)) !important;
+  }
+  100%{
+    opacity:var(--root-opacity);
+    transform:
+      translateX(var(--asset-shift))
+      translateY(var(--root-y))
+      rotate(var(--root-rot))
+      scale(var(--root-scale)) !important;
+  }
+}
+
+/* Baum vor den Ansätzen, damit der Übergang weich bleibt. */
+.tree-base-image{
+  z-index:3 !important;
+}
+
+.tree-leaf-overlay{
+  z-index:4 !important;
+}
+
+.tree-meadow-layer{
+  z-index:1 !important;
+}
+
+/* Auf kleineren Geräten proportional nur wenig kleiner. */
+@media(max-width:900px){
+  .root-png.root-growth-piece{
+    top:84% !important;
+    height:15.5% !important;
+  }
+}
