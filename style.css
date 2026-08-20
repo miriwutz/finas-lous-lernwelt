@@ -1165,3 +1165,79 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   }
 }
 
+
+/* =========================
+   HOMOGENE ÜBERGÄNGE 2.3g
+   ========================= */
+
+:root{
+  --tree-bark:#936c50;
+  --tree-bark-light:#b78d6c;
+  --tree-bark-dark:#765642;
+}
+
+/* Äste und Wurzeln exakt dieselbe Grundfarbe.
+   Keine getrennten Braunwerte mehr. */
+.branch,
+.twig,
+.root-main{
+  stroke:var(--tree-bark) !important;
+}
+
+/* An den Ansatzstellen etwas kräftiger und rund:
+   dadurch verschwinden die sichtbaren "angesetzten" Übergänge. */
+.branch{
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.branch-main{
+  stroke-width:8.4;
+}
+
+.branch-soft{
+  stroke-width:5.5;
+}
+
+.twig{
+  stroke-width:2.7;
+}
+
+/* Wurzeln laufen optisch aus dem Stamm heraus. */
+.root-main{
+  stroke:var(--tree-bark) !important;
+}
+
+.root-light{
+  stroke:var(--tree-bark-light) !important;
+  opacity:.30;
+}
+
+.root-shadow{
+  stroke:rgba(82,58,43,.06) !important;
+}
+
+/* Die ersten Zentimeter der dynamischen Wurzeln liegen über dem Stammfuß.
+   Dadurch ist keine sichtbare Ansatzkante mehr vorhanden. */
+#rootLayer{
+  pointer-events:none;
+}
+
+#rootLayer .dynamic-root{
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+/* Die Stamm-Lichtkante wird unten deutlich schwächer,
+   damit sie nicht wie eine Trennlinie zu den Wurzeln wirkt. */
+.tree-trunk-light{
+  opacity:.58;
+}
+
+/* Im großen Wachstumsfenster dieselben Übergänge. */
+.tree-growth-svg .branch,
+.tree-growth-svg .twig,
+.tree-growth-svg .root-main{
+  stroke:var(--tree-bark) !important;
+}
+
