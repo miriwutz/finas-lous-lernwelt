@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.3o Tiefe natürliche Wurzeln";
+const APP_VERSION = "2.3p PNG-Wurzeln";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -86,22 +86,6 @@ const leafPositions = [
   [402,257,214,-1],[454,238,-38,1]
 ];
 
-const rootPaths = [
-  "M287 420 C273 425 258 435 244 447 C228 461 210 474 188 482 C204 479 220 470 235 459 C251 447 268 436 291 427 Z",
-  "M297 420 C311 426 327 435 342 447 C359 461 378 473 401 481 C384 478 368 470 352 459 C335 447 318 436 293 427 Z",
-
-  "M289 421 C279 434 270 450 263 468 C257 483 247 494 234 501 C245 490 251 478 256 464 C263 446 273 431 290 418 Z",
-  "M295 421 C305 434 315 450 323 467 C330 482 340 493 354 500 C342 489 335 477 329 463 C321 445 310 430 294 418 Z",
-
-  "M290 421 C284 440 281 458 280 476 C279 487 275 496 268 503 C275 492 278 481 278 469 C278 450 282 433 291 418 Z",
-  "M294 421 C300 440 303 458 304 476 C305 487 309 496 316 503 C309 492 306 481 306 469 C306 450 302 433 293 418 Z",
-
-  "M286 423 C267 429 249 437 232 448 C216 458 200 465 183 468 C199 461 212 453 225 443 C242 431 262 423 287 418 Z",
-  "M298 423 C317 429 336 437 353 448 C370 458 386 465 404 468 C387 461 373 453 360 443 C343 431 323 423 297 418 Z",
-
-  "M288 424 C275 442 264 460 253 477 C245 489 235 498 222 504 C233 495 241 484 248 472 C258 454 271 437 290 419 Z",
-  "M296 424 C309 442 321 460 332 477 C340 489 351 498 364 504 C353 495 345 484 338 472 C327 454 314 437 294 419 Z"
-];
 
 function leafSvg() {
   return `<svg viewBox="0 0 46 46" aria-hidden="true">
@@ -856,13 +840,19 @@ async function toggleTask(taskId) {
 }
 
 
+function renderRootPngs() {
+  const rootCount = Math.min((state.roots || []).length, 6);
+
+  $$(".root-png").forEach((img, index) => {
+    img.classList.toggle("visible", index < rootCount);
+  });
+}
+
 function renderTree() {
   const leafLayer = $("#leafLayer");
-  const rootLayer = $("#rootLayer");
-  if (!leafLayer || !rootLayer) return;
+  if (!leafLayer) return;
 
   leafLayer.innerHTML = "";
-  rootLayer.innerHTML = "";
 
   const leaves = (state.learningLeaves || []).slice(0, leafPositions.length);
 
@@ -919,27 +909,7 @@ function renderTree() {
     `);
   });
 
-  (state.roots || []).slice(0, rootPaths.length).forEach((root, i) => {
-    rootLayer.insertAdjacentHTML(
-      "beforeend",
-      `
-      <g class="dynamic-root root-shape-${i + 1}">
-        <path
-          d="${rootPaths[i]}"
-          class="root-organic-shadow"
-        />
-        <path
-          d="${rootPaths[i]}"
-          class="root-organic-body"
-        />
-        <path
-          d="${rootPaths[i]}"
-          class="root-organic-light"
-        />
-      </g>
-      `
-    );
-  });
+  renderRootPngs();
 
   const target = Number(state.tree?.targetLeaves || 20);
   const complete = leaves.length >= target;
