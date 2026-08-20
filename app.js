@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.3 Lerntag";
+const APP_VERSION = "2.3b Baumwachstum";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -14,6 +14,8 @@ let unsubscribe = null;
 let selectedHearts = [];
 let adminDraft = { fina: [], lou: [] };
 let attentionTicker = null;
+let pendingTreeGrowth = false;
+let treeGrowthTimer = null;
 
 const dailyMissions = [
   "🌸 Nimm heute einmal bewusst etwas Schönes wahr.",
@@ -334,6 +336,35 @@ function showSunbeam() {
   setTimeout(() => beam.classList.remove("shine"), 1400);
 }
 
+function showTreeGrowthCelebration() {
+  const dialog = $("#treeGrowthDialog");
+  const preview = $("#treeGrowthPreview");
+  const tree = $("#treeSvg");
+
+  if (!dialog || !preview || !tree) return;
+
+  if (treeGrowthTimer) {
+    clearTimeout(treeGrowthTimer);
+    treeGrowthTimer = null;
+  }
+
+  const treeClone = tree.cloneNode(true);
+  treeClone.removeAttribute("id");
+  treeClone.classList.add("tree-growth-svg");
+
+  const newestLeaf = treeClone.querySelector(".dynamic-leaf:last-of-type");
+  newestLeaf?.classList.add("new-growth-leaf");
+
+  preview.replaceChildren(treeClone);
+
+  if (!dialog.open) dialog.showModal();
+
+  treeGrowthTimer = setTimeout(() => {
+    if (dialog.open) dialog.close();
+    treeGrowthTimer = null;
+  }, 3600);
+}
+
 function renderTreeAttention() {
   const story = $(".tree-story");
   if (!story) return;
@@ -547,6 +578,12 @@ function renderAll() {
   renderTasks("fina");
   renderTasks("lou");
   renderTree();
+
+  if (pendingTreeGrowth) {
+    pendingTreeGrowth = false;
+    requestAnimationFrame(() => showTreeGrowthCelebration());
+  }
+
   renderHearts();
   renderRootMemories();
   renderForest();
@@ -689,7 +726,7 @@ if (task.done) {
 });
     });
 
-    if (completedNow) showSunbeam();
+    if (completedNow) pendingTreeGrowth = true;
   } catch (err) {
     alert("Die Aufgabe konnte nicht gespeichert werden: " + err.message);
   }
@@ -1053,6 +1090,21 @@ $("#mamaDialog")?.addEventListener("close", () => {
 
 $("#dayClosingDialog")?.addEventListener("cancel", event => {
   event.preventDefault();
+});
+
+$("#treeGrowthDialog")?.addEventListener("cancel", event => {
+  event.preventDefault();
+});
+
+$("#treeGrowthDialog")?.addEventListener("click", event => {
+  if (event.target !== $("#treeGrowthDialog")) return;
+
+  if (treeGrowthTimer) {
+    clearTimeout(treeGrowthTimer);
+    treeGrowthTimer = null;
+  }
+
+  $("#treeGrowthDialog")?.close();
 });
 
 if ($("#unlockMamaBtn")) {
