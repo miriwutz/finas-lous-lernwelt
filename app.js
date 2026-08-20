@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.3k Moderner Lernbaum";
+const APP_VERSION = "2.3l PNG-Lernbaum";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -76,39 +76,27 @@ const heartOptions = [
 ];
 
 const leafPositions = [
-  /* linke Außenkrone */
-  [112,160,-30,1],[137,176,150,-1],[157,150,-17,1],
-  [177,191,164,-1],[197,169,-26,1],[216,209,148,-1],
-
-  /* linke obere Krone */
-  [201,126,-18,1],[223,148,158,-1],[239,178,-8,1],
-  [247,111,-29,1],[265,145,149,-1],
-
-  /* obere Mitte */
-  [274,78,-15,1],[291,110,164,-1],[304,151,-5,1],
-
-  /* rechte obere Krone */
-  [330,120,22,1],[347,151,204,-1],[366,130,10,1],
-  [390,150,211,-1],
-
-  /* rechte Außenkrone */
-  [406,181,12,1],[427,163,207,-1],[448,188,20,1],
-  [468,163,211,-1],
-
-  /* mittlere/untere lockere Blätter */
-  [150,218,-25,1],[190,229,153,-1],[225,244,-7,1],
-  [343,240,8,1],[382,228,202,-1],[423,219,18,1]
+  [70,170,-28,1],[96,190,150,-1],[118,154,-16,1],[139,210,163,-1],
+  [158,177,-34,1],[178,226,147,-1],[167,128,-21,1],[192,151,158,-1],
+  [214,190,-10,1],[221,111,-30,1],[244,145,149,-1],[254,72,-16,1],
+  [279,102,164,-1],[299,139,-6,1],[321,72,22,1],[339,111,204,-1],
+  [360,139,11,1],[383,112,211,-1],[405,157,14,1],[425,126,207,-1],
+  [443,180,18,1],[465,153,211,-1],[487,200,24,1],[507,169,202,-1],
+  [112,242,-25,1],[160,257,153,-1],[207,239,-7,1],[352,244,8,1],
+  [402,257,201,-1],[454,238,17,1]
 ];
 
 const rootPaths = [
-  "M279 382 C262 397 242 410 218 422 C198 432 180 439 159 443",
-  "M283 383 C268 405 255 426 244 449 C236 465 226 479 214 491",
-  "M288 382 C281 407 278 432 277 457 C277 473 274 486 269 497",
-  "M294 382 C301 407 307 432 309 457 C311 473 315 486 320 496",
-  "M299 383 C314 404 329 425 348 445 C360 459 374 473 391 485",
-  "M303 382 C321 398 342 410 365 420 C387 429 409 436 434 440",
-  "M274 386 C250 392 226 396 202 396 C182 396 162 400 143 407",
-  "M307 386 C330 392 354 396 379 395 C402 394 423 398 443 405"
+  "M282 390 C268 401 253 410 235 420 C215 431 195 441 170 447",
+  "M285 391 C273 407 262 423 251 443 C241 461 230 478 216 491",
+  "M289 390 C283 412 279 434 278 456 C277 472 274 486 270 498",
+  "M294 390 C300 412 305 434 308 456 C310 472 314 486 319 497",
+  "M298 391 C310 407 323 423 339 442 C353 458 368 474 388 487",
+  "M302 390 C317 401 334 411 354 420 C375 430 397 438 424 444",
+  "M279 393 C257 397 235 400 213 400 C191 400 170 404 148 412",
+  "M305 393 C327 397 350 400 373 399 C397 398 419 402 442 410",
+  "M286 392 C276 419 264 444 250 469",
+  "M297 392 C307 418 321 444 337 468"
 ];
 
 function leafSvg() {
@@ -346,7 +334,7 @@ async function toggleAttention(taskId) {
 function showTreeGrowthCelebration() {
   const dialog = $("#treeGrowthDialog");
   const preview = $("#treeGrowthPreview");
-  const tree = $("#treeSvg");
+  const tree = $("#treeCanvas");
   const flyingLeaf = $("#flyingLeaf");
 
   if (!dialog || !preview || !tree) return;
@@ -358,14 +346,14 @@ function showTreeGrowthCelebration() {
 
   const treeClone = tree.cloneNode(true);
   treeClone.removeAttribute("id");
-  treeClone.classList.add("tree-growth-svg");
+  treeClone.classList.add("tree-growth-canvas");
+  treeClone.querySelectorAll("[id]").forEach(el => el.removeAttribute("id"));
 
-  // Der äußere Block behält IMMER seine echte Position am Ast.
   const newestLeaf = treeClone.querySelector(".dynamic-leaf:last-of-type");
   const newestShape = newestLeaf?.querySelector(".leaf-shape");
   newestShape?.classList.add("new-growth-leaf");
 
-  preview.querySelector(".tree-growth-svg")?.remove();
+  preview.querySelector(".tree-growth-canvas")?.remove();
   preview.appendChild(treeClone);
 
   if (!dialog.open) dialog.showModal();
@@ -385,37 +373,31 @@ function showTreeGrowthCelebration() {
     const targetX = leafRect.left + leafRect.width / 2 - previewRect.left;
     const targetY = leafRect.top + leafRect.height / 2 - previewRect.top;
 
-    // Alte Animation sicher beenden.
     flyingLeaf.getAnimations().forEach(animation => animation.cancel());
     flyingLeaf.style.opacity = "0";
 
-    // Viele kleine Zwischenpunkte ergeben eine weiche, leicht wellige Flugbahn
-    // statt einer zackigen Bewegung von Keyframe zu Keyframe.
     const frames = [];
-    const steps = 28;
+    const steps = 34;
 
     for (let i = 0; i <= steps; i++) {
       const t = i / steps;
-
-      // Sanfte Kurve: zuerst etwas nach rechts, dann zum Ziel.
-      const curveLift = Math.sin(Math.PI * t) * Math.min(70, Math.max(30, targetY * 0.16));
-      const wave = Math.sin(t * Math.PI * 3.2) * (1 - t) * 13;
-
+      const arc = Math.sin(Math.PI * t) * Math.min(74, Math.max(34, targetY * 0.16));
+      const wave = Math.sin(t * Math.PI * 3.4) * (1 - t) * 11;
       const x = startX + (targetX - startX) * t + wave;
-      const y = startY + (targetY - startY) * t - curveLift;
+      const y = startY + (targetY - startY) * t - arc;
 
       frames.push({
         offset: t,
-        opacity: t < 0.04 ? 0 : (t > 0.94 ? 0 : 1),
+        opacity: t < 0.03 ? 0 : (t > 0.96 ? 0 : 1),
         transform:
           `translate(${x - startX}px, ${y - startY}px) ` +
-          `rotate(${(-14 + 26 * t + Math.sin(t * Math.PI * 4) * 7)}deg) ` +
-          `scale(${0.78 + Math.sin(Math.PI * t) * 0.18})`
+          `rotate(${(-12 + 22 * t + Math.sin(t * Math.PI * 3.6) * 6)}deg) ` +
+          `scale(${0.80 + Math.sin(Math.PI * t) * 0.16})`
       });
     }
 
     flyingLeaf.animate(frames, {
-      duration: 2050,
+      duration: 2100,
       easing: "linear",
       fill: "forwards"
     });
@@ -431,7 +413,7 @@ function showTreeGrowthCelebration() {
     }
 
     treeGrowthTimer = null;
-  }, 4550);
+  }, 4600);
 }
 
 function renderTreeAttention() {
