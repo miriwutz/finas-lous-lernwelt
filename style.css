@@ -2653,3 +2653,105 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
     font-size:54px !important;
   }
 }
+
+
+/* =========================================================
+   2.3y – Herz exakt ins Stammherz + Wurzel wirklich sichtbar
+   ========================================================= */
+
+/* Für Herzmomente wird der komplette Baum im Dialog etwas höher
+   und kleiner dargestellt. So entsteht UNTEN Platz für die Wurzeln. */
+.root-growth-canvas{
+  transform:translateY(-6%) scale(.91) !important;
+  transform-origin:center top !important;
+}
+
+/* Im Herzmoment-Dialog dürfen die Wurzeln nicht am unteren Canvasrand
+   abgeschnitten werden. */
+.root-growth-canvas .tree-root-png-layer{
+  overflow:visible !important;
+}
+
+/* Die normale Baumansicht bleibt unverändert.
+   Nur im Herzmoment-Dialog wird die Wurzelzone etwas weiter nach oben geholt,
+   damit das Wachsen tatsächlich im sichtbaren Bereich stattfindet. */
+.root-growth-canvas .root-png.root-growth-piece{
+  top:80.5% !important;
+}
+
+/* Ältere Wurzeln treten während der Animation deutlich zurück. */
+.root-growth-canvas .root-growth-piece:not(.new-growth-root){
+  opacity:.20 !important;
+  filter:saturate(.72) brightness(1.08) !important;
+}
+
+/* Die neue Wurzel ist zunächst komplett weg. */
+.root-growth-canvas .new-growth-root.root-waiting{
+  opacity:0 !important;
+  visibility:hidden !important;
+  clip-path:inset(0 0 100% 0) !important;
+  animation:none !important;
+}
+
+/* Nach dem Herzflug wird genau die neue Wurzel deutlich enthüllt. */
+.root-growth-canvas .new-growth-root.root-growing-now{
+  visibility:visible !important;
+  z-index:8 !important;
+  animation:rootGrowVeryVisibleY 2.05s cubic-bezier(.14,.78,.18,1) both !important;
+}
+
+@keyframes rootGrowVeryVisibleY{
+  0%{
+    opacity:0;
+    clip-path:inset(0 0 100% 0);
+    filter:
+      sepia(.35)
+      saturate(1.55)
+      brightness(1.16)
+      drop-shadow(0 0 10px rgba(185,121,67,.48));
+  }
+  20%{
+    opacity:1;
+    clip-path:inset(0 0 76% 0);
+  }
+  48%{
+    opacity:1;
+    clip-path:inset(0 0 43% 0);
+    filter:
+      sepia(.28)
+      saturate(1.40)
+      brightness(1.12)
+      drop-shadow(0 0 9px rgba(185,121,67,.40));
+  }
+  78%{
+    opacity:1;
+    clip-path:inset(0 0 10% 0);
+  }
+  100%{
+    opacity:var(--root-opacity);
+    clip-path:inset(0 0 0 0);
+    filter:none;
+  }
+}
+
+/* Das Ziel am Stammherz pulsiert nur kurz nach dem Auftreffen. */
+.heart-target-pulse.is-pulsing{
+  animation:heartTargetPulseY .90s ease-out both !important;
+}
+
+@keyframes heartTargetPulseY{
+  0%{
+    opacity:0;
+    box-shadow:0 0 0 0 rgba(224,124,118,.42);
+  }
+  24%{
+    opacity:1;
+    box-shadow:
+      0 0 0 8px rgba(224,124,118,.19),
+      0 0 24px 10px rgba(224,124,118,.28);
+  }
+  100%{
+    opacity:0;
+    box-shadow:0 0 0 19px rgba(224,124,118,0);
+  }
+}
