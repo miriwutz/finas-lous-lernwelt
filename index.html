@@ -612,11 +612,53 @@
             </label>
 
 
-            <p class="muted">
-              Die Kinder sehen keine Zahl. Sie erleben nur,
-              wie der Baum wächst und schließlich in den
-              Lernwald wandert.
-            </p>
+            <div class="leaf-color-settings">
+              <h3>🍃 Blattfarben</h3>
+              <p class="muted">
+                Hier kannst du für Fina und Lou selbst festlegen,
+                welche Farben für leicht, mittel und knifflig verwendet werden.
+              </p>
+
+              <div class="leaf-color-grid">
+                <div class="leaf-color-card">
+                  <h4>🌸 Fina</h4>
+
+                  <label>
+                    Leicht
+                    <input id="finaEasyColor" type="color" value="#b89adf">
+                  </label>
+
+                  <label>
+                    Mittel
+                    <input id="finaMediumColor" type="color" value="#f2cf63">
+                  </label>
+
+                  <label>
+                    Knifflig
+                    <input id="finaTrickyColor" type="color" value="#86b978">
+                  </label>
+                </div>
+
+                <div class="leaf-color-card">
+                  <h4>🌺 Lou</h4>
+
+                  <label>
+                    Leicht
+                    <input id="louEasyColor" type="color" value="#ef9fb3">
+                  </label>
+
+                  <label>
+                    Mittel
+                    <input id="louMediumColor" type="color" value="#7fb7d2">
+                  </label>
+
+                  <label>
+                    Knifflig
+                    <input id="louTrickyColor" type="color" value="#d49a3a">
+                  </label>
+                </div>
+              </div>
+            </div>
 
 
             <button
@@ -635,6 +677,30 @@
 
   </div>
 
+
+
+  <!-- SCHWIERIGKEIT NACH DER AUFGABE -->
+  <dialog id="difficultyDialog">
+    <div class="difficulty-card">
+      <div class="difficulty-kicker">🍃 Kurz zurückschauen</div>
+      <h2>Wie war die Aufgabe für dich?</h2>
+      <p id="difficultyTaskTitle" class="difficulty-task-title"></p>
+
+      <div class="difficulty-actions">
+        <button type="button" class="difficulty-option easy" data-difficulty="easy">
+          Leicht
+        </button>
+
+        <button type="button" class="difficulty-option medium" data-difficulty="medium">
+          Mittel
+        </button>
+
+        <button type="button" class="difficulty-option tricky" data-difficulty="tricky">
+          Knifflig
+        </button>
+      </div>
+    </div>
+  </dialog>
 
 
   <!-- SICHTBARES BAUMWACHSTUM -->
