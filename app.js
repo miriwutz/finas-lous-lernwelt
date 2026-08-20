@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.3w Wurzelwachstum mit Herz";
+const APP_VERSION = "2.3x Herzflug & sichtbares Wurzelwachstum";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -422,9 +422,9 @@ function showRootGrowthCelebration() {
     treeGrowthTimer = null;
   }
 
-  if (kicker) kicker.textContent = "♥ Ein Herzmoment stärkt euren Baum";
+  if (kicker) kicker.textContent = "♥ EIN HERZMOMENT STÄRKT EUREN BAUM";
   if (title) title.textContent = "Eine neue Wurzel wächst.";
-  if (text) text.textContent = "Schau – dieser Herzmoment gibt eurem Baum Halt.";
+  if (text) text.textContent = "Dieser Herzmoment findet seinen Platz – und schenkt eurem Baum neue Wurzeln.";
 
   if (flyingLeaf) flyingLeaf.style.display = "none";
   if (flyingHeart) flyingHeart.style.display = "grid";
@@ -436,44 +436,97 @@ function showRootGrowthCelebration() {
 
   const roots = [...treeClone.querySelectorAll(".root-growth-piece")];
   const newestRoot = roots.at(-1);
-  newestRoot?.classList.add("new-growth-root");
+
+  // Die neue Wurzel ist anfangs unsichtbar und wächst erst,
+  // nachdem das Herz den Stamm erreicht hat.
+  newestRoot?.classList.add("new-growth-root", "root-waiting");
 
   preview.querySelector(".tree-growth-canvas")?.remove();
   preview.appendChild(treeClone);
+
+  // kleiner Zielpunkt genau über dem geschnitzten Baumherz
+  let heartTarget = preview.querySelector(".heart-target-pulse");
+  if (!heartTarget) {
+    heartTarget = document.createElement("div");
+    heartTarget.className = "heart-target-pulse";
+    preview.appendChild(heartTarget);
+  }
+  heartTarget.classList.remove("is-pulsing");
 
   if (!dialog.open) dialog.showModal();
 
   requestAnimationFrame(() => {
     dialog.classList.remove("rainbow-bloom");
-    void dialog.offsetWidth;
     dialog.classList.add("heart-bloom");
-
-    if (!flyingHeart) return;
 
     const previewRect = preview.getBoundingClientRect();
     const canvasRect = treeClone.getBoundingClientRect();
 
-    const targetX = canvasRect.left + canvasRect.width * 0.50 - previewRect.left;
-    const targetY = canvasRect.top + canvasRect.height * 0.54 - previewRect.top;
+    // Aus dem aktuellen PNG/Screenshot abgeleitet:
+    // das geschnitzte Herz sitzt ca. bei 51.5 % Breite / 64 % Höhe.
+    const targetX = canvasRect.left + canvasRect.width * 0.515 - previewRect.left;
+    const targetY = canvasRect.top + canvasRect.height * 0.640 - previewRect.top;
+
+    heartTarget.style.left = `${targetX}px`;
+    heartTarget.style.top = `${targetY}px`;
+
+    if (!flyingHeart) return;
 
     const startX = previewRect.width * 0.50;
-    const startY = previewRect.height * 0.30;
+    const startY = Math.max(28, previewRect.height * 0.10);
 
     flyingHeart.getAnimations().forEach(a => a.cancel());
     flyingHeart.style.opacity = "0";
 
-    flyingHeart.animate([
-      { opacity:0, transform:`translate(${startX}px, ${startY}px) scale(.55)` },
-      { opacity:1, transform:`translate(${startX}px, ${startY}px) scale(1.65)`, offset:.18 },
-      { opacity:1, transform:`translate(${targetX}px, ${targetY}px) scale(.58)`, offset:.82 },
-      { opacity:0, transform:`translate(${targetX}px, ${targetY}px) scale(.20)` }
+    const heartAnimation = flyingHeart.animate([
+      {
+        offset: 0,
+        opacity: 0,
+        transform: `translate(${startX}px, ${startY}px) translate(-50%,-50%) scale(.55)`
+      },
+      {
+        offset: .12,
+        opacity: 1,
+        transform: `translate(${startX}px, ${startY}px) translate(-50%,-50%) scale(1.55)`
+      },
+      {
+        offset: .42,
+        opacity: 1,
+        transform: `translate(${startX - 24}px, ${startY + (targetY-startY)*.40}px) translate(-50%,-50%) scale(1.30)`
+      },
+      {
+        offset: .72,
+        opacity: 1,
+        transform: `translate(${targetX + 14}px, ${startY + (targetY-startY)*.78}px) translate(-50%,-50%) scale(.92)`
+      },
+      {
+        offset: .94,
+        opacity: 1,
+        transform: `translate(${targetX}px, ${targetY}px) translate(-50%,-50%) scale(.52)`
+      },
+      {
+        offset: 1,
+        opacity: 0,
+        transform: `translate(${targetX}px, ${targetY}px) translate(-50%,-50%) scale(.18)`
+      }
     ], {
-      duration:1550,
-      easing:"cubic-bezier(.22,.78,.22,1)",
-      fill:"forwards"
+      duration: 2450,
+      easing: "cubic-bezier(.22,.72,.20,1)",
+      fill: "forwards"
     });
+
+    heartAnimation.finished.then(() => {
+      heartTarget.classList.add("is-pulsing");
+
+      // Jetzt erst wächst die neue Wurzel deutlich sichtbar nach unten/außen.
+      if (newestRoot) {
+        newestRoot.classList.remove("root-waiting");
+        newestRoot.classList.add("root-growing-now");
+      }
+    }).catch(() => {});
   });
 
+  // genug Zeit, damit Herzflug UND Wurzelwachstum wahrgenommen werden
   treeGrowthTimer = setTimeout(() => {
     if (dialog.open) dialog.close();
     dialog.classList.remove("heart-bloom");
@@ -484,9 +537,11 @@ function showRootGrowthCelebration() {
       flyingHeart.style.display = "none";
     }
 
+    preview.querySelector(".heart-target-pulse")?.remove();
+
     if (flyingLeaf) flyingLeaf.style.display = "block";
     treeGrowthTimer = null;
-  }, 2200);
+  }, 4700);
 }
 
 function renderTreeAttention() {
