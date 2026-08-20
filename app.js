@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.3p PNG-Wurzeln";
+const APP_VERSION = "2.3q Wurzelgeflecht aus 3 PNGs";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -840,11 +840,42 @@ async function toggleTask(taskId) {
 }
 
 
-function renderRootPngs() {
-  const rootCount = Math.min((state.roots || []).length, 6);
+const ROOT_GROWTH_LAYOUT = [
+  { file:"wurzel-mitte.png",  x:0,   y:0,  rot:0,   scale:.86, opacity:.86 },
+  { file:"wurzel-links.png",  x:-18, y:2,  rot:-5,  scale:.78, opacity:.82 },
+  { file:"wurzel-rechts.png", x:18,  y:2,  rot:5,   scale:.78, opacity:.82 },
+  { file:"wurzel-mitte.png",  x:-8,  y:10, rot:-7,  scale:.72, opacity:.72 },
+  { file:"wurzel-links.png",  x:-38, y:8,  rot:-11, scale:.70, opacity:.72 },
+  { file:"wurzel-rechts.png", x:38,  y:8,  rot:11,  scale:.70, opacity:.72 },
+  { file:"wurzel-mitte.png",  x:10,  y:15, rot:8,   scale:.66, opacity:.66 },
+  { file:"wurzel-links.png",  x:-58, y:15, rot:-16, scale:.64, opacity:.64 },
+  { file:"wurzel-rechts.png", x:58,  y:15, rot:16,  scale:.64, opacity:.64 },
+  { file:"wurzel-mitte.png",  x:-18, y:22, rot:-12, scale:.60, opacity:.58 },
+  { file:"wurzel-links.png",  x:-76, y:23, rot:-20, scale:.58, opacity:.58 },
+  { file:"wurzel-rechts.png", x:76,  y:23, rot:20,  scale:.58, opacity:.58 },
+  { file:"wurzel-mitte.png",  x:20,  y:28, rot:14,  scale:.55, opacity:.54 },
+  { file:"wurzel-links.png",  x:-92, y:30, rot:-24, scale:.53, opacity:.52 },
+  { file:"wurzel-rechts.png", x:92,  y:30, rot:24,  scale:.53, opacity:.52 }
+];
 
-  $$(".root-png").forEach((img, index) => {
-    img.classList.toggle("visible", index < rootCount);
+function renderRootPngs() {
+  const layer = $("#rootPngLayer");
+  if (!layer) return;
+  const rootCount = Math.min((state.roots || []).length, ROOT_GROWTH_LAYOUT.length);
+  layer.innerHTML = "";
+  ROOT_GROWTH_LAYOUT.slice(0, rootCount).forEach((cfg, index) => {
+    const img = document.createElement("img");
+    img.className = "root-png root-growth-piece";
+    img.src = cfg.file;
+    img.alt = "";
+    img.draggable = false;
+    img.style.setProperty("--root-x", `${cfg.x}px`);
+    img.style.setProperty("--root-y", `${cfg.y}px`);
+    img.style.setProperty("--root-rot", `${cfg.rot}deg`);
+    img.style.setProperty("--root-scale", cfg.scale);
+    img.style.setProperty("--root-opacity", cfg.opacity);
+    img.style.setProperty("--root-delay", `${Math.min(index * 35, 180)}ms`);
+    layer.appendChild(img);
   });
 }
 
