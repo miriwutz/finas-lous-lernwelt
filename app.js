@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.3c Neuer Lernbaum";
+const APP_VERSION = "2.3d Regenbogen-Wachstum";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -324,6 +324,7 @@ function showTreeGrowthCelebration() {
   const dialog = $("#treeGrowthDialog");
   const preview = $("#treeGrowthPreview");
   const tree = $("#treeSvg");
+  const flyingLeaf = $("#flyingLeaf");
 
   if (!dialog || !preview || !tree) return;
 
@@ -339,14 +340,39 @@ function showTreeGrowthCelebration() {
   const newestLeaf = treeClone.querySelector(".dynamic-leaf:last-of-type");
   newestLeaf?.classList.add("new-growth-leaf");
 
-  preview.replaceChildren(treeClone);
+  // Nur den Baum ersetzen, das fliegende Blatt bleibt im Preview erhalten.
+  preview.querySelector(".tree-growth-svg")?.remove();
+  preview.appendChild(treeClone);
 
   if (!dialog.open) dialog.showModal();
 
+  requestAnimationFrame(() => {
+    dialog.classList.remove("rainbow-bloom");
+    void dialog.offsetWidth;
+    dialog.classList.add("rainbow-bloom");
+
+    if (flyingLeaf && newestLeaf) {
+      const previewRect = preview.getBoundingClientRect();
+      const leafRect = newestLeaf.getBoundingClientRect();
+
+      const targetX = leafRect.left + leafRect.width / 2 - previewRect.left;
+      const targetY = leafRect.top + leafRect.height / 2 - previewRect.top;
+
+      flyingLeaf.style.setProperty("--leaf-target-x", `${targetX}px`);
+      flyingLeaf.style.setProperty("--leaf-target-y", `${targetY}px`);
+
+      flyingLeaf.classList.remove("fly");
+      void flyingLeaf.offsetWidth;
+      flyingLeaf.classList.add("fly");
+    }
+  });
+
   treeGrowthTimer = setTimeout(() => {
     if (dialog.open) dialog.close();
+    dialog.classList.remove("rainbow-bloom");
+    flyingLeaf?.classList.remove("fly");
     treeGrowthTimer = null;
-  }, 3600);
+  }, 4300);
 }
 
 function renderTreeAttention() {
