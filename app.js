@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.3b Baumwachstum";
+const APP_VERSION = "2.3c Neuer Lernbaum";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -61,27 +61,31 @@ const heartOptions = [
 ];
 
 const leafPositions = [
-  [121,198,-28,1],[139,216,150,-1],[157,220,-22,1],[174,239,155,-1],
-  [194,241,-18,1],[214,259,160,-1],[235,265,-15,1],[250,281,165,-1],
-  [432,174,28,1],[413,195,208,-1],[393,201,22,1],[373,221,202,-1],
-  [351,228,18,1],[331,246,198,-1],[309,254,15,1],[292,270,195,-1],
-  [166,126,-22,1],[178,147,158,-1],[190,153,-18,1],[203,173,162,-1],
-  [219,181,-15,1],[233,202,165,-1],[249,211,-12,1],[262,230,168,-1]
+  [82,205,-26,1],[108,215,148,-1],[128,184,-20,1],[151,202,154,-1],
+  [161,163,-28,1],[181,180,150,-1],[194,134,-20,1],[211,151,152,-1],
+  [230,109,-18,1],[246,128,154,-1],[255,77,-20,1],[272,96,152,-1],
+
+  [478,174,25,1],[452,191,205,-1],[430,151,20,1],[411,175,202,-1],
+  [402,129,27,1],[381,146,205,-1],[367,101,18,1],[346,122,198,-1],
+  [334,73,18,1],[315,94,198,-1],[321,45,22,1],[300,69,198,-1],
+
+  [125,235,-18,1],[151,247,150,-1],[188,260,-14,1],[219,271,160,-1],
+  [438,216,18,1],[412,236,202,-1],[378,252,14,1],[345,266,198,-1]
 ];
 
 const rootPaths = [
-  "M258 385 C230 397 204 415 172 433",
-  "M267 389 C246 410 229 432 213 458",
-  "M279 389 C276 414 274 439 275 469",
-  "M291 389 C309 412 327 436 349 459",
-  "M302 384 C331 397 360 416 392 433",
-  "M245 390 C216 399 187 402 153 400",
-  "M314 391 C345 400 374 402 410 397",
-  "M253 395 C229 421 202 444 176 463",
-  "M306 395 C332 420 360 444 389 462",
-  "M270 396 C260 424 255 449 252 477",
-  "M291 396 C301 423 306 449 309 477",
-  "M235 392 C205 407 177 417 143 425"
+  "M282 402 C258 416 236 430 217 448",
+  "M288 403 C276 423 267 444 261 466",
+  "M294 403 C305 423 315 444 323 466",
+  "M300 402 C323 416 345 431 365 449",
+  "M274 404 C248 409 221 414 193 416",
+  "M307 404 C334 409 361 414 389 416",
+  "M278 406 C253 429 236 449 224 470",
+  "M304 406 C329 429 347 449 360 469",
+  "M286 406 C283 429 282 451 283 474",
+  "M297 406 C299 430 300 452 299 475",
+  "M269 407 C242 421 214 433 186 439",
+  "M312 407 C340 421 368 432 397 438"
 ];
 
 function leafSvg() {
@@ -314,26 +318,6 @@ async function toggleAttention(taskId) {
   } catch (err) {
     alert("Die Aufmerksamkeitszeit konnte nicht gespeichert werden: " + err.message);
   }
-}
-
-function showSunbeam() {
-  const section = $(".tree-section");
-  if (!section) return;
-
-  let beam = $("#sunbeamEffect");
-  if (!beam) {
-    beam = document.createElement("div");
-    beam.id = "sunbeamEffect";
-    beam.setAttribute("aria-hidden", "true");
-    beam.innerHTML = '<div class="sunbeam-ray"></div><div class="sunbeam-glow">☀️</div>';
-    section.appendChild(beam);
-  }
-
-  beam.classList.remove("shine");
-  void beam.offsetWidth;
-  beam.classList.add("shine");
-
-  setTimeout(() => beam.classList.remove("shine"), 1400);
 }
 
 function showTreeGrowthCelebration() {
@@ -734,12 +718,10 @@ if (task.done) {
 
 function renderTree() {
   const leafLayer = $("#leafLayer");
-  const flowerLayer = $("#flowerLayer");
   const rootLayer = $("#rootLayer");
-  if (!leafLayer || !flowerLayer || !rootLayer) return;
+  if (!leafLayer || !rootLayer) return;
 
   leafLayer.innerHTML = "";
-  flowerLayer.innerHTML = "";
   rootLayer.innerHTML = "";
 
   const leaves = (state.learningLeaves || []).slice(0, leafPositions.length);
@@ -751,52 +733,39 @@ function renderTree() {
     leafLayer.insertAdjacentHTML("beforeend", `
       <g transform="translate(${x} ${y}) rotate(${rot}) scale(1 ${mirror})"
          class="dynamic-leaf">
-        <path d="M0 0 C8 -16 25 -18 35 -4 C25 10 10 12 0 0Z"
-          fill="${color}" stroke="#765f52" stroke-width="1.2"/>
-        <path d="M3 0 C14 -1 24 -2 32 -4"
-          fill="none" stroke="#fffaf4" stroke-width="1.15"/>
+        <path
+          d="M0 0 C7 -13 20 -17 31 -8 C28 6 17 13 0 0Z"
+          fill="${color}"
+          stroke="#7c6759"
+          stroke-width="1"
+        />
+        <path
+          d="M3 0 C12 -1 21 -4 28 -7"
+          fill="none"
+          stroke="#fffaf4"
+          stroke-width="1"
+          opacity=".9"
+        />
       </g>
     `);
-  });
-
-  const branchEnds = [[112,194],[438,169],[157,119],[390,108],[231,60],[340,45]];
-  const target = Number(state.tree?.targetLeaves || 20);
-  const perBranch = Math.max(2, Math.ceil(target / 6));
-
-  branchEnds.forEach((p, b) => {
-    if (leaves.length >= Math.min(target, (b + 1) * perBranch)) {
-      flowerLayer.insertAdjacentHTML("beforeend", flowerSvg(p[0], p[1], b));
-    }
   });
 
   (state.roots || []).slice(0, rootPaths.length).forEach((root, i) => {
     rootLayer.insertAdjacentHTML(
       "beforeend",
       `<path d="${rootPaths[i]}" class="dynamic-root"
-        stroke-width="${Math.max(4, 8 - i * .25)}"/>`
+        stroke-width="${Math.max(2.4, 4.8 - i * .16)}"/>`
     );
   });
 
+  const target = Number(state.tree?.targetLeaves || 20);
   const complete = leaves.length >= target;
+
   $("#treeStatus").textContent = complete
     ? "Die Krone ist vollständig gewachsen. Dieser Baum darf in den Lernwald ziehen."
     : "Der Baum wächst still mit euren Lernaufgaben und Herzmomenten.";
 
   $("#finishTreeBtn")?.classList.toggle("hidden", !complete);
-}
-
-function flowerSvg(x, y, i) {
-  const colors = ["#efb6ad","#c6afe0","#f1cc76","#b8cda9","#e8a76f","#9ec6d4"];
-  const c = colors[i % colors.length];
-
-  return `<g transform="translate(${x} ${y})">
-    <ellipse cx="0" cy="-11" rx="7" ry="11" fill="${c}"/>
-    <ellipse cx="10" cy="-3" rx="7" ry="11" fill="${c}" transform="rotate(55 10 -3)"/>
-    <ellipse cx="6" cy="9" rx="7" ry="11" fill="${c}" transform="rotate(115 6 9)"/>
-    <ellipse cx="-6" cy="9" rx="7" ry="11" fill="${c}" transform="rotate(-115 -6 9)"/>
-    <ellipse cx="-10" cy="-3" rx="7" ry="11" fill="${c}" transform="rotate(-55 -10 -3)"/>
-    <circle r="6" fill="#e6bd62"/>
-  </g>`;
 }
 
 function renderHearts() {
