@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.3v Wurzeln Mitte nach außen";
+const APP_VERSION = "2.3w Wurzelwachstum mit Herz";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -15,6 +15,7 @@ let selectedHearts = [];
 let adminDraft = { fina: [], lou: [] };
 let attentionTicker = null;
 let pendingTreeGrowth = false;
+let pendingRootGrowth = false;
 let treeGrowthTimer = null;
 
 const DEFAULT_LEAF_COLORS = {
@@ -404,6 +405,90 @@ function showTreeGrowthCelebration() {
   }, 4600);
 }
 
+function showRootGrowthCelebration() {
+  const dialog = $("#treeGrowthDialog");
+  const preview = $("#treeGrowthPreview");
+  const tree = $("#treeCanvas");
+  const flyingLeaf = $("#flyingLeaf");
+  const flyingHeart = $("#flyingHeart");
+  const kicker = dialog?.querySelector(".tree-growth-kicker");
+  const title = $("#treeGrowthTitle");
+  const text = dialog?.querySelector(".tree-growth-copy p");
+
+  if (!dialog || !preview || !tree) return;
+
+  if (treeGrowthTimer) {
+    clearTimeout(treeGrowthTimer);
+    treeGrowthTimer = null;
+  }
+
+  if (kicker) kicker.textContent = "♥ Ein Herzmoment stärkt euren Baum";
+  if (title) title.textContent = "Eine neue Wurzel wächst.";
+  if (text) text.textContent = "Schau – dieser Herzmoment gibt eurem Baum Halt.";
+
+  if (flyingLeaf) flyingLeaf.style.display = "none";
+  if (flyingHeart) flyingHeart.style.display = "grid";
+
+  const treeClone = tree.cloneNode(true);
+  treeClone.removeAttribute("id");
+  treeClone.classList.add("tree-growth-canvas", "root-growth-canvas");
+  treeClone.querySelectorAll("[id]").forEach(el => el.removeAttribute("id"));
+
+  const roots = [...treeClone.querySelectorAll(".root-growth-piece")];
+  const newestRoot = roots.at(-1);
+  newestRoot?.classList.add("new-growth-root");
+
+  preview.querySelector(".tree-growth-canvas")?.remove();
+  preview.appendChild(treeClone);
+
+  if (!dialog.open) dialog.showModal();
+
+  requestAnimationFrame(() => {
+    dialog.classList.remove("rainbow-bloom");
+    void dialog.offsetWidth;
+    dialog.classList.add("heart-bloom");
+
+    if (!flyingHeart) return;
+
+    const previewRect = preview.getBoundingClientRect();
+    const canvasRect = treeClone.getBoundingClientRect();
+
+    const targetX = canvasRect.left + canvasRect.width * 0.50 - previewRect.left;
+    const targetY = canvasRect.top + canvasRect.height * 0.54 - previewRect.top;
+
+    const startX = previewRect.width * 0.50;
+    const startY = previewRect.height * 0.30;
+
+    flyingHeart.getAnimations().forEach(a => a.cancel());
+    flyingHeart.style.opacity = "0";
+
+    flyingHeart.animate([
+      { opacity:0, transform:`translate(${startX}px, ${startY}px) scale(.55)` },
+      { opacity:1, transform:`translate(${startX}px, ${startY}px) scale(1.65)`, offset:.18 },
+      { opacity:1, transform:`translate(${targetX}px, ${targetY}px) scale(.58)`, offset:.82 },
+      { opacity:0, transform:`translate(${targetX}px, ${targetY}px) scale(.20)` }
+    ], {
+      duration:1550,
+      easing:"cubic-bezier(.22,.78,.22,1)",
+      fill:"forwards"
+    });
+  });
+
+  treeGrowthTimer = setTimeout(() => {
+    if (dialog.open) dialog.close();
+    dialog.classList.remove("heart-bloom");
+
+    if (flyingHeart) {
+      flyingHeart.getAnimations().forEach(a => a.cancel());
+      flyingHeart.style.opacity = "0";
+      flyingHeart.style.display = "none";
+    }
+
+    if (flyingLeaf) flyingLeaf.style.display = "block";
+    treeGrowthTimer = null;
+  }, 2200);
+}
+
 function renderTreeAttention() {
   const story = $(".tree-story");
   if (!story) return;
@@ -621,6 +706,9 @@ function renderAll() {
   if (pendingTreeGrowth) {
     pendingTreeGrowth = false;
     requestAnimationFrame(() => showTreeGrowthCelebration());
+  } else if (pendingRootGrowth) {
+    pendingRootGrowth = false;
+    requestAnimationFrame(() => showRootGrowthCelebration());
   }
 
   renderHearts();
@@ -841,31 +929,28 @@ async function toggleTask(taskId) {
 
 
 const ROOT_GROWTH_LAYOUT = [
-  /* 1: zuerst eine deutlich sichtbare, längere Mittelwurzel */
-  { type:"middle", file:"wurzel-mitte.png",  anchor:50.0, y:0, rot:0,   scale:1.02, opacity:.88 },
+  { type:"middle", file:"wurzel-mitte.png",  anchor:50.0, y:0, rot:0,   scale:1.14, opacity:.94, height:22.5 },
 
-  /* danach immer RECHTS / LINKS im Wechsel – von innen nach außen */
-  { type:"right",  file:"wurzel-rechts.png", anchor:52.0, y:0, rot:14,  scale:.82, opacity:.80 },
-  { type:"left",   file:"wurzel-links.png",  anchor:48.0, y:0, rot:-14, scale:.82, opacity:.80 },
+  { type:"right",  file:"wurzel-rechts.png", anchor:52.0, y:0, rot:14,  scale:.86, opacity:.86, height:14.5 },
+  { type:"left",   file:"wurzel-links.png",  anchor:48.0, y:0, rot:-14, scale:.86, opacity:.86, height:14.5 },
 
-  { type:"right",  file:"wurzel-rechts.png", anchor:53.0, y:1, rot:27,  scale:.80, opacity:.76 },
-  { type:"left",   file:"wurzel-links.png",  anchor:47.0, y:1, rot:-27, scale:.80, opacity:.76 },
+  { type:"right",  file:"wurzel-rechts.png", anchor:53.0, y:1, rot:28,  scale:.84, opacity:.82, height:14.0 },
+  { type:"left",   file:"wurzel-links.png",  anchor:47.0, y:1, rot:-28, scale:.84, opacity:.82, height:14.0 },
 
-  { type:"right",  file:"wurzel-rechts.png", anchor:54.0, y:2, rot:40,  scale:.78, opacity:.72 },
-  { type:"left",   file:"wurzel-links.png",  anchor:46.0, y:2, rot:-40, scale:.78, opacity:.72 },
+  { type:"right",  file:"wurzel-rechts.png", anchor:54.0, y:2, rot:42,  scale:.82, opacity:.78, height:13.8 },
+  { type:"left",   file:"wurzel-links.png",  anchor:46.0, y:2, rot:-42, scale:.82, opacity:.78, height:13.8 },
 
-  { type:"right",  file:"wurzel-rechts.png", anchor:55.0, y:3, rot:54,  scale:.76, opacity:.68 },
-  { type:"left",   file:"wurzel-links.png",  anchor:45.0, y:3, rot:-54, scale:.76, opacity:.68 },
+  { type:"right",  file:"wurzel-rechts.png", anchor:55.0, y:3, rot:56,  scale:.80, opacity:.74, height:13.5 },
+  { type:"left",   file:"wurzel-links.png",  anchor:45.0, y:3, rot:-56, scale:.80, opacity:.74, height:13.5 },
 
-  { type:"right",  file:"wurzel-rechts.png", anchor:56.0, y:4, rot:67,  scale:.74, opacity:.64 },
-  { type:"left",   file:"wurzel-links.png",  anchor:44.0, y:4, rot:-67, scale:.74, opacity:.64 },
+  { type:"right",  file:"wurzel-rechts.png", anchor:56.0, y:4, rot:69,  scale:.78, opacity:.70, height:13.2 },
+  { type:"left",   file:"wurzel-links.png",  anchor:44.0, y:4, rot:-69, scale:.78, opacity:.70, height:13.2 },
 
-  { type:"right",  file:"wurzel-rechts.png", anchor:57.0, y:5, rot:79,  scale:.72, opacity:.60 },
-  { type:"left",   file:"wurzel-links.png",  anchor:43.0, y:5, rot:-79, scale:.72, opacity:.60 },
+  { type:"right",  file:"wurzel-rechts.png", anchor:57.0, y:5, rot:80,  scale:.76, opacity:.66, height:13.0 },
+  { type:"left",   file:"wurzel-links.png",  anchor:43.0, y:5, rot:-80, scale:.76, opacity:.66, height:13.0 },
 
-  /* ganz außen fast waagrecht */
-  { type:"right",  file:"wurzel-rechts.png", anchor:58.0, y:6, rot:88,  scale:.70, opacity:.56 },
-  { type:"left",   file:"wurzel-links.png",  anchor:42.0, y:6, rot:-88, scale:.70, opacity:.56 }
+  { type:"right",  file:"wurzel-rechts.png", anchor:58.0, y:6, rot:89,  scale:.74, opacity:.62, height:12.8 },
+  { type:"left",   file:"wurzel-links.png",  anchor:42.0, y:6, rot:-89, scale:.74, opacity:.62, height:12.8 }
 ];
 
 function renderRootPngs() {
@@ -892,6 +977,8 @@ function renderRootPngs() {
     img.style.setProperty("--root-rot", `${cfg.rot}deg`);
     img.style.setProperty("--root-scale", cfg.scale);
     img.style.setProperty("--root-opacity", cfg.opacity);
+    img.style.setProperty("--root-height", `${cfg.height}%`);
+    img.dataset.rootOrder = String(index + 1);
     img.style.setProperty(
       "--root-delay",
       `${Math.min(index * 30, 160)}ms`
@@ -1027,6 +1114,8 @@ if ($("#addRootBtn")) {
       return;
     }
 
+    pendingRootGrowth = true;
+
     try {
       await runTransaction(db, async tx => {
         const snap = await tx.get(spaceRef);
@@ -1050,6 +1139,7 @@ if ($("#addRootBtn")) {
       if ($("#heartReason")) $("#heartReason").value = "";
       renderHearts();
     } catch (err) {
+      pendingRootGrowth = false;
       alert("Die Wurzel konnte nicht gespeichert werden: " + err.message);
     }
   };
