@@ -159,36 +159,17 @@
                 </linearGradient>
               </defs>
 
-              <!-- dezenter Boden -->
+              <!-- dezenter Boden ganz hinten -->
               <path
                 class="tree-ground"
                 d="M170 420 C225 407 337 407 392 420"
               />
 
-              <!-- schlanker, organischer Stamm -->
-              <path
-                class="tree-trunk"
-                d="M257 408
-                   C263 365 267 326 267 287
-                   C266 246 262 210 266 177
-                   C270 144 279 112 287 76
-                   C296 113 302 145 299 179
-                   C296 214 298 248 305 286
-                   C312 326 316 366 322 408
-                   C304 399 294 396 288 396
-                   C279 396 269 399 257 408 Z"
-                fill="url(#trunkGrad)"
-              />
+              <!-- Wurzeln liegen HINTER dem Stamm -->
+              <g id="rootLayer"></g>
 
-              <!-- ruhige Lichtkante am Stamm -->
-              <path
-                class="tree-trunk-light"
-                d="M277 389
-                   C278 343 276 302 277 261
-                   C278 217 280 177 286 135"
-                fill="none"
-                stroke="url(#trunkLight)"
-              />
+              <!-- Äste und Zweige liegen ebenfalls HINTER dem Stamm.
+                   Dadurch verschwinden die sichtbaren Ansatzkanten. -->
 
               <!-- linke Hauptäste -->
               <path class="branch branch-main"
@@ -232,9 +213,32 @@
               <path class="twig" d="M381 83 C394 71 406 63 419 57"/>
               <path class="twig" d="M381 83 C386 65 387 50 384 37"/>
 
-              <!-- hier wachsen Lernblätter und Herz-Wurzeln dynamisch -->
+              <!-- Stamm liegt VOR Ästen und Wurzeln -->
+              <path
+                class="tree-trunk"
+                d="M257 408
+                   C263 365 267 326 267 287
+                   C266 246 262 210 266 177
+                   C270 144 279 112 287 76
+                   C296 113 302 145 299 179
+                   C296 214 298 248 305 286
+                   C312 326 316 366 322 408
+                   C304 399 294 396 288 396
+                   C279 396 269 399 257 408 Z"
+                fill="url(#trunkGrad)"
+              />
+
+              <path
+                class="tree-trunk-light"
+                d="M277 389
+                   C278 343 276 302 277 261
+                   C278 217 280 177 286 135"
+                fill="none"
+                stroke="url(#trunkLight)"
+              />
+
+              <!-- Lernblätter liegen ganz vorne -->
               <g id="leafLayer"></g>
-              <g id="rootLayer"></g>
             </svg>
           </div>
 
