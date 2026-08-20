@@ -1506,3 +1506,112 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   filter:drop-shadow(0 .65px .85px rgba(64,45,34,.05));
 }
 
+
+/* =========================
+   MODERNER LERNBAUM 2.3k
+   ========================= */
+
+.modern-meadow{
+  fill:url(#modernMeadowGrad);
+}
+
+.modern-meadow-glow{
+  fill:none;
+  stroke:url(#modernMeadowGlow);
+  stroke-width:26;
+  stroke-linecap:round;
+  opacity:.75;
+}
+
+.modern-tree-shape{
+  filter:drop-shadow(0 2px 2px rgba(68,49,38,.08));
+}
+
+.modern-branch{
+  fill:none;
+  stroke:#765a48;
+  stroke-width:7.4;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.modern-branch-light{
+  stroke-width:5.2;
+  opacity:.96;
+}
+
+.modern-trunk-highlight{
+  fill:none;
+  stroke:#ba9270;
+  stroke-width:2.3;
+  stroke-linecap:round;
+  opacity:.30;
+}
+
+/* keine antiquierten Rindenzeichnungen */
+.bark-line,
+.bark-line-soft,
+.bark-line-short,
+.branch-heavy,
+.branch-main,
+.branch-soft,
+.twig,
+.twig-natural{
+  display:none !important;
+}
+
+/* Wurzeln reduziert und weich */
+.root-main{
+  stroke:#765a48 !important;
+  opacity:.80;
+}
+
+.root-light{
+  stroke:#a98162 !important;
+  opacity:.20;
+}
+
+.root-shadow{
+  stroke:rgba(68,49,38,.08) !important;
+  opacity:.42;
+}
+
+/* Blätter etwas moderner und leichter */
+.leaf-body{
+  stroke:#766257;
+  stroke-width:.58;
+}
+
+.leaf-soft-light{
+  opacity:.22;
+  stroke-width:.80;
+}
+
+.leaf-vein{
+  stroke-width:.62;
+  opacity:.52;
+}
+
+.leaf-vein-small{
+  stroke-width:.46;
+  opacity:.44;
+}
+
+.dynamic-leaf{
+  filter:drop-shadow(0 .5px .7px rgba(64,45,34,.045));
+}
+
+@media(max-width:820px){
+  #treeSvg{
+    width:76%;
+    max-height:400px;
+  }
+}
+
+@media(max-width:520px){
+  #treeSvg{
+    width:92%;
+    max-height:360px;
+  }
+}
+
