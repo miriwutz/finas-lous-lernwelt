@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.3g Homogener Naturbaum";
+const APP_VERSION = "2.3h Natürliche Ebenen & Archivzeichen";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -76,16 +76,29 @@ const heartOptions = [
 ];
 
 const leafPositions = [
-  [76,214,-32,1],[103,198,145,-1],[118,232,-18,1],[141,184,162,-1],
-  [157,216,-41,1],[174,170,138,-1],[191,201,-16,1],[205,144,171,-1],
-  [225,176,-35,1],[238,118,149,-1],[252,151,-11,1],[267,88,166,-1],
+  /* linker äußerer Ast – bewusst mal oberhalb, mal unterhalb */
+  [66,198,-28,1],[88,221,148,-1],[108,188,-20,1],[126,231,159,-1],
+  [144,198,-38,1],[163,238,144,-1],
 
-  [486,189,31,1],[459,170,214,-1],[445,207,14,1],[420,153,198,-1],
-  [405,190,39,1],[389,132,220,-1],[371,165,10,1],[354,104,201,-1],
-  [338,141,30,1],[325,74,214,-1],[306,111,9,1],[294,52,198,-1],
+  /* linker mittlerer Ast */
+  [127,158,-24,1],[147,139,154,-1],[160,176,-16,1],[179,154,168,-1],
+  [193,203,-30,1],[210,181,148,-1],
 
-  [94,254,-28,1],[127,269,152,-1],[168,247,-8,1],[198,286,176,-1],
-  [467,235,26,1],[433,261,210,-1],[397,238,6,1],[361,286,194,-1]
+  /* linke obere Krone */
+  [178,102,-22,1],[198,119,160,-1],[211,149,-12,1],[228,174,171,-1],
+  [235,111,-33,1],[250,145,149,-1],
+
+  /* ganz oben – unregelmäßig */
+  [246,65,-19,1],[263,90,161,-1],[276,122,-9,1],
+  [319,57,23,1],[311,96,203,-1],[329,127,8,1],
+
+  /* rechte obere Krone */
+  [362,99,27,1],[381,122,210,-1],[402,147,13,1],
+  [423,101,31,1],[447,137,205,-1],
+
+  /* rechter äußerer Ast */
+  [438,179,18,1],[458,204,213,-1],[484,174,26,1],
+  [397,211,9,1],[420,232,200,-1],[454,218,18,1]
 ];
 
 const rootPaths = [
@@ -1461,6 +1474,19 @@ function renderTaskArchive() {
       ? new Date(entry.completedAt).toLocaleDateString("de-AT")
       : "";
 
+    const difficultyInfo =
+      entry.difficulty === "easy"
+        ? { icon: "🍃", label: "Leicht" }
+        : entry.difficulty === "medium"
+          ? { icon: "🌿", label: "Mittel" }
+          : entry.difficulty === "tricky"
+            ? { icon: "⭐", label: "Knifflig" }
+            : null;
+
+    const difficultyColor = entry.difficulty
+      ? getLeafColor(entry.child === "lou" ? "lou" : "fina", entry.difficulty)
+      : "";
+
     return `
       <div class="archive-task">
         <div class="archive-task-meta">
@@ -1475,9 +1501,24 @@ function renderTaskArchive() {
           : ""
         }
 
-       <div class="archive-task-time">
-  💛 ${minutes} Min.
-</div>
+       <div class="archive-task-details">
+         <div class="archive-task-time">
+           💛 ${minutes} Min.
+         </div>
+
+         ${difficultyInfo
+           ? `<div class="archive-difficulty">
+                <span
+                  class="archive-difficulty-dot"
+                  style="background:${escapeHtml(difficultyColor)}"
+                ></span>
+                ${difficultyInfo.icon} ${difficultyInfo.label}
+              </div>`
+           : `<div class="archive-difficulty archive-difficulty-old">
+                Schwierigkeit nicht erfasst
+              </div>`
+         }
+       </div>
 
 <button
   type="button"
