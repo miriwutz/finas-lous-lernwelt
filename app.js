@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.3x Herzflug & sichtbares Wurzelwachstum";
+const APP_VERSION = "2.3y Herz exakt & Wurzel deutlich sichtbar";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -424,7 +424,7 @@ function showRootGrowthCelebration() {
 
   if (kicker) kicker.textContent = "♥ EIN HERZMOMENT STÄRKT EUREN BAUM";
   if (title) title.textContent = "Eine neue Wurzel wächst.";
-  if (text) text.textContent = "Dieser Herzmoment findet seinen Platz – und schenkt eurem Baum neue Wurzeln.";
+  if (text) text.textContent = "Schau genau hin – gleich wächst unten eine neue Wurzel.";
 
   if (flyingLeaf) flyingLeaf.style.display = "none";
   if (flyingHeart) flyingHeart.style.display = "grid";
@@ -437,14 +437,11 @@ function showRootGrowthCelebration() {
   const roots = [...treeClone.querySelectorAll(".root-growth-piece")];
   const newestRoot = roots.at(-1);
 
-  // Die neue Wurzel ist anfangs unsichtbar und wächst erst,
-  // nachdem das Herz den Stamm erreicht hat.
   newestRoot?.classList.add("new-growth-root", "root-waiting");
 
   preview.querySelector(".tree-growth-canvas")?.remove();
   preview.appendChild(treeClone);
 
-  // kleiner Zielpunkt genau über dem geschnitzten Baumherz
   let heartTarget = preview.querySelector(".heart-target-pulse");
   if (!heartTarget) {
     heartTarget = document.createElement("div");
@@ -460,12 +457,17 @@ function showRootGrowthCelebration() {
     dialog.classList.add("heart-bloom");
 
     const previewRect = preview.getBoundingClientRect();
-    const canvasRect = treeClone.getBoundingClientRect();
+    const baseImage = treeClone.querySelector(".tree-base-image");
+    const imageRect = baseImage?.getBoundingClientRect() || treeClone.getBoundingClientRect();
 
-    // Aus dem aktuellen PNG/Screenshot abgeleitet:
-    // das geschnitzte Herz sitzt ca. bei 51.5 % Breite / 64 % Höhe.
-    const targetX = canvasRect.left + canvasRect.width * 0.515 - previewRect.left;
-    const targetY = canvasRect.top + canvasRect.height * 0.640 - previewRect.top;
+    /*
+      Ziel nicht mehr über das gesamte Canvas berechnen,
+      sondern direkt über das tatsächlich sichtbare PNG.
+      Die rote Markierung liegt am geschnitzten Herz:
+      ca. 50 % Breite / 62,7 % Höhe des sichtbaren Baum-PNGs.
+    */
+    const targetX = imageRect.left + imageRect.width * 0.500 - previewRect.left;
+    const targetY = imageRect.top + imageRect.height * 0.627 - previewRect.top;
 
     heartTarget.style.left = `${targetX}px`;
     heartTarget.style.top = `${targetY}px`;
@@ -473,60 +475,62 @@ function showRootGrowthCelebration() {
     if (!flyingHeart) return;
 
     const startX = previewRect.width * 0.50;
-    const startY = Math.max(28, previewRect.height * 0.10);
+    const startY = Math.max(34, previewRect.height * 0.08);
 
     flyingHeart.getAnimations().forEach(a => a.cancel());
     flyingHeart.style.opacity = "0";
 
     const heartAnimation = flyingHeart.animate([
       {
-        offset: 0,
-        opacity: 0,
-        transform: `translate(${startX}px, ${startY}px) translate(-50%,-50%) scale(.55)`
+        offset:0,
+        opacity:0,
+        transform:`translate(${startX}px, ${startY}px) translate(-50%,-50%) scale(.55)`
       },
       {
-        offset: .12,
-        opacity: 1,
-        transform: `translate(${startX}px, ${startY}px) translate(-50%,-50%) scale(1.55)`
+        offset:.12,
+        opacity:1,
+        transform:`translate(${startX}px, ${startY}px) translate(-50%,-50%) scale(1.65)`
       },
       {
-        offset: .42,
-        opacity: 1,
-        transform: `translate(${startX - 24}px, ${startY + (targetY-startY)*.40}px) translate(-50%,-50%) scale(1.30)`
+        offset:.36,
+        opacity:1,
+        transform:`translate(${startX - 30}px, ${startY + (targetY-startY)*.34}px) translate(-50%,-50%) scale(1.36)`
       },
       {
-        offset: .72,
-        opacity: 1,
-        transform: `translate(${targetX + 14}px, ${startY + (targetY-startY)*.78}px) translate(-50%,-50%) scale(.92)`
+        offset:.62,
+        opacity:1,
+        transform:`translate(${targetX + 24}px, ${startY + (targetY-startY)*.69}px) translate(-50%,-50%) scale(1.02)`
       },
       {
-        offset: .94,
-        opacity: 1,
-        transform: `translate(${targetX}px, ${targetY}px) translate(-50%,-50%) scale(.52)`
+        offset:.88,
+        opacity:1,
+        transform:`translate(${targetX}px, ${targetY}px) translate(-50%,-50%) scale(.56)`
       },
       {
-        offset: 1,
-        opacity: 0,
-        transform: `translate(${targetX}px, ${targetY}px) translate(-50%,-50%) scale(.18)`
+        offset:1,
+        opacity:0,
+        transform:`translate(${targetX}px, ${targetY}px) translate(-50%,-50%) scale(.15)`
       }
     ], {
-      duration: 2450,
-      easing: "cubic-bezier(.22,.72,.20,1)",
-      fill: "forwards"
+      duration:2750,
+      easing:"cubic-bezier(.20,.72,.18,1)",
+      fill:"forwards"
     });
 
     heartAnimation.finished.then(() => {
       heartTarget.classList.add("is-pulsing");
 
-      // Jetzt erst wächst die neue Wurzel deutlich sichtbar nach unten/außen.
       if (newestRoot) {
         newestRoot.classList.remove("root-waiting");
         newestRoot.classList.add("root-growing-now");
       }
+
+      if (text) {
+        text.textContent = "Da ist sie – diese Wurzel ist gerade dazugekommen.";
+      }
     }).catch(() => {});
   });
 
-  // genug Zeit, damit Herzflug UND Wurzelwachstum wahrgenommen werden
   treeGrowthTimer = setTimeout(() => {
     if (dialog.open) dialog.close();
     dialog.classList.remove("heart-bloom");
@@ -541,7 +545,7 @@ function showRootGrowthCelebration() {
 
     if (flyingLeaf) flyingLeaf.style.display = "block";
     treeGrowthTimer = null;
-  }, 4700);
+  }, 5600);
 }
 
 function renderTreeAttention() {
