@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.3l PNG-Lernbaum";
+const APP_VERSION = "2.3m Organische Wurzeln";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -87,16 +87,16 @@ const leafPositions = [
 ];
 
 const rootPaths = [
-  "M282 390 C268 401 253 410 235 420 C215 431 195 441 170 447",
-  "M285 391 C273 407 262 423 251 443 C241 461 230 478 216 491",
-  "M289 390 C283 412 279 434 278 456 C277 472 274 486 270 498",
-  "M294 390 C300 412 305 434 308 456 C310 472 314 486 319 497",
-  "M298 391 C310 407 323 423 339 442 C353 458 368 474 388 487",
-  "M302 390 C317 401 334 411 354 420 C375 430 397 438 424 444",
-  "M279 393 C257 397 235 400 213 400 C191 400 170 404 148 412",
-  "M305 393 C327 397 350 400 373 399 C397 398 419 402 442 410",
-  "M286 392 C276 419 264 444 250 469",
-  "M297 392 C307 418 321 444 337 468"
+  "M289 389 C278 397 264 407 247 416 C228 426 207 435 184 440 C204 438 225 432 244 423 C263 414 279 404 294 394 Z",
+  "M288 390 C279 405 269 421 259 439 C250 456 239 472 226 487 C241 474 253 459 264 443 C276 425 286 408 295 394 Z",
+  "M290 390 C285 409 282 429 280 449 C278 466 276 482 271 496 C280 482 286 466 289 449 C292 428 295 408 296 392 Z",
+  "M294 390 C299 410 304 429 307 449 C310 466 314 481 320 495 C317 478 316 464 315 448 C314 428 309 407 299 392 Z",
+  "M297 390 C307 405 318 421 331 438 C344 455 358 470 376 485 C362 467 350 451 339 435 C327 418 316 403 302 393 Z",
+  "M299 390 C314 400 330 409 349 417 C369 426 391 433 414 438 C394 430 375 422 357 413 C338 404 320 396 303 392 Z",
+  "M286 391 C268 395 249 398 229 399 C208 400 188 404 169 411 C190 406 211 405 232 406 C252 406 272 402 292 395 Z",
+  "M300 391 C318 395 337 398 357 399 C379 400 400 404 420 411 C398 406 377 405 356 406 C335 406 316 402 296 395 Z",
+  "M289 391 C283 410 276 430 267 449 C260 464 251 477 240 489 C253 479 264 467 273 453 C284 435 292 415 296 393 Z",
+  "M296 391 C303 410 311 429 321 447 C330 463 340 476 353 488 C342 474 333 460 326 445 C317 426 308 407 301 393 Z"
 ];
 
 function leafSvg() {
@@ -916,26 +916,21 @@ function renderTree() {
   });
 
   (state.roots || []).slice(0, rootPaths.length).forEach((root, i) => {
-    const width = Math.max(2.3, 4.7 - i * .15);
-
     rootLayer.insertAdjacentHTML(
       "beforeend",
       `
-      <g class="dynamic-root">
+      <g class="dynamic-root root-shape-${i + 1}">
         <path
           d="${rootPaths[i]}"
-          class="root-shadow"
-          stroke-width="${width + 1.8}"
+          class="root-organic-shadow"
         />
         <path
           d="${rootPaths[i]}"
-          class="root-main"
-          stroke-width="${width}"
+          class="root-organic-body"
         />
         <path
           d="${rootPaths[i]}"
-          class="root-light"
-          stroke-width="${Math.max(1, width * .28)}"
+          class="root-organic-light"
         />
       </g>
       `
