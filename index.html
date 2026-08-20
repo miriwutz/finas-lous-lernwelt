@@ -140,117 +140,22 @@
 
           <div class="tree-wrap">
 
-            <svg
-              id="treeSvg"
-              viewBox="0 0 560 500"
-              role="img"
-              aria-label="Lernbaum"
-            >
-              <defs>
-                <linearGradient id="modernTrunkGrad" x1="0" y1="0" x2="1" y2=".15">
-                  <stop offset="0%" stop-color="#765a48"/>
-                  <stop offset="45%" stop-color="#9a7358"/>
-                  <stop offset="100%" stop-color="#6f5140"/>
-                </linearGradient>
+            <div id="treeCanvas" class="tree-canvas" role="img" aria-label="Lernbaum">
+              <div class="tree-meadow-layer" aria-hidden="true"></div>
 
-                <linearGradient id="modernMeadowGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#dfe8ce" stop-opacity=".12"/>
-                  <stop offset="42%" stop-color="#cad9ad" stop-opacity=".42"/>
-                  <stop offset="100%" stop-color="#aabd82" stop-opacity=".62"/>
-                </linearGradient>
+              <svg id="rootSvg" class="tree-overlay tree-root-overlay"
+                   viewBox="0 0 560 500" aria-hidden="true">
+                <g id="rootLayer"></g>
+              </svg>
 
-                <linearGradient id="modernMeadowGlow" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stop-color="#f3f6e8" stop-opacity="0"/>
-                  <stop offset="50%" stop-color="#dfe9c7" stop-opacity=".45"/>
-                  <stop offset="100%" stop-color="#f3f6e8" stop-opacity="0"/>
-                </linearGradient>
-              </defs>
+              <img id="treeBaseImage" class="tree-base-image"
+                   src="lernbaum.png" alt="" draggable="false">
 
-              <!-- sehr weiche Wiese -->
-              <path
-                class="modern-meadow"
-                d="M0 397
-                   C95 381 179 385 250 394
-                   C328 404 415 400 560 382
-                   L560 500 L0 500 Z"
-              />
-
-              <path
-                class="modern-meadow-glow"
-                d="M55 411
-                   C154 399 243 402 322 409
-                   C393 415 465 409 530 401"
-              />
-
-              <!-- dynamische Wurzeln hinter dem Baum -->
-              <g id="rootLayer"></g>
-
-              <!-- moderner, zusammenhängender Grundbaum:
-                   wenige große Formen statt vieler aufgesetzter Äste -->
-
-              <!-- linke Kronenform -->
-              <path
-                class="modern-tree-shape"
-                d="M281 382
-                   C276 346 272 314 271 286
-                   C252 278 234 265 217 249
-                   C198 232 182 214 166 195
-                   C147 173 127 156 104 145
-                   C126 148 147 158 166 171
-                   C183 182 199 196 215 212
-                   C226 223 239 234 252 242
-                   C245 221 238 200 229 181
-                   C220 161 209 144 194 130
-                   C213 141 229 156 242 175
-                   C254 191 264 210 273 229
-                   C270 200 271 171 275 142
-                   C278 118 283 96 289 74
-                   C294 98 298 121 299 145
-                   C301 174 301 201 298 226
-                   C309 205 321 186 336 169
-                   C351 152 368 139 388 130
-                   C372 143 359 160 349 178
-                   C339 196 331 216 325 237
-                   C340 227 356 216 370 203
-                   C389 186 407 173 427 164
-                   C447 155 467 151 487 151
-                   C463 157 442 169 423 184
-                   C403 199 387 218 369 237
-                   C351 256 331 270 309 280
-                   C309 311 313 345 320 382
-                   C306 377 294 375 281 382 Z"
-                fill="url(#modernTrunkGrad)"
-              />
-
-              <!-- wenige zusätzliche organische Äste, aber aus derselben Formensprache -->
-              <path
-                class="modern-branch"
-                d="M268 281 C236 269 210 249 189 223 C169 198 147 182 119 175"
-              />
-              <path
-                class="modern-branch"
-                d="M301 277 C334 264 360 245 382 221 C404 197 428 182 457 177"
-              />
-              <path
-                class="modern-branch modern-branch-light"
-                d="M276 231 C255 210 241 186 233 160"
-              />
-              <path
-                class="modern-branch modern-branch-light"
-                d="M298 229 C318 208 333 184 342 157"
-              />
-
-              <!-- dezente Lichtkante -->
-              <path
-                class="modern-trunk-highlight"
-                d="M286 365
-                   C285 329 285 298 285 268
-                   C285 231 287 194 290 156"
-              />
-
-              <!-- Lernblätter ganz vorne -->
-              <g id="leafLayer"></g>
-            </svg>
+              <svg id="leafSvg" class="tree-overlay tree-leaf-overlay"
+                   viewBox="0 0 560 500" aria-hidden="true">
+                <g id="leafLayer"></g>
+              </svg>
+            </div>
           </div>
 
 
