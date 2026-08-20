@@ -2444,3 +2444,42 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
     height:12.5% !important;
   }
 }
+
+
+/* =========================================================
+   2.3v – Wachstum von der Mitte nach außen
+   1 Mitte, dann rechts/links im Wechsel.
+   Je weiter außen, desto stärker die Drehung bis fast 90°.
+   ========================================================= */
+
+.root-png.root-growth-piece{
+  top:84.0% !important;
+  height:14.0% !important;
+}
+
+/* Mittelwurzel darf bewusst länger nach unten wachsen. */
+.root-png.root-middle{
+  height:18.5% !important;
+  --asset-shift:-51.2%;
+  --asset-origin:51.2%;
+}
+
+/* Seitenwurzeln bleiben flacher und werden durch die Layout-Rotation
+   mit zunehmendem Abstand immer stärker nach außen gelegt. */
+.root-png.root-left{
+  height:13.5% !important;
+  --asset-shift:-85%;
+  --asset-origin:85%;
+}
+
+.root-png.root-right{
+  height:13.5% !important;
+  --asset-shift:-10.1%;
+  --asset-origin:10.1%;
+}
+
+@media(max-width:900px){
+  .root-png.root-middle{ height:18% !important; }
+  .root-png.root-left,
+  .root-png.root-right{ height:13% !important; }
+}
