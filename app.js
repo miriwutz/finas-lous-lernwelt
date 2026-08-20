@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.3u Wurzeln breiter statt tiefer";
+const APP_VERSION = "2.3v Wurzeln Mitte nach außen";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -841,25 +841,31 @@ async function toggleTask(taskId) {
 
 
 const ROOT_GROWTH_LAYOUT = [
-  { type:"middle", file:"wurzel-mitte.png",  anchor:50.0, y:0, rot:0,   scale:.64, opacity:.78 },
-  { type:"left",   file:"wurzel-links.png",  anchor:44.5, y:0, rot:-16, scale:.77, opacity:.78 },
-  { type:"right",  file:"wurzel-rechts.png", anchor:55.0, y:0, rot:16,  scale:.77, opacity:.78 },
+  /* 1: zuerst eine deutlich sichtbare, längere Mittelwurzel */
+  { type:"middle", file:"wurzel-mitte.png",  anchor:50.0, y:0, rot:0,   scale:1.02, opacity:.88 },
 
-  { type:"middle", file:"wurzel-mitte.png",  anchor:49.3, y:2, rot:-8,  scale:.53, opacity:.64 },
-  { type:"left",   file:"wurzel-links.png",  anchor:45.3, y:1, rot:-22, scale:.68, opacity:.66 },
-  { type:"right",  file:"wurzel-rechts.png", anchor:54.3, y:1, rot:22,  scale:.68, opacity:.66 },
+  /* danach immer RECHTS / LINKS im Wechsel – von innen nach außen */
+  { type:"right",  file:"wurzel-rechts.png", anchor:52.0, y:0, rot:14,  scale:.82, opacity:.80 },
+  { type:"left",   file:"wurzel-links.png",  anchor:48.0, y:0, rot:-14, scale:.82, opacity:.80 },
 
-  { type:"middle", file:"wurzel-mitte.png",  anchor:50.7, y:3, rot:9,   scale:.47, opacity:.56 },
-  { type:"left",   file:"wurzel-links.png",  anchor:46.0, y:2, rot:-27, scale:.61, opacity:.58 },
-  { type:"right",  file:"wurzel-rechts.png", anchor:53.6, y:2, rot:27,  scale:.61, opacity:.58 },
+  { type:"right",  file:"wurzel-rechts.png", anchor:53.0, y:1, rot:27,  scale:.80, opacity:.76 },
+  { type:"left",   file:"wurzel-links.png",  anchor:47.0, y:1, rot:-27, scale:.80, opacity:.76 },
 
-  { type:"middle", file:"wurzel-mitte.png",  anchor:49.7, y:4, rot:-12, scale:.42, opacity:.49 },
-  { type:"left",   file:"wurzel-links.png",  anchor:44.8, y:3, rot:-31, scale:.55, opacity:.51 },
-  { type:"right",  file:"wurzel-rechts.png", anchor:54.8, y:3, rot:31,  scale:.55, opacity:.51 },
+  { type:"right",  file:"wurzel-rechts.png", anchor:54.0, y:2, rot:40,  scale:.78, opacity:.72 },
+  { type:"left",   file:"wurzel-links.png",  anchor:46.0, y:2, rot:-40, scale:.78, opacity:.72 },
 
-  { type:"middle", file:"wurzel-mitte.png",  anchor:50.4, y:5, rot:13,  scale:.37, opacity:.43 },
-  { type:"left",   file:"wurzel-links.png",  anchor:45.6, y:4, rot:-35, scale:.49, opacity:.45 },
-  { type:"right",  file:"wurzel-rechts.png", anchor:54.0, y:4, rot:35,  scale:.49, opacity:.45 }
+  { type:"right",  file:"wurzel-rechts.png", anchor:55.0, y:3, rot:54,  scale:.76, opacity:.68 },
+  { type:"left",   file:"wurzel-links.png",  anchor:45.0, y:3, rot:-54, scale:.76, opacity:.68 },
+
+  { type:"right",  file:"wurzel-rechts.png", anchor:56.0, y:4, rot:67,  scale:.74, opacity:.64 },
+  { type:"left",   file:"wurzel-links.png",  anchor:44.0, y:4, rot:-67, scale:.74, opacity:.64 },
+
+  { type:"right",  file:"wurzel-rechts.png", anchor:57.0, y:5, rot:79,  scale:.72, opacity:.60 },
+  { type:"left",   file:"wurzel-links.png",  anchor:43.0, y:5, rot:-79, scale:.72, opacity:.60 },
+
+  /* ganz außen fast waagrecht */
+  { type:"right",  file:"wurzel-rechts.png", anchor:58.0, y:6, rot:88,  scale:.70, opacity:.56 },
+  { type:"left",   file:"wurzel-links.png",  anchor:42.0, y:6, rot:-88, scale:.70, opacity:.56 }
 ];
 
 function renderRootPngs() {
