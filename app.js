@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.3e Sanftes Wachstum";
+const APP_VERSION = "2.3f Naturbaum & Blattfarben";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -16,6 +16,21 @@ let adminDraft = { fina: [], lou: [] };
 let attentionTicker = null;
 let pendingTreeGrowth = false;
 let treeGrowthTimer = null;
+
+const DEFAULT_LEAF_COLORS = {
+  fina: {
+    easy: "#b89adf",
+    medium: "#f2cf63",
+    tricky: "#86b978"
+  },
+  lou: {
+    easy: "#ef9fb3",
+    medium: "#7fb7d2",
+    tricky: "#d49a3a"
+  }
+};
+
+let pendingDifficultyTaskId = null;
 
 const dailyMissions = [
   "🌸 Nimm heute einmal bewusst etwas Schönes wahr.",
@@ -61,31 +76,31 @@ const heartOptions = [
 ];
 
 const leafPositions = [
-  [82,205,-26,1],[108,215,148,-1],[128,184,-20,1],[151,202,154,-1],
-  [161,163,-28,1],[181,180,150,-1],[194,134,-20,1],[211,151,152,-1],
-  [230,109,-18,1],[246,128,154,-1],[255,77,-20,1],[272,96,152,-1],
+  [76,214,-32,1],[103,198,145,-1],[118,232,-18,1],[141,184,162,-1],
+  [157,216,-41,1],[174,170,138,-1],[191,201,-16,1],[205,144,171,-1],
+  [225,176,-35,1],[238,118,149,-1],[252,151,-11,1],[267,88,166,-1],
 
-  [478,174,25,1],[452,191,205,-1],[430,151,20,1],[411,175,202,-1],
-  [402,129,27,1],[381,146,205,-1],[367,101,18,1],[346,122,198,-1],
-  [334,73,18,1],[315,94,198,-1],[321,45,22,1],[300,69,198,-1],
+  [486,189,31,1],[459,170,214,-1],[445,207,14,1],[420,153,198,-1],
+  [405,190,39,1],[389,132,220,-1],[371,165,10,1],[354,104,201,-1],
+  [338,141,30,1],[325,74,214,-1],[306,111,9,1],[294,52,198,-1],
 
-  [125,235,-18,1],[151,247,150,-1],[188,260,-14,1],[219,271,160,-1],
-  [438,216,18,1],[412,236,202,-1],[378,252,14,1],[345,266,198,-1]
+  [94,254,-28,1],[127,269,152,-1],[168,247,-8,1],[198,286,176,-1],
+  [467,235,26,1],[433,261,210,-1],[397,238,6,1],[361,286,194,-1]
 ];
 
 const rootPaths = [
-  "M282 402 C258 416 236 430 217 448",
-  "M288 403 C276 423 267 444 261 466",
-  "M294 403 C305 423 315 444 323 466",
-  "M300 402 C323 416 345 431 365 449",
-  "M274 404 C248 409 221 414 193 416",
-  "M307 404 C334 409 361 414 389 416",
-  "M278 406 C253 429 236 449 224 470",
-  "M304 406 C329 429 347 449 360 469",
-  "M286 406 C283 429 282 451 283 474",
-  "M297 406 C299 430 300 452 299 475",
-  "M269 407 C242 421 214 433 186 439",
-  "M312 407 C340 421 368 432 397 438"
+  "M288 386 C276 402 252 417 221 442 C204 456 190 469 171 478",
+  "M291 388 C280 409 266 431 255 458 C249 472 246 483 244 490",
+  "M293 388 C294 411 291 438 293 466 C294 478 296 486 299 493",
+  "M296 387 C309 407 326 431 347 455 C360 469 373 479 389 486",
+  "M285 391 C259 401 231 408 202 412 C180 415 161 417 141 422",
+  "M299 391 C325 401 353 408 381 411 C405 414 424 416 445 420",
+  "M289 390 C266 417 246 442 227 469 C218 481 212 490 207 499",
+  "M297 390 C320 416 341 441 361 467 C371 480 379 489 386 497",
+  "M287 389 C269 403 247 420 225 432 C206 443 190 449 172 453",
+  "M298 389 C319 403 341 420 365 432 C384 442 401 449 420 452",
+  "M290 390 C280 420 275 449 274 482",
+  "M296 390 C305 420 311 450 314 483"
 ];
 
 function leafSvg() {
@@ -697,24 +712,48 @@ function renderTasks(child) {
   });
 }
 
-async function toggleTask(taskId) {
+function getLeafColor(child, difficulty) {
+  const configured = state.tree?.leafColors?.[child]?.[difficulty];
+  if (configured) return configured;
+
+  return DEFAULT_LEAF_COLORS?.[child]?.[difficulty]
+    || DEFAULT_LEAF_COLORS.fina.medium;
+}
+
+function askTaskDifficulty(taskId) {
+  const task = (state.tasks || []).find(item => item.id === taskId);
+  if (!task) return;
+
+  pendingDifficultyTaskId = taskId;
+
+  const dialog = $("#difficultyDialog");
+  const title = $("#difficultyTaskTitle");
+
+  if (title) {
+    title.textContent = task.title || "Diese Aufgabe";
+  }
+
+  if (dialog && !dialog.open) dialog.showModal();
+}
+
+async function completeTaskWithDifficulty(taskId, difficulty) {
   let completedNow = false;
 
   try {
     await runTransaction(db, async tx => {
       const snap = await tx.get(spaceRef);
       const data = snap.data();
+
       const tasks = [...(data.tasks || [])];
       const leaves = [...(data.learningLeaves || [])];
-      const index = tasks.findIndex(t => t.id === taskId);
       const archive = [...(data.taskArchive || [])];
 
+      const index = tasks.findIndex(t => t.id === taskId);
       if (index < 0) return;
 
       const task = { ...tasks[index] };
-      const willBeDone = !task.done;
 
-      if (willBeDone && task.activeSince) {
+      if (task.activeSince) {
         const started = new Date(task.activeSince).getTime();
         const elapsed = Number.isFinite(started)
           ? Math.max(0, Math.floor((Date.now() - started) / 1000))
@@ -727,49 +766,50 @@ async function toggleTask(taskId) {
         task.activeSince = null;
       }
 
-      task.done = willBeDone;
+      task.done = true;
+      task.difficulty = difficulty;
       tasks[index] = task;
-if (task.done) {
-  const alreadyArchived = archive.some(entry => entry.taskId === task.id);
 
-  if (!alreadyArchived) {
-    archive.push({
-      id: crypto.randomUUID(),
-      taskId: task.id,
-      child: task.child,
-      title: task.title || "",
-      note: task.note || "",
-      type: task.type || "paper",
-      url: task.url || "",
-      attentionSeconds: Number(task.attentionSeconds || 0),
-      completedAt: new Date().toISOString()
-    });
-  }
-}
+      const alreadyArchived = archive.some(entry => entry.taskId === task.id);
+
+      if (!alreadyArchived) {
+        archive.push({
+          id: crypto.randomUUID(),
+          taskId: task.id,
+          child: task.child,
+          title: task.title || "",
+          note: task.note || "",
+          type: task.type || "paper",
+          url: task.url || "",
+          attentionSeconds: Number(task.attentionSeconds || 0),
+          difficulty,
+          completedAt: new Date().toISOString()
+        });
+      }
+
       const leafIndex = leaves.findIndex(l => l.taskId === taskId);
 
-      if (task.done && leafIndex < 0) {
+      if (leafIndex < 0) {
         leaves.push({
           id: crypto.randomUUID(),
           taskId,
           child: task.child,
           title: task.title,
+          difficulty,
+          color: getLeafColor(task.child, difficulty),
           attentionSeconds: Number(task.attentionSeconds || 0),
           createdAt: new Date().toISOString()
         });
+
         completedNow = true;
       }
 
-      if (!task.done && leafIndex >= 0) {
-        leaves.splice(leafIndex, 1);
-      }
-
-   tx.update(spaceRef, {
-  tasks,
-  learningLeaves: leaves,
-  taskArchive: archive,
-  updatedAt: serverTimestamp()
-});
+      tx.update(spaceRef, {
+        tasks,
+        learningLeaves: leaves,
+        taskArchive: archive,
+        updatedAt: serverTimestamp()
+      });
     });
 
     if (completedNow) pendingTreeGrowth = true;
@@ -777,6 +817,50 @@ if (task.done) {
     alert("Die Aufgabe konnte nicht gespeichert werden: " + err.message);
   }
 }
+
+async function toggleTask(taskId) {
+  const task = (state.tasks || []).find(item => item.id === taskId);
+  if (!task) return;
+
+  // Beim ersten Abschließen fragt das Kind, wie sich die Aufgabe angefühlt hat.
+  if (!task.done) {
+    askTaskDifficulty(taskId);
+    return;
+  }
+
+  // Bereits erledigte Aufgabe wieder öffnen.
+  try {
+    await runTransaction(db, async tx => {
+      const snap = await tx.get(spaceRef);
+      const data = snap.data();
+
+      const tasks = [...(data.tasks || [])];
+      const leaves = [...(data.learningLeaves || [])];
+
+      const index = tasks.findIndex(t => t.id === taskId);
+      if (index < 0) return;
+
+      tasks[index] = {
+        ...tasks[index],
+        done: false,
+        difficulty: null,
+        activeSince: null
+      };
+
+      const leafIndex = leaves.findIndex(l => l.taskId === taskId);
+      if (leafIndex >= 0) leaves.splice(leafIndex, 1);
+
+      tx.update(spaceRef, {
+        tasks,
+        learningLeaves: leaves,
+        updatedAt: serverTimestamp()
+      });
+    });
+  } catch (err) {
+    alert("Die Aufgabe konnte nicht wieder geöffnet werden: " + err.message);
+  }
+}
+
 
 function renderTree() {
   const leafLayer = $("#leafLayer");
@@ -790,8 +874,11 @@ function renderTree() {
 
   leaves.forEach((leaf, i) => {
     const [x, y, rot, mirror] = leafPositions[i];
-    const color = i % 2 === 0 ? "#a9bea0" : "#8ebdcc";
-    const highlight = i % 2 === 0 ? "#dbe6d7" : "#d7edf3";
+    const color = leaf.color || getLeafColor(
+      leaf.child || "fina",
+      leaf.difficulty || "medium"
+    );
+    const highlight = "#f7f4ea";
 
     leafLayer.insertAdjacentHTML("beforeend", `
       <g
@@ -1131,6 +1218,24 @@ function renderForest() {
   });
 }
 
+$$("[data-difficulty]").forEach(btn => {
+  btn.onclick = async () => {
+    if (!pendingDifficultyTaskId) return;
+
+    const taskId = pendingDifficultyTaskId;
+    pendingDifficultyTaskId = null;
+
+    $("#difficultyDialog")?.close();
+    await completeTaskWithDifficulty(taskId, btn.dataset.difficulty);
+  };
+});
+
+$("#difficultyDialog")?.addEventListener("cancel", event => {
+  event.preventDefault();
+  pendingDifficultyTaskId = null;
+  $("#difficultyDialog")?.close();
+});
+
 // Baumpfleger-Bereich
 function openMamaDialog() {
   $("#dayClosingDialog")?.close();
@@ -1214,6 +1319,16 @@ function prepareAdmin() {
   if ($("#treeTargetInput")) {
     $("#treeTargetInput").value = String(state.tree?.targetLeaves || 20);
   }
+
+  const leafColors = state.tree?.leafColors || DEFAULT_LEAF_COLORS;
+
+  if ($("#finaEasyColor")) $("#finaEasyColor").value = leafColors.fina?.easy || DEFAULT_LEAF_COLORS.fina.easy;
+  if ($("#finaMediumColor")) $("#finaMediumColor").value = leafColors.fina?.medium || DEFAULT_LEAF_COLORS.fina.medium;
+  if ($("#finaTrickyColor")) $("#finaTrickyColor").value = leafColors.fina?.tricky || DEFAULT_LEAF_COLORS.fina.tricky;
+
+  if ($("#louEasyColor")) $("#louEasyColor").value = leafColors.lou?.easy || DEFAULT_LEAF_COLORS.lou.easy;
+  if ($("#louMediumColor")) $("#louMediumColor").value = leafColors.lou?.medium || DEFAULT_LEAF_COLORS.lou.medium;
+  if ($("#louTrickyColor")) $("#louTrickyColor").value = leafColors.lou?.tricky || DEFAULT_LEAF_COLORS.lou.tricky;
 
   renderAdminTasks("fina");
   renderAdminTasks("lou");
@@ -1513,7 +1628,19 @@ if ($("#saveTreeSettings")) {
         tree: {
           ...state.tree,
           name: $("#treeNameInput").value.trim() || "Unser Wochenbaum",
-          targetLeaves: Number($("#treeTargetInput").value)
+          targetLeaves: Number($("#treeTargetInput").value),
+          leafColors: {
+            fina: {
+              easy: $("#finaEasyColor")?.value || DEFAULT_LEAF_COLORS.fina.easy,
+              medium: $("#finaMediumColor")?.value || DEFAULT_LEAF_COLORS.fina.medium,
+              tricky: $("#finaTrickyColor")?.value || DEFAULT_LEAF_COLORS.fina.tricky
+            },
+            lou: {
+              easy: $("#louEasyColor")?.value || DEFAULT_LEAF_COLORS.lou.easy,
+              medium: $("#louMediumColor")?.value || DEFAULT_LEAF_COLORS.lou.medium,
+              tricky: $("#louTrickyColor")?.value || DEFAULT_LEAF_COLORS.lou.tricky
+            }
+          }
         },
         updatedAt: serverTimestamp()
       });
