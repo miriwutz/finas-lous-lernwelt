@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5t Lernwald organische Verteilung";
+const APP_VERSION = "2.5u Lernwald natuerliche Lichtung";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -2426,20 +2426,24 @@ function forestCompanionForIndex(index) {
 }
 
 function deterministicForestPoint(index) {
-  const frac = value => value - Math.floor(value);
+  const frac = n => n - Math.floor(n);
+  const hash = (n, salt) =>
+    frac(Math.sin((n + 5) * (9.731 + salt * 13.117)) * 24634.6345);
 
-  const rx = frac((index + 3) * 0.6435942529);
-  const ry = frac((index + 7) * 0.7831347281);
+  const x = 7 + hash(index, 1) * 86;
 
-  const x = 8 + rx * 84;
+  // Verschiedene Tiefenzonen statt einer unteren Emoji-Linie.
+  const depthBand = index % 4;
+  const yBase =
+    depthBand === 0 ? 76 :
+    depthBand === 1 ? 82 :
+    depthBand === 2 ? 69 : 87;
 
-  // Bewohner/Pflanzen überwiegend im unteren Landschaftsbereich,
-  // aber nicht auf einer geraden Linie.
-  const y = 72 + Math.pow(ry, 1.1) * 19;
+  const y = yBase + (hash(index, 2) - 0.5) * 7;
 
   return {
     x: Math.max(6, Math.min(94, x)),
-    y: Math.max(70, Math.min(92, y))
+    y: Math.max(66, Math.min(92, y))
   };
 }
 
@@ -2581,76 +2585,123 @@ function runGrowthPreview(kind) {
 
 function forestTreeLayout(index, count) {
   /*
-    Organische Lernwald-Verteilung:
-    - keine geraden Reihen
-    - keine Symmetrie
-    - jeder Baum eigener Platz
-    - Vorder-/Mittel-/Hintergrund unterschiedlich groß
-    - Positionen bleiben deterministisch stabil
-    - Sicherheitsrand, damit nichts abgeschnitten wird
+    2.5u – natürliche Lernwald-Lichtung
+
+    Ziel:
+    - kein Raster und keine Reihen
+    - keine symmetrischen Abstände
+    - Bäume wirklich über die Fläche verteilen
+    - kleine Lichtungen / Gruppen entstehen lassen
+    - Vordergrund größer, Hintergrund kleiner
+    - rechts und links nichts abschneiden
+    - Positionen bleiben bei jedem Öffnen stabil
   */
+
+  const frac = n => n - Math.floor(n);
+  const hash = (n, salt) =>
+    frac(Math.sin((n + 1) * (12.9898 + salt * 17.123)) * 43758.5453123);
 
   const safeCount = Math.max(1, count);
 
-  // Quasi-zufällige, aber stabile Werte 0..1.
-  // Unterschiedliche irrationale Faktoren verhindern sichtbare Muster.
-  const frac = value => value - Math.floor(value);
-  const rx = frac((index + 1) * 0.61803398875);
-  const ry = frac((index + 1) * 0.75487766625);
-  const rz = frac((index + 1) * 0.56984029099);
-
-  // Mit mehr Bäumen wird die gesamte Szene weiter.
   const densityScale =
     safeCount <= 5  ? 1.00 :
-    safeCount <= 10 ? 0.90 :
+    safeCount <= 10 ? 0.91 :
     safeCount <= 20 ? 0.78 :
-    safeCount <= 35 ? 0.66 :
+    safeCount <= 35 ? 0.67 :
                       0.57;
 
-  /*
-    yDepth:
-    0 = weit hinten
-    1 = weit vorne
+  // Alle Positionen bis zum gewünschten Index reproduzierbar erzeugen.
+  const placed = [];
 
-    Die Potenz verteilt mehr Bäume angenehm im Mittel-/Hintergrund,
-    ohne dass der Vordergrund zu dicht wird.
-  */
-  const yDepth = Math.pow(ry, 0.82);
+  for (let n = 0; n <= index; n++) {
+    let best = null;
+    let bestScore = -Infinity;
 
-  // Horizontal etwas mehr Raum im Vordergrund als hinten.
-  const horizontalSpread = 0.76 + yDepth * 0.18;
-  let left = 50 + (rx - 0.5) * 100 * horizontalSpread;
+    // Mehrere Kandidaten ausprobieren und den natürlichsten freien Platz wählen.
+    for (let attempt = 0; attempt < 34; attempt++) {
+      const seed = n * 53 + attempt * 17;
 
-  // Kleine unregelmäßige Zusatzverschiebung.
-  left += (rz - 0.5) * 7;
+      // Tiefe nicht linear: dadurch entstehen unregelmäßige Vorder-/Hintergruppen.
+      const rawDepth = hash(seed, 1);
+      const depth = Math.pow(rawDepth, 0.92);
 
-  // Sicherheitsrand gegen Abschneiden.
-  left = Math.max(5.5, Math.min(92.5, left));
+      // Sichere horizontale Fläche. Hinten etwas schmaler als vorne.
+      const spread = 76 + depth * 12;
+      let x = 50 + (hash(seed, 2) - 0.5) * spread;
 
-  // Hintere Bäume höher, vordere tiefer.
-  const bottom = 44 + yDepth * 42;
+      // Sanfte seitliche Verschiebung verhindert vertikale Säulen.
+      x += (hash(seed, 3) - 0.5) * 8;
+      x = Math.max(7, Math.min(91, x));
 
-  // Perspektive: hinten deutlich kleiner.
-  const depthScale = 0.56 + yDepth * 0.44;
+      // Visuelle Waldtiefe.
+      const y = 20 + depth * 66;
 
-  // Kleine natürliche Größenunterschiede zusätzlich zur Perspektive.
-  const naturalVariation = 0.91 + rz * 0.16;
+      // Abstand zu vorhandenen Bäumen messen.
+      let minDist = 999;
+      for (const p of placed) {
+        const dx = (x - p.x) / 1.00;
+        const dy = (y - p.y) / 0.72;
+        const d = Math.sqrt(dx * dx + dy * dy);
+        minDist = Math.min(minDist, d);
+      }
 
-  const scale = densityScale * depthScale * naturalVariation;
+      // Nicht überall maximal gleichmäßig verteilen:
+      // leichte Gruppierung ist erwünscht, aber Überlagerung nicht.
+      const clusterWave =
+        Math.sin((x / 100) * Math.PI * 3.1 + 0.8) * 1.8 +
+        Math.cos((y / 100) * Math.PI * 2.4) * 1.2;
 
-  // Z-Index folgt der Tiefe: vordere Bäume liegen vor hinteren.
-  const z = 10 + Math.round(yDepth * 70);
+      // Rand leicht unattraktiver machen.
+      const edgePenalty =
+        x < 11 || x > 87 ? 4 :
+        x < 15 || x > 83 ? 1.5 : 0;
 
-  // Minimaler Winkel für organischen Eindruck.
-  const tilt = (frac((index + 1) * 0.41421356237) - 0.5) * 2.2;
+      // Sehr gleiche x/y-Lagen zu früheren Bäumen vermeiden.
+      let alignmentPenalty = 0;
+      for (const p of placed) {
+        if (Math.abs(x - p.x) < 3.8) alignmentPenalty += 3.4;
+        if (Math.abs(y - p.y) < 3.5) alignmentPenalty += 1.6;
+      }
+
+      const score =
+        (placed.length ? Math.min(minDist, 22) : 20) +
+        clusterWave -
+        edgePenalty -
+        alignmentPenalty +
+        hash(seed, 4) * 2.8;
+
+      if (score > bestScore) {
+        bestScore = score;
+        best = { x, y, depth, seed };
+      }
+    }
+
+    placed.push(best);
+  }
+
+  const p = placed[index];
+
+  // Tiefe: hinten kleiner, vorne größer.
+  const perspective = 0.55 + p.depth * 0.45;
+
+  // Natürliche Größenstreuung, damit nicht alle Bäume derselben Ebene gleich wirken.
+  const variation = 0.90 + hash(p.seed, 6) * 0.18;
+  const scale = densityScale * perspective * variation;
+
+  // Landschaftskoordinate in CSS-bottom umrechnen.
+  // Hintergrund höher, Vordergrund tiefer.
+  const bottom = 34 + (1 - p.depth) * 118;
+
+  // Minimale Neigung.
+  const tilt = (hash(p.seed, 7) - 0.5) * 2.4;
 
   return {
-    left,
+    left: p.x,
     bottom,
     scale,
-    z,
+    z: 20 + Math.round(p.depth * 80),
     tilt,
-    depth: yDepth
+    depth: p.depth
   };
 }
 
