@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5h Runtime-Fix";
+const APP_VERSION = "2.5i Baum benennen & Lernwald";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -1880,63 +1880,149 @@ async function deleteRoot(rootId) {
   }
 }
 
-async function sendCurrentTreeToForest({ force = false } = {}) {
-  const target = Math.max(1, Math.min(50, Number(state.tree?.targetLeaves || 24)));
+
+let pendingFinishTreeForce = false;
+
+function openFinishTreeDialog({ force = false } = {}) {
+  const dialog = $("#finishTreeDialog");
+  const input = $("#finishTreeName");
+  const text = $("#finishTreeDialogText");
+
+  if (!dialog || !input) return;
+
+  const target = Math.max(
+    1,
+    Math.min(50, Number(state.tree?.targetLeaves || 24))
+  );
   const currentLeaves = (state.learningLeaves || []).length;
 
   if (!force && currentLeaves < target) return;
 
-  const name = state.tree?.name || "Unser Wochenbaum";
-  const message = force && currentLeaves < target
-    ? `„${name}“ hat aktuell ${currentLeaves} von ${target} Lernblättern. Trotzdem jetzt in den Lernwald setzen?`
-    : `Soll „${name}“ in den Lernwald wandern?`;
+  pendingFinishTreeForce = force;
 
-  if (!confirm(message)) return;
+  const currentName = (state.tree?.name || "Unser Wochenbaum").trim();
+  input.value = currentName;
+
+  if (text) {
+    text.textContent =
+      force && currentLeaves < target
+        ? `Euer Baum hat gerade ${currentLeaves} von ${target} Lernblättern. Wenn ihr möchtet, darf er trotzdem schon in den Lernwald ziehen. Gebt ihm vorher noch einen Namen.`
+        : "Bevor euer Baum in den Lernwald zieht, dürft ihr ihm noch einen Namen geben.";
+  }
+
+  if (!dialog.open) dialog.showModal();
+
+  requestAnimationFrame(() => {
+    input.focus();
+    input.select();
+  });
+}
+
+async function archiveCurrentTreeToForest() {
+  const dialog = $("#finishTreeDialog");
+  const input = $("#finishTreeName");
+
+  const typedName = (input?.value || "").trim();
+  const finalName =
+    typedName ||
+    (state.tree?.name || "Unser Wochenbaum").trim() ||
+    "Unser Wochenbaum";
+
+  const target = Math.max(
+    1,
+    Math.min(50, Number(state.tree?.targetLeaves || 24))
+  );
+  const currentLeaves = (state.learningLeaves || []).length;
+
+  if (!pendingFinishTreeForce && currentLeaves < target) {
+    dialog?.close();
+    return;
+  }
+
+  const confirmBtn = $("#confirmFinishTree");
+  if (confirmBtn) {
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = "🌲 Wird gepflanzt …";
+  }
 
   try {
     await runTransaction(db, async tx => {
       const snap = await tx.get(spaceRef);
+      if (!snap.exists()) return;
+
       const data = snap.data();
       const forest = [...(data.forest || [])];
 
+      const archivedTree = {
+        ...(data.tree || {}),
+        name: finalName
+      };
+
+      const learningLeaves = structuredClone(data.learningLeaves || []);
+      const roots = structuredClone(data.roots || []);
+      const tasksSnapshot = structuredClone(data.tasks || []);
+
       forest.push({
         id: crypto.randomUUID(),
-        name: data.tree?.name || "Wochenbaum",
+        name: finalName,
         completedAt: new Date().toISOString(),
-        leaves: (data.learningLeaves || []).length,
-        roots: structuredClone(data.roots || []),
+        leaves: learningLeaves.length,
+        roots,
 
-        // Ab 2.4h wird ein vollständiger Schnappschuss gespeichert.
-        // Dadurch kann der Baum später wirklich wieder aktiviert werden.
+        // Vollständiger Schnappschuss:
+        // Der Baum kann im Baumpfleger-Bereich später wieder aktiviert werden.
         snapshot: {
-          tree: structuredClone(data.tree || {}),
-          learningLeaves: structuredClone(data.learningLeaves || []),
-          roots: structuredClone(data.roots || []),
-          tasks: structuredClone(data.tasks || [])
+          tree: archivedTree,
+          learningLeaves,
+          roots,
+          tasks: tasksSnapshot
         }
       });
 
-      const tasks = (data.tasks || []).map(t => ({ ...t, done: false }));
+      const tasks = (data.tasks || []).map(task => ({
+        ...task,
+        done: false,
+        activeSince: null
+      }));
 
       tx.update(spaceRef, {
         forest,
+
+        // Neuer Baum beginnt leer.
         learningLeaves: [],
         roots: [],
         tasks,
+
         tree: {
-          ...data.tree,
-          name: "Neuer Wochenbaum",
+          ...(data.tree || {}),
+          name: "Unser Wochenbaum",
           startedAt: new Date().toISOString()
         },
+
         updatedAt: serverTimestamp()
       });
     });
 
-    alert("✓ Der Baum ist jetzt im Lernwald.");
+    dialog?.close();
+    $("#forestSection")?.classList.remove("hidden");
+
+    alert(`🌳 „${finalName}“ steht jetzt im Lernwald.`);
   } catch (err) {
+    console.error("Baum konnte nicht in den Lernwald gesetzt werden:", err);
     alert("Der Baum konnte nicht in den Lernwald gesetzt werden: " + err.message);
+  } finally {
+    if (confirmBtn) {
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = "🌲 In den Lernwald pflanzen";
+    }
+    pendingFinishTreeForce = false;
   }
 }
+
+async function sendCurrentTreeToForest({ force = false } = {}) {
+  openFinishTreeDialog({ force });
+}
+
 
 if ($("#finishTreeBtn")) {
   $("#finishTreeBtn").onclick = () => sendCurrentTreeToForest({ force: false });
@@ -1944,6 +2030,34 @@ if ($("#finishTreeBtn")) {
 
 if ($("#adminFinishTreeBtn")) {
   $("#adminFinishTreeBtn").onclick = () => sendCurrentTreeToForest({ force: true });
+}
+
+
+if ($("#confirmFinishTree")) {
+  $("#confirmFinishTree").onclick = () => archiveCurrentTreeToForest();
+}
+
+if ($("#cancelFinishTree")) {
+  $("#cancelFinishTree").onclick = () => {
+    pendingFinishTreeForce = false;
+    $("#finishTreeDialog")?.close();
+  };
+}
+
+if ($("#closeFinishTreeDialog")) {
+  $("#closeFinishTreeDialog").onclick = () => {
+    pendingFinishTreeForce = false;
+    $("#finishTreeDialog")?.close();
+  };
+}
+
+if ($("#finishTreeName")) {
+  $("#finishTreeName").addEventListener("keydown", event => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      archiveCurrentTreeToForest();
+    }
+  });
 }
 
 if ($("#openForest")) {
