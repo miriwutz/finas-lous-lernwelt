@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5af Lichtung natürlich durchbrochen";
+const APP_VERSION = "2.5ag Große Lücken deutlich gefüllt";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -2933,13 +2933,13 @@ function buildLargeForestLayout(count) {
     */
     candidates.sort((a,b) => {
       const scoreA =
-        a.clusterField * .46 -
-        Math.max(0, a.clearingField - .92) * .16 +
+        a.clusterField * .34 -
+        Math.max(0, a.clearingField - .97) * .05 +
         a.random * .34;
 
       const scoreB =
-        b.clusterField * .46 -
-        Math.max(0, b.clearingField - .92) * .16 +
+        b.clusterField * .34 -
+        Math.max(0, b.clearingField - .97) * .05 +
         b.random * .34;
 
       return scoreB - scoreA;
@@ -2980,6 +2980,113 @@ function buildLargeForestLayout(count) {
 
     result.push(...chosen.slice(0, countInRow));
   });
+
+  /*
+    2.5ag – große Leerflächen gezielt schließen.
+
+    Die normale Waldverteilung bleibt die Basis. Danach wird die Fläche
+    grob in Zellen geprüft. Ist eine größere Zelle praktisch leer, wird
+    dort ein kleiner "Brücken-Cluster" ergänzt.
+
+    Wichtig:
+    - keine komplette Rasterfüllung
+    - kleine Lichtungen bleiben erhalten
+    - nur auffällige große Lücken werden unterbrochen
+    - Perspektivgröße richtet sich weiter nach der Tiefe
+  */
+  if (safeCount >= 100) {
+    const bridgeTrees = [];
+    const cols =
+      safeCount <= 250 ? 8 :
+      safeCount <= 500 ? 10 : 12;
+    const rows =
+      safeCount <= 250 ? 5 :
+      safeCount <= 500 ? 6 : 7;
+
+    const xMin = profile.marginX + 1.5;
+    const xMax = 100 - profile.marginX - 1.5;
+    const yMin = profile.top + 3;
+    const yMax = profile.bottom - 3;
+    const cellW = (xMax - xMin) / cols;
+    const cellH = (yMax - yMin) / rows;
+
+    for (let gy = 0; gy < rows; gy++) {
+      for (let gx = 0; gx < cols; gx++) {
+        const cx = xMin + (gx + .5) * cellW;
+        const cy = yMin + (gy + .5) * cellH;
+
+        // Zähle Bäume in einem großzügigen Umfeld der Zelle.
+        const nearby = result.filter(p => {
+          const dx = Math.abs(p.left - cx) / cellW;
+          const dy = Math.abs(p.topPct - cy) / cellH;
+          return dx < .78 && dy < .72;
+        }).length;
+
+        // Nur echte große Lücken auffüllen.
+        if (nearby <= 1) {
+          const cellSeed =
+            safeCount * 701 +
+            gy * 101 +
+            gx * 37;
+
+          // Je nach Leere 2–4 Bäume, bei sehr großen Wäldern 3–5.
+          const amount =
+            safeCount <= 250
+              ? 2 + Math.floor(hash(cellSeed, 21) * 3)
+              : 3 + Math.floor(hash(cellSeed, 21) * 3);
+
+          for (let k = 0; k < amount; k++) {
+            const seed = cellSeed * 31 + k * 173;
+
+            let x =
+              cx +
+              (hash(seed, 22) - .5) * cellW * 1.18;
+
+            let y =
+              cy +
+              (hash(seed, 23) - .5) * cellH * 1.12;
+
+            x = Math.max(profile.marginX, Math.min(100 - profile.marginX, x));
+            y = Math.max(profile.top, Math.min(profile.bottom, y));
+
+            const depth =
+              Math.max(
+                0,
+                Math.min(
+                  1,
+                  (y - profile.top) /
+                  Math.max(1, profile.bottom - profile.top)
+                )
+              );
+
+            const scaleBase =
+              profile.farScale +
+              Math.pow(depth, .86) *
+                (profile.nearScale - profile.farScale);
+
+            bridgeTrees.push({
+              left: x,
+              topPct: y,
+              y,
+              scale: scaleBase * (.82 + hash(seed, 24) * .28),
+              z: 35 + Math.round(depth * 700) + k,
+              tilt: (hash(seed, 25) - .5) * 2.8,
+              depth,
+              seed,
+              isBridgeTree: true
+            });
+          }
+        }
+      }
+    }
+
+    // Begrenzen, damit aus Lichtungen kein dichter Teppich wird.
+    const maxExtra =
+      safeCount <= 250 ? 34 :
+      safeCount <= 500 ? 52 : 72;
+
+    result.push(...bridgeTrees.slice(0, maxExtra));
+  }
 
   /*
     Neue Bäume sollen nicht Tiefenzone für Tiefenzone erscheinen.
