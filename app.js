@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5x Lernwelt Tiefe & Waldbewohner";
+const APP_VERSION = "2.5y Lernwald neue Landschaftslogik";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -2380,17 +2380,13 @@ function forestMiniLeaves(tree) {
 /* ---------- 2.5l: wachsender Lernwald ---------- */
 
 const FOREST_COMPANIONS = [
-  // Pflanzen sind am häufigsten – Tiere bleiben dadurch etwas Besonderes.
-  "🌿","🌿","🌿","🌱","🌱","🌱","🍄","🍄","🌼","🌸","🌾","☘️",
-  // Kleine Waldtiere
-  "🐿️","🐇","🦔","🐌","🐞","🦋","🐝","🐦",
-  // Seltenere Waldbewohner
+  "🌿","🌿","🌱","🌱","🍄","🍄","🌼","🌸","🌾","☘️","🌷",
+  "🐿️","🐿️","🐇","🦔","🐌","🐞","🦋","🐝","🐦",
   "🦊","🦌","🦉"
 ];
 
 function forestZoomForCount(count) {
-  // Die Perspektive entsteht ab 2.5w über echte Tiefenverteilung und Baumgröße,
-  // nicht mehr dadurch, die komplette Waldfläche zusammenzustauchen.
+  // 2.5y: no global compression. Perspective is created by actual landscape positions.
   return 1;
 }
 
@@ -2577,133 +2573,55 @@ function runGrowthPreview(kind) {
 
 
 
-const FOREST_LAYOUT_CACHE = new Map();
-
-function forestViewProfile(count) {
-  /*
-    2.5x:
-    Je voller der Lernwald wird, desto weiter zieht sich die Kamera zurück.
-    "top" wandert deshalb deutlich nach oben.
-    Kleine Bäume dürfen weit hinten stehen; vorne bleiben größere Einzelbäume.
-  */
-  if (count <= 20) {
-    return { top: 38, bottom: 88, minScale: .72, maxScale: 1.00, attempts: 34 };
-  }
-  if (count <= 50) {
-    return { top: 25, bottom: 90, minScale: .48, maxScale: .86, attempts: 30 };
-  }
-  if (count <= 100) {
-    return { top: 14, bottom: 92, minScale: .29, maxScale: .67, attempts: 24 };
-  }
-  if (count <= 250) {
-    return { top: 4, bottom: 93, minScale: .13, maxScale: .48, attempts: 18 };
-  }
-  if (count <= 500) {
-    return { top: 2, bottom: 94, minScale: .085, maxScale: .34, attempts: 12 };
-  }
-  return { top: 1, bottom: 95, minScale: .055, maxScale: .25, attempts: 8 };
-}
-
-function buildForestLayouts(count) {
-  const safeCount = Math.max(1, count);
-  if (FOREST_LAYOUT_CACHE.has(safeCount)) {
-    return FOREST_LAYOUT_CACHE.get(safeCount);
-  }
-
-  const profile = forestViewProfile(safeCount);
+function forestTreeLayoutLegacy(index, count) {
+  // Original close-view logic retained for small forests.
   const frac = n => n - Math.floor(n);
   const hash = (n, salt) =>
     frac(Math.sin((n + 1) * (12.9898 + salt * 17.123)) * 43758.5453123);
 
-  const placed = [];
+  const safeCount = Math.max(1, count);
+  const densityScale =
+    safeCount <= 5  ? 1.00 :
+    safeCount <= 10 ? 0.91 :
+    safeCount <= 20 ? 0.78 : 0.70;
 
-  for (let n = 0; n < safeCount; n++) {
+  const placed = [];
+  for (let n = 0; n <= index; n++) {
     let best = null;
     let bestScore = -Infinity;
 
-    for (let attempt = 0; attempt < profile.attempts; attempt++) {
-      const seed = n * 71 + attempt * 29;
-
-      // 0 = weit hinten, 1 = vorne.
-      // Leichte Bevorzugung der mittleren/hinteren Landschaft verhindert
-      // den bisherigen dichten "Baumgürtel" am unteren Rand.
-      const r = hash(seed, 1);
-      // Mehr Bäume => mehr echte Ferne. Bei 250+ wird die obere Landschaft
-      // bewusst mit kleinen Baumgruppen erschlossen.
-      const depthExponent =
-        safeCount <= 50 ? 1.05 :
-        safeCount <= 100 ? .88 :
-        safeCount <= 250 ? .68 :
-        safeCount <= 500 ? .58 : .50;
-      const depth = 1 - Math.pow(1 - r, depthExponent);
-
-      // Landschaft nach hinten etwas schmaler, vorne breiter.
-      const horizontalMargin = 5.5 + (1 - depth) * 4.5;
-      let x = horizontalMargin +
-              hash(seed, 2) * (100 - 2 * horizontalMargin);
-
-      // Organische seitliche Drift.
-      x += Math.sin((depth * 8.4) + n * .73) * (1.2 + depth * 1.4);
-      x = Math.max(horizontalMargin, Math.min(100 - horizontalMargin, x));
-
-      // WIRKLICHE Tiefenverteilung über fast die ganze sichtbare Landschaft.
-      const y = profile.top + depth * (profile.bottom - profile.top);
+    for (let attempt = 0; attempt < 34; attempt++) {
+      const seed = n * 53 + attempt * 17;
+      const rawDepth = hash(seed, 1);
+      const depth = Math.pow(rawDepth, 0.92);
+      const spread = 76 + depth * 12;
+      let x = 50 + (hash(seed, 2) - 0.5) * spread;
+      x += (hash(seed, 3) - 0.5) * 8;
+      x = Math.max(7, Math.min(91, x));
+      const y = 20 + depth * 66;
 
       let minDist = 999;
+      for (const p of placed) {
+        const dx = x - p.x;
+        const dy = (y - p.y) / 0.72;
+        minDist = Math.min(minDist, Math.sqrt(dx * dx + dy * dy));
+      }
+
+      const clusterWave =
+        Math.sin((x / 100) * Math.PI * 3.1 + 0.8) * 1.8 +
+        Math.cos((y / 100) * Math.PI * 2.4) * 1.2;
+
+      const edgePenalty = x < 11 || x > 87 ? 4 : x < 15 || x > 83 ? 1.5 : 0;
+
       let alignmentPenalty = 0;
-
-      // Für große Wälder lokale Nachbarschaft prüfen; das hält 1000 performant.
-      const lookBack =
-        safeCount <= 100 ? placed.length :
-        safeCount <= 250 ? Math.min(placed.length, 190) :
-        safeCount <= 500 ? Math.min(placed.length, 120) :
-                           Math.min(placed.length, 80);
-
-      const start = Math.max(0, placed.length - lookBack);
-
-      for (let pIndex = start; pIndex < placed.length; pIndex++) {
-        const p = placed[pIndex];
-
-        // In der Ferne dürfen Bäume dichter stehen als vorne.
-        const depthMean = (depth + p.depth) / 2;
-        const dx = (x - p.x) / (0.72 + depthMean * .42);
-        const dy = (y - p.y) / (0.78 + depthMean * .30);
-        const d = Math.sqrt(dx * dx + dy * dy);
-
-        minDist = Math.min(minDist, d);
-
-        if (Math.abs(x - p.x) < 1.8 + depthMean * 1.4 &&
-            Math.abs(y - p.y) < 2.2) {
-          alignmentPenalty += 2.8;
-        }
+      for (const p of placed) {
+        if (Math.abs(x - p.x) < 3.8) alignmentPenalty += 3.4;
+        if (Math.abs(y - p.y) < 3.5) alignmentPenalty += 1.6;
       }
-
-      // Ältere Punkte stichprobenartig einbeziehen.
-      if (start > 0) {
-        const step = Math.max(1, Math.floor(start / 28));
-        for (let pIndex = 0; pIndex < start; pIndex += step) {
-          const p = placed[pIndex];
-          const dx = x - p.x;
-          const dy = y - p.y;
-          minDist = Math.min(minDist, Math.sqrt(dx * dx + dy * dy));
-        }
-      }
-
-      // Kleine Lichtungen/Cluster statt gleichmäßiger Punktwolke.
-      const landscapeWave =
-        Math.sin(x * .115 + y * .071) * 1.8 +
-        Math.cos(x * .061 - y * .133) * 1.35;
-
-      // Vordergrund nicht komplett zukleistern.
-      const foregroundPenalty =
-        depth > .82 ? (depth - .82) * safeCount * .022 : 0;
 
       const score =
-        Math.min(minDist, 17) +
-        landscapeWave -
-        alignmentPenalty -
-        foregroundPenalty +
-        hash(seed, 5) * 2.4;
+        (placed.length ? Math.min(minDist, 22) : 20) +
+        clusterWave - edgePenalty - alignmentPenalty + hash(seed, 4) * 2.8;
 
       if (score > bestScore) {
         bestScore = score;
@@ -2711,37 +2629,131 @@ function buildForestLayouts(count) {
       }
     }
 
-    // Perspektive: weit hinten deutlich kleiner, vorne größer.
-    const perspective = profile.minScale +
-      Math.pow(best.depth, .82) * (profile.maxScale - profile.minScale);
-
-    const variation = .88 + hash(best.seed, 6) * .22;
-    const scale = perspective * variation;
-
-    // y ist Prozent von oben. CSS arbeitet mit bottom.
-    const bottom = 100 - best.y;
-
-    const tilt = (hash(best.seed, 7) - .5) * 2.2;
-
-    placed.push({
-      x: best.x,
-      y: best.y,
-      depth: best.depth,
-      seed: best.seed,
-      left: best.x,
-      bottom,
-      scale,
-      z: 10 + Math.round(best.depth * 900),
-      tilt
-    });
+    placed.push(best);
   }
 
-  FOREST_LAYOUT_CACHE.set(safeCount, placed);
-  return placed;
+  const p = placed[index];
+  const perspective = 0.55 + p.depth * 0.45;
+  const variation = 0.90 + hash(p.seed, 6) * 0.18;
+  return {
+    left: p.x,
+    bottom: 34 + (1 - p.depth) * 118,
+    scale: densityScale * perspective * variation,
+    z: 20 + Math.round(p.depth * 80),
+    tilt: (hash(p.seed, 7) - 0.5) * 2.4,
+    depth: p.depth
+  };
+}
+
+const FOREST_LAYOUT_CACHE = new Map();
+
+function buildLandscapeForest(count) {
+  const safeCount = Math.max(21, count);
+  if (FOREST_LAYOUT_CACHE.has(safeCount)) return FOREST_LAYOUT_CACHE.get(safeCount);
+
+  const frac = n => n - Math.floor(n);
+  const hash = (n, salt) =>
+    frac(Math.sin((n + 3) * (19.171 + salt * 11.731)) * 31847.2731);
+
+  // Camera stages. yTop/yBottom are percentages measured from TOP of stage.
+  const profile =
+    safeCount <= 50  ? { yTop: 34, yBottom: 88, far: .42, near: .80, bands: 4 } :
+    safeCount <= 100 ? { yTop: 25, yBottom: 90, far: .27, near: .67, bands: 5 } :
+    safeCount <= 250 ? { yTop: 15, yBottom: 92, far: .15, near: .48, bands: 7 } :
+    safeCount <= 500 ? { yTop: 10, yBottom: 93, far: .10, near: .34, bands: 9 } :
+                       { yTop:  7, yBottom: 94, far: .065, near: .25, bands: 12 };
+
+  // Irregular depth bands. Each band gets a different horizontal phase,
+  // density and curvature so there are no straight "rows".
+  const slots = [];
+  const totalHeight = profile.yBottom - profile.yTop;
+
+  for (let band = 0; band < profile.bands; band++) {
+    const t = profile.bands === 1 ? 0 : band / (profile.bands - 1); // 0 far, 1 near
+    const bandY = profile.yTop + t * totalHeight;
+
+    // More capacity in the distance, fewer large trees in foreground.
+    const weight = 1.35 - t * .55;
+    const bandCount = Math.max(3, Math.round((safeCount / profile.bands) * weight));
+
+    // Golden-ratio-like offset prevents vertical columns.
+    const phase = frac((band + 1) * 0.61803398875 + hash(band, 8)) * 0.9;
+
+    for (let j = 0; j < bandCount; j++) {
+      const seed = band * 10007 + j * 97 + safeCount * 3;
+      const u = (j + 0.5) / bandCount;
+
+      // broad x distribution with jitter, but safe margins
+      let x = 5.5 + 89 * frac(u + phase + (hash(seed, 1) - .5) * .055);
+
+      // curved / broken depth band rather than horizontal line
+      const wave =
+        Math.sin(x * .085 + band * 1.7) * (2.0 + (1 - t) * 1.8) +
+        Math.sin(x * .031 - band * .9) * 1.4;
+
+      const jitterY = (hash(seed, 2) - .5) * (6.5 + (1 - t) * 5.5);
+      let y = bandY + wave + jitterY;
+      y = Math.max(profile.yTop, Math.min(profile.yBottom, y));
+
+      // Create genuine clearings by suppressing some positions in selected zones.
+      const clearingField =
+        Math.sin(x * .105 + y * .071) +
+        .72 * Math.cos(x * .057 - y * .113);
+      if (clearingField > 1.28 && hash(seed, 3) < .72) continue;
+
+      const scaleBase = profile.far + t * (profile.near - profile.far);
+      const scale = scaleBase * (.86 + hash(seed, 4) * .25);
+
+      slots.push({
+        left: x,
+        bottom: 100 - y,
+        scale,
+        z: 30 + band * 100 + Math.round(hash(seed, 5) * 20),
+        tilt: (hash(seed, 6) - .5) * 2.2,
+        depth: t,
+        band,
+        seed
+      });
+    }
+  }
+
+  // Deterministic shuffle so new trees populate the whole landscape early,
+  // instead of filling one band before the next.
+  slots.sort((a, b) => {
+    const ha = hash(a.seed, 11);
+    const hb = hash(b.seed, 11);
+    return ha - hb;
+  });
+
+  // If clearings removed too many slots, add free-form fallback points.
+  let k = 0;
+  while (slots.length < safeCount) {
+    const seed = 900000 + k * 131 + safeCount;
+    const t = hash(seed, 1);
+    const x = 6 + hash(seed, 2) * 88;
+    const y = profile.yTop + t * totalHeight + (hash(seed, 3) - .5) * 5;
+    const scaleBase = profile.far + t * (profile.near - profile.far);
+    slots.push({
+      left: x,
+      bottom: 100 - Math.max(profile.yTop, Math.min(profile.yBottom, y)),
+      scale: scaleBase * (.88 + hash(seed, 4) * .22),
+      z: 30 + Math.round(t * 900),
+      tilt: (hash(seed, 5) - .5) * 2.2,
+      depth: t,
+      band: -1,
+      seed
+    });
+    k++;
+  }
+
+  const result = slots.slice(0, safeCount);
+  FOREST_LAYOUT_CACHE.set(safeCount, result);
+  return result;
 }
 
 function forestTreeLayout(index, count) {
-  const layouts = buildForestLayouts(count);
+  if (count <= 20) return forestTreeLayoutLegacy(index, count);
+  const layouts = buildLandscapeForest(count);
   return layouts[index] || layouts[0];
 }
 
