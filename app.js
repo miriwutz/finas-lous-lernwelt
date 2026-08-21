@@ -4,10 +4,11 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5g Wurzeln & Aufmerksamkeit sicher";
+const APP_VERSION = "2.5h Runtime-Fix";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
+console.info("Lernwelt gestartet:", APP_VERSION);
 
 let state = structuredClone(defaultState);
 let unsubscribe = null;
@@ -1007,7 +1008,7 @@ $("#loginForm")?.addEventListener("submit", async e => {
 if ($("#logoutBtn")) {
   $("#logoutBtn").onclick = () => signOut(auth);
 
- setTimeout(decorateTree24a,0);
+
 }
 
 function stopTaskAttention(task, now = Date.now()) {
