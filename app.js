@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5aq Ohne Vögel";
+const APP_VERSION = "Lernwald Final – ohne Testfunktion";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -2478,42 +2478,11 @@ function decorateForestScene(treeCount) {
 
 let forestTestCount = null;
 
-function makeForestTestTrees(count) {
-  return Array.from({ length: count }, (_, i) => ({
-    id: `preview-${i + 1}`,
-    name: `Baum ${i + 1}`,
-    completedAt: new Date(2026, 0, Math.min(28, i + 1)).toISOString(),
-    leaves: 20 + (i % 11),
-    roots: Array.from({ length: 3 + (i % 4) }, (_, r) => ({
-      id: `preview-root-${i}-${r}`,
-      isGift: r === 0 && i % 3 === 0
-    })),
-    snapshot: {
-      learningLeaves: Array.from({ length: 20 + (i % 11) }, (_, l) => ({
-        color: ["#d9b56f","#b8a6c9","#c99586","#98ad88"][l % 4],
-        attentionSeconds: 300 + (l % 4) * 120
-      })),
-      roots: Array.from({ length: 3 + (i % 4) }, (_, r) => ({
-        id: `preview-snapshot-root-${i}-${r}`,
-        isGift: r === 0 && i % 3 === 0
-      }))
-    }
-  }));
-}
 
-function setForestTestCount(count) {
-  forestTestCount = count;
-  renderForest();
-  $("#forestSection")?.classList.remove("hidden");
-  requestAnimationFrame(() => {
-    $("#forestSection")?.scrollIntoView({ behavior:"smooth", block:"start" });
-  });
-}
 
-function clearForestTestMode() {
-  forestTestCount = null;
-  renderForest();
-}
+
+
+
 
 function runGrowthPreview(kind) {
   if (kind === "leaf") {
