@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5m Lernwald Positionen & kleiner Aktionsbaum";
+const APP_VERSION = "2.5n Lernwald-Baum im sichtbaren Bereich";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
