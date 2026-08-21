@@ -2942,3 +2942,94 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
 .tree-tiny-flower{
   opacity:.44 !important;
 }
+
+
+/* =========================================================
+   2.4c – Datum / Einklappen / Baum manuell abschließen / Zielwahl
+   ========================================================= */
+
+.heart-form{
+  align-items:end;
+}
+
+#heartDate{
+  min-width:150px;
+}
+
+/* Fina/Lou im Baumpfleger-Bereich kompakt einklappbar */
+.admin-child-details{
+  border:1px solid var(--line, #ead2c2);
+  border-radius:16px;
+  background:rgba(255,252,248,.76);
+  overflow:hidden;
+}
+
+.admin-child-details > summary{
+  list-style:none;
+  cursor:pointer;
+  padding:14px 16px;
+  font-weight:800;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+
+.admin-child-details > summary::-webkit-details-marker{
+  display:none;
+}
+
+.admin-child-details > summary::after{
+  content:"⌄";
+  font-size:18px;
+  opacity:.62;
+  transition:transform .18s ease;
+}
+
+.admin-child-details[open] > summary::after{
+  transform:rotate(180deg);
+}
+
+.admin-child-details > summary span{
+  margin-left:auto;
+  font-size:12px;
+  font-weight:500;
+  opacity:.55;
+}
+
+.admin-child-details-body{
+  padding:0 12px 14px;
+}
+
+/* Eigene Blattanzahl */
+.tree-target-custom{
+  margin:-4px 0 14px;
+  padding:12px 14px;
+  border-radius:14px;
+  background:rgba(245,232,210,.58);
+}
+
+.tree-target-custom input{
+  max-width:130px;
+}
+
+.admin-finish-tree{
+  margin-left:10px;
+}
+
+.admin-finish-hint{
+  margin-top:10px;
+  max-width:620px;
+}
+
+@media(max-width:760px){
+  .admin-finish-tree{
+    margin-left:0;
+    margin-top:8px;
+    width:100%;
+  }
+
+  .admin-child-details > summary span{
+    display:none;
+  }
+}
