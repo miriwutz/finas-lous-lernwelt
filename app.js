@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5d Wurzeln & Aufmerksamkeit robust";
+const APP_VERSION = "2.5e Cache-Fix Wurzeln & Aufmerksamkeit";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -929,44 +929,32 @@ function renderTreeAttention() {
     story.insertBefore(line, $("#treeStatus"));
   }
 
-  const treeStartedAt = state.tree?.startedAt
-    ? new Date(state.tree.startedAt).getTime()
-    : 0;
-
   const leafSeconds = (state.learningLeaves || [])
     .reduce((sum, leaf) => sum + Number(leaf.attentionSeconds || 0), 0);
 
-  // Archiv ist die zuverlässigste Quelle für bereits erledigte Aufgaben.
-  // Bei einem neuen Baum werden nur Einträge seit dessen Start berücksichtigt.
-  const currentArchive = (state.taskArchive || []).filter(item => {
-    if (!treeStartedAt || !item.completedAt) return true;
-    return new Date(item.completedAt).getTime() >= treeStartedAt;
-  });
+  const archive = state.taskArchive || [];
 
   const archivedTaskIds = new Set(
-    currentArchive.map(item => item.taskId).filter(Boolean)
+    archive.map(item => item.taskId).filter(Boolean)
   );
 
-  const archiveSeconds = currentArchive
+  const archiveSeconds = archive
     .reduce((sum, item) => sum + Number(item.attentionSeconds || 0), 0);
 
-  // Noch nicht archivierte aktuelle Aufgaben ebenfalls mitzählen,
-  // ohne bereits archivierte Aufgaben doppelt zu zählen.
-  const openTaskSeconds = (state.tasks || [])
+  const currentTaskSeconds = (state.tasks || [])
     .filter(task => !archivedTaskIds.has(task.id))
     .reduce((sum, task) => sum + currentAttentionSeconds(task), 0);
 
-  const reconstructedSeconds = archiveSeconds + openTaskSeconds;
+  const reconstructedSeconds = archiveSeconds + currentTaskSeconds;
 
-  // Ältere Datenstände haben die Minuten teilweise nur in den Blättern,
-  // andere nur im Archiv. Daher den höheren plausiblen Wert verwenden.
+  // Manche ältere Einträge speicherten Zeit nur in Blättern,
+  // andere im Aufgabenarchiv. Deshalb den plausibel höheren Stand nehmen.
   const seconds = Math.max(leafSeconds, reconstructedSeconds);
 
   line.textContent = seconds > 0
     ? `💛 Ihr habt diesem Baum schon ${formatAttentionMinutes(seconds)} Aufmerksamkeit geschenkt.`
     : "💛 Noch keine Aufmerksamkeit eingetragen.";
 }
-
 
 if ($("#archiveSearch")) {
   $("#archiveSearch").addEventListener("input", () => renderTaskArchive());
@@ -1168,6 +1156,7 @@ async function beginNewLearningDay() {
 }
 
 function renderAll() {
+  document.documentElement.dataset.appVersion = APP_VERSION;
   const now = new Date();
   $("#todayLabel").textContent = now.toLocaleDateString("de-AT", {
     weekday: "long", day: "2-digit", month: "long", year: "numeric"
@@ -1473,6 +1462,12 @@ function renderRootPngs() {
       "--root-delay",
       `${Math.min(index * 30, 160)}ms`
     );
+
+    img.onload = () => {
+      img.style.display = "block";
+      img.style.visibility = "visible";
+      img.style.opacity = String(cfg.opacity);
+    };
 
     layer.appendChild(img);
   });
