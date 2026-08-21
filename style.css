@@ -6117,3 +6117,68 @@ label:has(textarea){
   opacity:.88 !important;
   filter:drop-shadow(0 1px 1.5px rgba(82,60,44,.09)) !important;
 }
+
+/* =========================================================
+   2.5r – Abschluss-Testmodus (nur Baumpfleger)
+   ========================================================= */
+.forest-test-panel{
+  margin-top:12px;
+  padding:10px 12px;
+  border:1px dashed #d7c5b7;
+  border-radius:13px;
+  background:#fffdf9;
+}
+
+.forest-test-panel summary{
+  cursor:pointer;
+  font-weight:800;
+  color:#684b39;
+}
+
+.forest-test-note{
+  margin:7px 0 9px;
+  font-size:.82rem;
+}
+
+.forest-test-controls,
+.growth-test-controls{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:6px;
+  margin-top:7px;
+}
+
+.forest-test-controls > span,
+.growth-test-controls > span{
+  margin-right:3px;
+  color:#7b6658;
+  font-size:.82rem;
+  font-weight:750;
+}
+
+.forest-test-controls button,
+.growth-test-controls button{
+  min-height:32px;
+  padding:5px 8px;
+  font-size:.78rem;
+}
+
+.growth-test-butterfly{
+  position:fixed;
+  z-index:100000;
+  font-size:24px;
+  pointer-events:none;
+  filter:drop-shadow(0 2px 3px rgba(73,53,42,.12));
+}
+
+/* Bei sehr großem Vorschauwald Namen stärker zurücknehmen. */
+.forest-stage[style*="0.55"] .forest-tree-name,
+.forest-stage[style*="0.49"] .forest-tree-name{
+  opacity:.18 !important;
+}
+
+.forest-stage[style*="0.55"] .forest-tree-spot:hover .forest-tree-name,
+.forest-stage[style*="0.49"] .forest-tree-spot:hover .forest-tree-name{
+  opacity:1 !important;
+}
