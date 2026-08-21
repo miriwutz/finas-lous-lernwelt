@@ -6247,3 +6247,39 @@ label:has(textarea){
 .forest-grid{
   overflow:hidden !important;
 }
+
+
+/* =========================================================
+   2.5u – natürliche Lichtung statt Baumreihe
+   ========================================================= */
+
+.forest-tree-spot{
+  transform:
+    translateX(-50%)
+    scale(var(--tree-scale, 1))
+    rotate(var(--tree-tilt, 0deg)) !important;
+  transform-origin:center bottom !important;
+}
+
+/* Die Namen sollen nicht selbst wie ein Raster wirken. */
+.forest-tree-name{
+  opacity:.42 !important;
+  font-size:10px !important;
+  white-space:nowrap;
+}
+
+.forest-tree-spot:hover .forest-tree-name,
+.forest-tree-spot:focus-visible .forest-tree-name{
+  opacity:1 !important;
+}
+
+/* Waldbewohner/Pflanzen etwas ruhiger in die Landschaft integrieren. */
+.forest-companion{
+  opacity:.76 !important;
+}
+
+/* Nichts darf aus dem sichtbaren Waldrahmen ragen. */
+.forest-stage,
+.forest-grid{
+  overflow:hidden !important;
+}
