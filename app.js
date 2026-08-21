@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.4q Verschenken rechts & Empfänger nur aktiv";
+const APP_VERSION = "2.5a 50 Blätter & Blümchen";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -79,14 +79,25 @@ const heartOptions = [
 ];
 
 const leafPositions = [
-  [70,170,-42,1],[96,190,133,-1],[118,154,18,1],[139,210,171,-1],
-  [158,177,-61,1],[178,226,118,-1],[167,128,33,1],[192,151,146,-1],
-  [214,190,-23,1],[221,111,74,-1],[244,145,156,-1],[254,72,-11,1],
-  [279,102,109,-1],[299,139,-53,1],[321,72,37,1],[339,111,198,-1],
-  [360,139,7,1],[383,112,242,-1],[405,157,54,1],[425,126,183,-1],
-  [443,180,-17,1],[465,153,227,-1],[487,200,68,1],[507,169,151,-1],
-  [112,242,-71,1],[160,257,126,-1],[207,239,31,1],[352,244,94,1],
-  [402,257,214,-1],[454,238,-38,1]
+  /* 1–10: sofort über die ganze Krone verteilt */
+  [282,104,-12,1],[165,188,-48,1],[394,184,42,-1],[236,150,24,1],[336,146,-30,-1],
+  [116,228,-68,1],[448,226,64,-1],[204,230,58,-1],[365,232,-52,1],[286,206,8,1],
+
+  /* 11–20: Lücken schließen, auch obere Krone deutlich nutzen */
+  [220,92,-34,1],[348,92,36,-1],[145,132,18,1],[420,132,-18,-1],[88,184,-80,1],
+  [480,182,78,-1],[176,278,-18,1],[394,278,20,-1],[260,270,44,-1],[316,270,-42,1],
+
+  /* 21–30: zweite natürliche Schicht */
+  [110,120,-56,1],[458,118,54,-1],[190,108,52,-1],[378,108,-50,1],[132,252,34,-1],
+  [434,250,-36,1],[230,198,-70,1],[342,198,72,-1],[264,126,66,-1],[304,126,-64,1],
+
+  /* 31–40: feiner auffüllen, ohne Ballung */
+  [78,216,-88,1],[492,214,86,-1],[158,224,76,-1],[410,222,-74,1],[204,304,-38,1],
+  [364,304,40,-1],[248,242,-12,1],[326,242,14,-1],[126,166,46,-1],[442,164,-44,1],
+
+  /* 41–50: Endzustand – Rand und Krone schließen */
+  [96,146,-28,1],[470,146,30,-1],[182,156,-78,1],[386,156,80,-1],[148,304,24,-1],
+  [420,302,-26,1],[238,318,62,-1],[334,318,-60,1],[280,82,6,1],[286,292,-4,-1]
 ];
 
 
@@ -608,20 +619,45 @@ function showRootGrowthCelebration() {
   }, 6100);
 }
 
-const TREE_LEAF_LAYOUT_50=[
-[49,12,-8],[42,15,-24],[57,15,20],[35,19,-38],[64,19,34],[47,21,12],[53,22,-18],[29,24,-54],[70,24,48],[39,26,31],
-[60,27,-32],[23,29,-67],[76,29,62],[33,31,-18],[49,31,45],[66,32,15],[18,34,-78],[81,35,76],[27,37,28],[42,37,-42],
-[57,38,38],[72,39,-16],[14,41,-86],[85,42,84],[34,43,55],[50,44,-12],[64,45,-51],[22,47,12],[77,48,45],[30,50,-35],
-[44,50,26],[58,51,-24],[69,52,61],[17,54,-72],[83,55,70],[26,57,43],[38,57,-58],[52,58,17],[63,59,-39],[74,60,33],
-[21,63,-48],[32,64,68],[46,64,-21],[58,65,52],[69,66,-62],[79,67,44],[28,69,-17],[40,70,36],[55,70,-46],[66,71,18]
+
+
+const FLOWER_STEPS = [4,8,13,17,22,26,31,36,41,46];
+
+const FLOWER_POSITIONS = [
+  [248,116,-8,"#e8a9b8"],
+  [382,174,12,"#d8b4df"],
+  [152,208,-14,"#efc493"],
+  [324,104,7,"#e9a8a2"],
+  [436,226,-10,"#cdb9e6"],
+  [194,262,11,"#efb9c2"],
+  [110,154,-7,"#e8c27d"],
+  [356,262,13,"#d7a9c9"],
+  [468,174,-12,"#efb1a8"],
+  [274,278,6,"#d4b4de"]
 ];
-const TREE_FLOWERS=[[45,17],[62,22],[31,28],[72,34],[22,42],[55,43],[35,52],[76,54],[47,61],[64,66]];
-function decorateTree24a(){
- const leaves=[...document.querySelectorAll("#treeLeafOverlay > *")];
- leaves.slice(0,50).forEach((el,i)=>{const p=TREE_LEAF_LAYOUT_50[i];if(!p)return;el.style.left=p[0]+"%";el.style.top=p[1]+"%";el.style.transform=`translate(-50%,-50%) rotate(${p[2]}deg)`;});
- const o=document.querySelector("#treeFlowerOverlay");if(!o)return;
- const n=Math.min(10,Math.floor(Math.min(50,leaves.length)/5));
- o.innerHTML=TREE_FLOWERS.slice(0,n).map((p,i)=>`<span class="tree-tiny-flower" style="left:${p[0]}%;top:${p[1]}%">✿</span>`).join("");
+
+function renderTreeFlowers() {
+  const flowerLayer = $("#flowerLayer");
+  if (!flowerLayer) return;
+
+  const leafCount = Math.min((state.learningLeaves || []).length, 50);
+  const flowerCount = FLOWER_STEPS.filter(step => leafCount >= step).length;
+
+  flowerLayer.innerHTML = "";
+
+  FLOWER_POSITIONS.slice(0, flowerCount).forEach(([x,y,rot,color], i) => {
+    flowerLayer.insertAdjacentHTML("beforeend", `
+      <g class="tree-flower" transform="translate(${x} ${y}) rotate(${rot})">
+        <g class="tree-flower-shape" style="--flower-delay:${i * 70}ms">
+          <ellipse cx="-4" cy="0" rx="4.2" ry="6.3" fill="${color}" opacity=".48"/>
+          <ellipse cx="4" cy="0" rx="4.2" ry="6.3" fill="${color}" opacity=".48"/>
+          <ellipse cx="0" cy="-4" rx="4.2" ry="6.3" fill="${color}" opacity=".48"/>
+          <ellipse cx="0" cy="4" rx="4.2" ry="6.3" fill="${color}" opacity=".48"/>
+          <circle cx="0" cy="0" r="2.5" fill="#d9b66a" opacity=".72"/>
+        </g>
+      </g>
+    `);
+  });
 }
 
 function createGiftButterflyElement(color = "rgba(177,151,211,.62)") {
@@ -1483,10 +1519,10 @@ function renderTree() {
           <path
             class="leaf-body"
             d="M0 0
-               C5 -7 11 -12 18 -14
-               C24 -16 30 -13 34 -9
-               C31 -2 27 4 21 8
-               C14 11 7 8 0 0 Z"
+               C5 -6 10 -10 16 -13
+               C22 -15 27 -13 31 -9
+               C28 -3 24 2 19 6
+               C13 9 7 7 0 0 Z"
             fill="${color}"
           />
           <path
@@ -1496,7 +1532,7 @@ function renderTree() {
           />
           <path
             class="leaf-vein"
-            d="M4 1 C12 -1 20 -5 29 -10"
+            d="M4 1 C11 -1 18 -4 27 -9"
           />
           <path
             class="leaf-vein leaf-vein-small"
@@ -1504,11 +1540,11 @@ function renderTree() {
           />
           <path
             class="leaf-vein leaf-vein-small"
-            d="M18 -5 C21 -5 24 -4 27 -5"
+            d="M17 -5 C20 -5 23 -4 25 -5"
           />
           <path
             class="leaf-vein leaf-vein-small"
-            d="M23 -7 C25 -9 27 -10 28 -12"
+            d="M22 -7 C24 -9 25 -10 26 -11"
           />
         </g>
       </g>
@@ -1527,6 +1563,8 @@ function renderTree() {
     : "Der Baum wächst still mit euren Lernaufgaben und Herzmomenten.";
 
   $("#finishTreeBtn")?.classList.toggle("hidden", !complete);
+
+  renderTreeFlowers();
 }
 
 function renderHearts() {
