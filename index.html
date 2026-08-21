@@ -221,9 +221,7 @@
       Datum
       <input id="heartDate" type="date">
     </label>
-  </div>
 
-  <div class="heart-gift-row">
     <label class="heart-gift-toggle">
       <input id="heartGiftToggle" type="checkbox">
       <span>🎁 Herzmoment verschenken</span>
@@ -245,19 +243,11 @@
 
   <label id="heartNoteField" class="heart-note-field">
     🌱 Was möchtest du dir merken?
-    <textarea
-      id="heartReason"
-      rows="4"
-      placeholder="Deine Gedanken (freiwillig)"
-    ></textarea>
+    <textarea id="heartReason" rows="4" placeholder="Deine Gedanken (freiwillig)"></textarea>
   </label>
 
   <div class="heart-action-row">
-    <button
-      id="addRootBtn"
-      type="button"
-      class="primary heart-save-btn"
-    >
+    <button id="addRootBtn" type="button" class="primary heart-save-btn">
       🌱 Eine Wurzel wachsen lassen
     </button>
   </div>
@@ -500,6 +490,20 @@
       Hier findest du bereits bearbeitete Aufgaben und kannst sie später wiederverwenden.
     </p>
   </div>
+
+  <div class="archive-search-row">
+    <input
+      id="archiveSearch"
+      type="search"
+      placeholder="🔎 Suchen – Aufgabe, Text oder Link"
+      autocomplete="off"
+    >
+    <button id="archiveSearchClear" type="button" class="soft archive-search-clear">
+      Zurücksetzen
+    </button>
+  </div>
+
+  <div id="archiveSearchInfo" class="archive-search-info muted"></div>
 
   <div id="taskArchiveList">
     <p class="muted">
