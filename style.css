@@ -6058,3 +6058,62 @@ label:has(textarea){
 #flowerLayer{
   opacity:.82;
 }
+
+/* =========================================================
+   2.5q – Lernwald wächst langfristig mit
+   ========================================================= */
+
+/* Die echte Waldfläche trägt die Zoomstufe für alle Bäume und Bewohner. */
+.forest-stage{
+  --forest-zoom:1;
+}
+
+/* Ein neuer Baum = genau ein neues kleines Stück Waldleben.
+   Sichtbarer als bisher, aber weiterhin dezent. */
+.forest-companion{
+  z-index:4 !important;
+  opacity:.82 !important;
+  font-size:clamp(.82rem, 1.55vw, 1.18rem) !important;
+  filter:saturate(.90) drop-shadow(0 1px 1px rgba(70,54,42,.05)) !important;
+}
+
+.forest-companion:hover{
+  opacity:1 !important;
+}
+
+/* Bäume werden bei wachsendem Wald stufenweise kleiner.
+   Dadurch entsteht zunehmend eine Vogelperspektive. */
+.forest-tree-spot{
+  transition:
+    transform .75s ease,
+    opacity .45s ease !important;
+}
+
+/* =========================================================
+   Blümchen zwischen den Lernblättern:
+   etwas sichtbarer, aber weiterhin leicht und aquarellartig.
+   ========================================================= */
+
+#flowerLayer{
+  opacity:.94 !important;
+}
+
+#flowerLayer .tree-flower-shape{
+  opacity:.78 !important;
+}
+
+/* Petalen weniger durchsichtig als bisher. */
+#flowerLayer .tree-flower ellipse{
+  opacity:.60 !important;
+}
+
+#flowerLayer .tree-flower circle{
+  opacity:.80 !important;
+}
+
+/* Das allererste Blümchen nach ca. 4 Blättern darf
+   einen Tick auffälliger sein, damit man das Ereignis wirklich bemerkt. */
+#flowerLayer .tree-flower:first-child .tree-flower-shape{
+  opacity:.88 !important;
+  filter:drop-shadow(0 1px 1.5px rgba(82,60,44,.09)) !important;
+}
