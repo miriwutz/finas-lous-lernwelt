@@ -6423,3 +6423,54 @@ label:has(textarea){
   opacity:.34 !important;
   transform:translate(-50%, -50%) scale(.52) !important;
 }
+
+
+/* =========================================================
+   2.5z – große Wälder: echte 2D-Flächenlogik
+   ========================================================= */
+
+.forest-stage,
+.forest-grid{
+  overflow:hidden !important;
+}
+
+/* Kein gemeinsamer globaler Zoom mehr – jeder Baum hat seine eigene Perspektive. */
+.forest-tree-spot{
+  transform:
+    translateX(-50%)
+    scale(var(--tree-scale, 1))
+    rotate(var(--tree-tilt, 0deg)) !important;
+  transform-origin:center bottom !important;
+}
+
+/* Große Wälder = Landschaft. Namen nur noch auf Nachfrage. */
+.forest-stage.forest-dense .forest-tree-name,
+.forest-stage.forest-landscape .forest-tree-name,
+.forest-stage.forest-very-dense .forest-tree-name,
+.forest-stage.forest-world-view .forest-tree-name{
+  opacity:0 !important;
+}
+
+.forest-stage .forest-tree-spot:hover .forest-tree-name,
+.forest-stage .forest-tree-spot:focus-visible .forest-tree-name{
+  opacity:1 !important;
+}
+
+/* Bewohner bleiben vorhanden, werden aber bei großer Entfernung stark reduziert. */
+.forest-stage.forest-landscape .forest-companion:nth-of-type(2n){
+  display:none !important;
+}
+
+.forest-stage.forest-very-dense .forest-companion{
+  display:none !important;
+}
+
+.forest-stage.forest-very-dense .forest-companion:nth-of-type(6n){
+  display:block !important;
+  opacity:.34 !important;
+  transform:translate(-50%, -50%) scale(.55) !important;
+}
+
+.forest-stage.forest-world-view .forest-companion{
+  display:none !important;
+}
