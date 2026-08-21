@@ -5873,3 +5873,64 @@ label:has(textarea){
   opacity:1;
   transform:translate(-50%, -50%) scale(calc(var(--forest-zoom, 1) * 1.12));
 }
+
+/* =========================================================
+   2.5m – Lernwald: sichere Innenfläche
+   Kein Baum darf oben/seitlich abgeschnitten werden.
+   ========================================================= */
+
+#forestScene{
+  position:relative !important;
+  min-height:350px;
+  overflow:hidden !important;
+}
+
+/* Die gespeicherten Baumkoordinaten werden innerhalb der Waldfläche
+   interpretiert; zusätzliche Sicherheitsabstände verhindern Clipping. */
+.forest-tree-spot{
+  max-width:150px;
+}
+
+/* Der einzelne Baum im Schmetterlings-/Wurzel-Wachstumsfenster
+   soll deutlich kleiner als der Hauptbaum sein. */
+.growth-tree,
+.gift-tree,
+.heart-growth-tree,
+.growth-modal .tree-wrap,
+.gift-modal .tree-wrap{
+  max-width:360px !important;
+  width:min(44vw, 360px) !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+}
+
+.growth-tree img,
+.gift-tree img,
+.heart-growth-tree img,
+.growth-modal .tree-wrap img,
+.gift-modal .tree-wrap img{
+  max-height:360px !important;
+  width:auto !important;
+  object-fit:contain !important;
+}
+
+/* Falls das Wachstumsfenster den Hauptbaum direkt als SVG/IMG rendert,
+   fangen diese Selektoren die aktuelle Struktur zusätzlich ab. */
+#growthOverlay .tree-stage,
+#giftOverlay .tree-stage,
+#heartGrowthOverlay .tree-stage{
+  max-width:390px !important;
+  margin:0 auto !important;
+}
+
+#growthOverlay .tree-stage > img,
+#giftOverlay .tree-stage > img,
+#heartGrowthOverlay .tree-stage > img,
+#growthOverlay .tree-stage > svg,
+#giftOverlay .tree-stage > svg,
+#heartGrowthOverlay .tree-stage > svg{
+  max-height:350px !important;
+  width:auto !important;
+  margin:0 auto !important;
+  display:block !important;
+}
