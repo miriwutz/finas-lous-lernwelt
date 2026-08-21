@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5s Lernwald eigene Baumpositionen";
+const APP_VERSION = "2.5t Lernwald organische Verteilung";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -2426,27 +2426,20 @@ function forestCompanionForIndex(index) {
 }
 
 function deterministicForestPoint(index) {
-  /*
-    Sichere Waldfläche:
-    x = 13–87 %, y = 43–82 %.
-    Damit bleibt auch ein größerer Baum vollständig innerhalb des Rahmens.
-    Bei mehr Bäumen entstehen versetzte Reihen und später durch forestZoomForCount
-    automatisch kleinere Bäume / mehr Vogelperspektive.
-  */
-  const cols = 6;
-  const col = index % cols;
-  const row = Math.floor(index / cols);
+  const frac = value => value - Math.floor(value);
 
-  const xBase = 13 + col * 14.7;
-  const rowBand = row % 4;
-  const yBase = 48 + rowBand * 10.5;
+  const rx = frac((index + 3) * 0.6435942529);
+  const ry = frac((index + 7) * 0.7831347281);
 
-  const jitterX = (((index * 37) % 9) - 4) * 0.55;
-  const jitterY = (((index * 53) % 7) - 3) * 0.45;
+  const x = 8 + rx * 84;
+
+  // Bewohner/Pflanzen überwiegend im unteren Landschaftsbereich,
+  // aber nicht auf einer geraden Linie.
+  const y = 72 + Math.pow(ry, 1.1) * 19;
 
   return {
-    x: Math.max(11, Math.min(89, xBase + jitterX)),
-    y: Math.max(44, Math.min(84, yBase + jitterY))
+    x: Math.max(6, Math.min(94, x)),
+    y: Math.max(70, Math.min(92, y))
   };
 }
 
@@ -2467,7 +2460,7 @@ function decorateForestScene(treeCount) {
     el.title = item.label;
     el.setAttribute("aria-label", item.label);
     el.style.left = `${p.x}%`;
-    el.style.top = `${Math.min(92, Math.max(72, p.y + 11))}%`;
+    el.style.top = `${p.y}%`;
     scene.appendChild(el);
   }
 }
@@ -2587,51 +2580,77 @@ function runGrowthPreview(kind) {
 
 
 function forestTreeLayout(index, count) {
-  // Jeder Baum erhält einen eigenen Platz.
-  // Die Reihen liegen perspektivisch hintereinander:
-  // hinten kleiner und höher, vorne größer und tiefer.
-  const columns =
-    count <= 5 ? count :
-    count <= 10 ? 5 :
-    count <= 20 ? 7 :
-    count <= 35 ? 9 : 10;
+  /*
+    Organische Lernwald-Verteilung:
+    - keine geraden Reihen
+    - keine Symmetrie
+    - jeder Baum eigener Platz
+    - Vorder-/Mittel-/Hintergrund unterschiedlich groß
+    - Positionen bleiben deterministisch stabil
+    - Sicherheitsrand, damit nichts abgeschnitten wird
+  */
 
-  const rows = Math.max(1, Math.ceil(count / columns));
-  const row = Math.floor(index / columns);
-  const col = index % columns;
-  const itemsInRow = Math.min(columns, count - row * columns);
+  const safeCount = Math.max(1, count);
 
-  // Hinterste Reihe zuerst. Dadurch liegt die vorderste Reihe optisch vorne.
-  const depth = rows <= 1 ? 1 : row / (rows - 1);
+  // Quasi-zufällige, aber stabile Werte 0..1.
+  // Unterschiedliche irrationale Faktoren verhindern sichtbare Muster.
+  const frac = value => value - Math.floor(value);
+  const rx = frac((index + 1) * 0.61803398875);
+  const ry = frac((index + 1) * 0.75487766625);
+  const rz = frac((index + 1) * 0.56984029099);
 
-  // Innerhalb jeder Reihe gleichmäßig verteilen, aber nicht an den Rand kleben.
-  const leftMin = count <= 5 ? 8 : 3;
-  const leftMax = count <= 5 ? 86 : 91;
-  const step = itemsInRow <= 1 ? 0 : (leftMax - leftMin) / (itemsInRow - 1);
-  let left = itemsInRow <= 1 ? 47 : leftMin + col * step;
+  // Mit mehr Bäumen wird die gesamte Szene weiter.
+  const densityScale =
+    safeCount <= 5  ? 1.00 :
+    safeCount <= 10 ? 0.90 :
+    safeCount <= 20 ? 0.78 :
+    safeCount <= 35 ? 0.66 :
+                      0.57;
 
-  // Jede zweite Reihe leicht versetzen -> natürlicher Wald statt Raster.
-  if (row % 2 === 1 && itemsInRow > 2) {
-    left += step * 0.22;
-  }
-  left = Math.max(2, Math.min(92, left));
+  /*
+    yDepth:
+    0 = weit hinten
+    1 = weit vorne
 
-  // Perspektive: hintere Reihen höher und kleiner.
-  // Bei wenigen Bäumen bleiben sie bewusst groß.
-  const baseScale =
-    count <= 5 ? 1.00 :
-    count <= 10 ? 0.88 :
-    count <= 20 ? 0.72 :
-    count <= 35 ? 0.60 : 0.52;
+    Die Potenz verteilt mehr Bäume angenehm im Mittel-/Hintergrund,
+    ohne dass der Vordergrund zu dicht wird.
+  */
+  const yDepth = Math.pow(ry, 0.82);
 
-  const scale = baseScale * (0.72 + depth * 0.28);
-  const bottom = 28 + (rows - 1 - row) * (count <= 20 ? 64 : 48);
+  // Horizontal etwas mehr Raum im Vordergrund als hinten.
+  const horizontalSpread = 0.76 + yDepth * 0.18;
+  let left = 50 + (rx - 0.5) * 100 * horizontalSpread;
+
+  // Kleine unregelmäßige Zusatzverschiebung.
+  left += (rz - 0.5) * 7;
+
+  // Sicherheitsrand gegen Abschneiden.
+  left = Math.max(5.5, Math.min(92.5, left));
+
+  // Hintere Bäume höher, vordere tiefer.
+  const bottom = 44 + yDepth * 42;
+
+  // Perspektive: hinten deutlich kleiner.
+  const depthScale = 0.56 + yDepth * 0.44;
+
+  // Kleine natürliche Größenunterschiede zusätzlich zur Perspektive.
+  const naturalVariation = 0.91 + rz * 0.16;
+
+  const scale = densityScale * depthScale * naturalVariation;
+
+  // Z-Index folgt der Tiefe: vordere Bäume liegen vor hinteren.
+  const z = 10 + Math.round(yDepth * 70);
+
+  // Minimaler Winkel für organischen Eindruck.
+  const tilt = (frac((index + 1) * 0.41421356237) - 0.5) * 2.2;
 
   return {
     left,
     bottom,
     scale,
-    z: 20 + row
+    z,
+    tilt,
+    depth: yDepth
   };
 }
 
@@ -2678,7 +2697,7 @@ function renderForest() {
     box.insertAdjacentHTML("beforeend", `
       <article
         class="forest-tree-spot"
-        style="left:${layout.left}%; bottom:${layout.bottom}px; --tree-scale:${layout.scale}; z-index:${layout.z};"
+        style="left:${layout.left}%; bottom:${layout.bottom}px; --tree-scale:${layout.scale}; --tree-tilt:${layout.tilt}deg; --tree-depth:${layout.depth}; z-index:${layout.z};"
         tabindex="0"
         aria-label="${escapeHtml(tree.name || "Baum")} – Details anzeigen"
       >
