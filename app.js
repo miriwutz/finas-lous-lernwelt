@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.4k Tabs, Wurzeln & Geschenkflug repariert";
+const APP_VERSION = "2.4l Formular & Archivsuche aufgeräumt";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -887,6 +887,20 @@ function renderTreeAttention() {
   line.textContent = seconds > 0
     ? `💛 Dieser Baum hat schon ${formatAttentionMinutes(seconds)} Aufmerksamkeit bekommen.`
     : "💛 Dieser Baum wartet auf seine erste geschenkte Aufmerksamkeit.";
+}
+
+
+if ($("#archiveSearch")) {
+  $("#archiveSearch").addEventListener("input", () => renderTaskArchive());
+}
+
+if ($("#archiveSearchClear")) {
+  $("#archiveSearchClear").onclick = () => {
+    const input = $("#archiveSearch");
+    if (input) input.value = "";
+    renderTaskArchive();
+    $("#archiveSearch")?.focus();
+  };
 }
 
 onAuthStateChanged(auth, async user => {
