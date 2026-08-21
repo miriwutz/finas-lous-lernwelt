@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5z Große Wälder echte Flächenlogik";
+const APP_VERSION = "2.5aa Renderkoordinaten-Fix";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -2731,7 +2731,7 @@ function buildLandscapeForest(count) {
     const scaleBase = profile.far + t * (profile.near - profile.far);
     slots.push({
       left: x,
-      bottom: 100 - Math.max(profile.yTop, Math.min(profile.yBottom, y)),
+      topPct: Math.max(profile.yTop, Math.min(profile.yBottom, y)),
       scale: scaleBase * (.88 + hash(seed, 4) * .22),
       z: 30 + Math.round(t * 900),
       tilt: (hash(seed, 5) - .5) * 2.2,
@@ -2909,7 +2909,7 @@ function buildLargeForestLayout(count) {
 
       candidates.push({
         left: x,
-        bottom: 100 - y,
+        topPct: y,
         y,
         scale,
         z: 30 + rowIndex * 100 + Math.round(hash(seed, 8) * 18),
@@ -2996,10 +2996,18 @@ function renderForest() {
 
     const layout = forestTreeLayout(i, forest.length);
 
+    // Kleine Wälder benutzen weiterhin die bewährte bottom-Pixel-Position.
+    // Ab 50 Bäumen wird die berechnete Tiefe als echter Prozentwert
+    // der sichtbaren Waldfläche gerendert.
+    const forestPositionStyle =
+      Number.isFinite(layout.topPct)
+        ? `top:${layout.topPct}%;`
+        : `bottom:${layout.bottom}px;`;
+
     box.insertAdjacentHTML("beforeend", `
       <article
-        class="forest-tree-spot"
-        style="left:${layout.left}%; bottom:${layout.bottom}px; --tree-scale:${layout.scale}; --tree-tilt:${layout.tilt}deg; --tree-depth:${layout.depth}; z-index:${layout.z};"
+        class="forest-tree-spot ${Number.isFinite(layout.topPct) ? "forest-tree-depth-position" : ""}"
+        style="left:${layout.left}%; ${forestPositionStyle} --tree-scale:${layout.scale}; --tree-tilt:${layout.tilt}deg; --tree-depth:${layout.depth}; z-index:${layout.z};"
         tabindex="0"
         aria-label="${escapeHtml(tree.name || "Baum")} – Details anzeigen"
       >
