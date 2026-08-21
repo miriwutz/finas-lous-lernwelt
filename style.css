@@ -4655,3 +4655,139 @@ label:has(textarea){
     width:auto !important;
   }
 }
+
+/* =========================================================
+   2.4o – Verschenken-Schalter endlich sauber
+   Ziel: kompakter echter Toggle, keine Box, kein Kreis-Fremdkörper
+   ========================================================= */
+
+/* Zeile bleibt ruhig und kompakt */
+.heart-meta-primary{
+  display:grid !important;
+  grid-template-columns:105px 150px 165px 125px !important;
+  gap:10px !important;
+  align-items:end !important;
+  width:max-content !important;
+  max-width:100% !important;
+  margin:0 0 14px !important;
+}
+
+/* Geschenk-Label ohne Rahmen/Box */
+.heart-gift-toggle{
+  position:relative !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  width:165px !important;
+  min-height:42px !important;
+  margin:0 !important;
+  padding:0 0 6px !important;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  cursor:pointer !important;
+  white-space:nowrap !important;
+  user-select:none !important;
+}
+
+/* Browser-Checkbox komplett ausblenden */
+.heart-gift-toggle input{
+  position:absolute !important;
+  inline-size:1px !important;
+  block-size:1px !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+}
+
+/* Text + Platz für echten Toggle links */
+.heart-gift-toggle span{
+  position:relative !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  min-height:30px !important;
+  padding-left:50px !important;
+  color:#6f594d !important;
+  font-size:.90rem !important;
+  font-weight:800 !important;
+  line-height:1.1 !important;
+}
+
+/* Track */
+.heart-gift-toggle span::before{
+  content:"" !important;
+  position:absolute !important;
+  left:0 !important;
+  top:50% !important;
+  width:38px !important;
+  height:22px !important;
+  transform:translateY(-50%) !important;
+  border-radius:999px !important;
+  border:1px solid #d9c5b8 !important;
+  background:#eee4dc !important;
+  box-shadow:
+    inset 0 1px 2px rgba(88,62,45,.08) !important;
+  transition:
+    background .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease !important;
+}
+
+/* Knopf */
+.heart-gift-toggle span::after{
+  content:"" !important;
+  position:absolute !important;
+  left:3px !important;
+  top:50% !important;
+  width:16px !important;
+  height:16px !important;
+  transform:translateY(-50%) !important;
+  border-radius:50% !important;
+  background:#fffdf9 !important;
+  box-shadow:
+    0 1px 3px rgba(72,49,36,.24) !important;
+  transition:
+    left .18s ease,
+    transform .18s ease !important;
+}
+
+/* Aktiv: ruhiges Grün passend zur Seite */
+.heart-gift-toggle input:checked + span{
+  color:#56704e !important;
+}
+
+.heart-gift-toggle input:checked + span::before{
+  background:#91aa82 !important;
+  border-color:#7f9a70 !important;
+  box-shadow:
+    inset 0 1px 2px rgba(70,91,60,.12),
+    0 0 0 3px rgba(126,154,112,.10) !important;
+}
+
+.heart-gift-toggle input:checked + span::after{
+  left:19px !important;
+}
+
+/* Fokus dezent sichtbar */
+.heart-gift-toggle input:focus-visible + span::before{
+  outline:3px solid rgba(126,154,112,.20) !important;
+  outline-offset:2px !important;
+}
+
+/* Für wen? bleibt sauber rechts daneben */
+.heart-recipient-field,
+.heart-recipient-field select{
+  width:125px !important;
+}
+
+/* Tablet */
+@media(max-width:720px){
+  .heart-meta-primary{
+    width:100% !important;
+    grid-template-columns:105px 150px 165px !important;
+    row-gap:8px !important;
+  }
+
+  .heart-recipient-field{
+    grid-column:1 / span 2 !important;
+  }
+}
