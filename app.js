@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5ak Bäume 18 Prozent größer";
+const APP_VERSION = "2.5al Bäume 22 Prozent größer";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -3169,7 +3169,7 @@ function renderForest() {
     box.insertAdjacentHTML("beforeend", `
       <article
         class="forest-tree-spot ${Number.isFinite(layout.topPct) ? "forest-tree-depth-position" : ""}"
-        style="left:${layout.left}%; ${forestPositionStyle} --tree-scale:${layout.scale * 1.18}; --tree-tilt:${layout.tilt}deg; --tree-depth:${layout.depth}; z-index:${layout.z};"
+        style="left:${layout.left}%; ${forestPositionStyle} --tree-scale:${layout.scale * 1.22}; --tree-tilt:${layout.tilt}deg; --tree-depth:${layout.depth}; z-index:${layout.z};"
         tabindex="0"
         aria-label="${escapeHtml(tree.name || "Baum")} – Details anzeigen"
       >
