@@ -206,7 +206,7 @@
 
 <div class="heart-form heart-form-clean">
 
-  <div class="heart-meta-row">
+  <div class="heart-meta-row heart-meta-primary">
     <label class="heart-author-field">
       Von wem?
       <select id="heartAuthor">
@@ -221,10 +221,12 @@
       Datum
       <input id="heartDate" type="date">
     </label>
+  </div>
 
+  <div class="heart-gift-row">
     <label class="heart-gift-toggle">
       <input id="heartGiftToggle" type="checkbox">
-      🎁 Herzmoment verschenken
+      <span>🎁 Herzmoment verschenken</span>
     </label>
 
     <label id="heartGiftRecipientField" class="hidden heart-recipient-field">
@@ -241,16 +243,16 @@
     <input id="heartOtherText" type="text" maxlength="90" placeholder="z. B. Jemanden überrascht">
   </label>
 
-  <div class="heart-note-row">
-    <label id="heartNoteField" class="heart-note-field">
-      🌱 Was möchtest du dir merken?
-      <textarea
-        id="heartReason"
-        rows="4"
-        placeholder="Deine Gedanken (freiwillig)"
-      ></textarea>
-    </label>
+  <label id="heartNoteField" class="heart-note-field">
+    🌱 Was möchtest du dir merken?
+    <textarea
+      id="heartReason"
+      rows="4"
+      placeholder="Deine Gedanken (freiwillig)"
+    ></textarea>
+  </label>
 
+  <div class="heart-action-row">
     <button
       id="addRootBtn"
       type="button"
