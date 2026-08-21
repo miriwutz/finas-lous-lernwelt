@@ -6605,3 +6605,42 @@ label:has(textarea){
 
 /* 2.5al – Lernwald-Bäume jetzt +22 % gegenüber der ursprünglichen Größe.
    Sonst keine Änderungen. */
+
+
+/* =========================================================
+   2.5am – Archiv nach Lernbäumen + sichtbarere Waldbewohner
+   Waldverteilung, Perspektive und Baumgröße (+22 %) unverändert.
+   ========================================================= */
+.archive-tree-group{
+  margin:0 0 14px;
+  border:1px solid rgba(145,108,73,.22);
+  border-radius:18px;
+  background:rgba(255,252,247,.72);
+  overflow:hidden;
+}
+.archive-tree-summary{
+  cursor:pointer;
+  list-style:none;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  padding:16px 18px;
+}
+.archive-tree-summary::-webkit-details-marker{display:none;}
+.archive-tree-summary::after{
+  content:"⌄";
+  flex:0 0 auto;
+  opacity:.62;
+  transition:transform .18s ease;
+}
+.archive-tree-group[open] .archive-tree-summary::after{transform:rotate(180deg);}
+.archive-tree-title{font-weight:800;}
+.archive-tree-summary-meta{font-size:.88rem;opacity:.68;text-align:right;}
+.archive-tree-content{padding:0 14px 14px;}
+.archive-tree-content .archive-task:last-child{margin-bottom:0;}
+
+.forest-world-detail{filter:saturate(.94);}
+.forest-world-detail-tree,
+.forest-world-detail-ground{filter:saturate(.94);}
+.forest-world-detail-plant{filter:saturate(.88);}
