@@ -6115,48 +6115,12 @@ label:has(textarea){
 /* =========================================================
    2.5r – Abschluss-Testmodus (nur Baumpfleger)
    ========================================================= */
-.forest-test-panel{
-  margin-top:12px;
-  padding:10px 12px;
-  border:1px dashed #d7c5b7;
-  border-radius:13px;
-  background:#fffdf9;
-}
 
-.forest-test-panel summary{
-  cursor:pointer;
-  font-weight:800;
-  color:#684b39;
-}
 
-.forest-test-note{
-  margin:7px 0 9px;
-  font-size:.82rem;
-}
 
-.forest-test-controls,
-.growth-test-controls{
-  display:flex;
-  flex-wrap:wrap;
-  align-items:center;
-  gap:6px;
-  margin-top:7px;
-}
 
-.forest-test-controls > span,
-.growth-test-controls > span{
-  margin-right:3px;
-  color:#7b6658;
-  font-size:.82rem;
-  font-weight:750;
-}
 
-.forest-test-controls button,
-.growth-test-controls button{
-  min-height:32px;
-  padding:5px 8px;
-  font-size:.78rem;
-}
+
 
 .growth-test-butterfly{
   position:fixed;
@@ -6287,9 +6251,6 @@ label:has(textarea){
    2.5v – Lernwald-Stresstest 100 / 250 / 500 / 1000
    ========================================================= */
 
-.forest-test-stress{
-  border-style:dashed !important;
-}
 
 /* Ab 100 Bäumen wird der Wald zur Landschaft:
    Namen nur noch beim Darüberfahren sichtbar. */
@@ -6676,3 +6637,7 @@ label:has(textarea){
    Baumkronen: Eulen, Schmetterlinge, Eichhörnchen.
    Boden: Fuchs, Igel, Hase, Schnecke, Käfer, Pilze und Pflanzen.
    Waldlayout und Archiv unverändert. */
+
+/* Finale Einsatzversion:
+   sichtbare Lernwald-Test-/Simulationsfunktion entfernt.
+   Lernwald, Archiv, Speicherung und Waldbewohner unverändert. */
