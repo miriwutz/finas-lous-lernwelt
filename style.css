@@ -5766,3 +5766,47 @@ label:has(textarea){
     flex-direction:column;
   }
 }
+
+/* =========================================================
+   2.5k – Baumname im Lernwald sehr dezent
+   + Lernwald-Button scrollt wirklich zum Wald
+   ========================================================= */
+
+.forest-tree-name{
+  display:block !important;
+  width:max-content !important;
+  max-width:145px !important;
+  margin:1px auto 0 !important;
+  padding:1px 4px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+  color:#766659 !important;
+  font-size:.74rem !important;
+  font-weight:650 !important;
+  line-height:1.15 !important;
+  letter-spacing:.01em !important;
+  opacity:.82 !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+}
+
+/* Beim Darüberfahren darf der Name minimal deutlicher werden,
+   bleibt aber klar hinter dem Baum selbst zurück. */
+.forest-tree-spot:hover .forest-tree-name,
+.forest-tree-spot:focus-visible .forest-tree-name{
+  color:#5e4c3f !important;
+  opacity:1 !important;
+}
+
+/* Button soll sich eindeutig wie ein Button anfühlen. */
+#openForest{
+  cursor:pointer !important;
+}
+
+#openForest:active{
+  transform:translateY(1px);
+}
