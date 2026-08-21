@@ -6368,3 +6368,35 @@ label:has(textarea){
 .forest-stage.forest-world-view .forest-tree-spot{
   filter:saturate(.92);
 }
+
+
+/* =========================================================
+   2.5x – Lernwelt nutzt die Tiefe + ruhigere Waldbewohner
+   ========================================================= */
+
+/* Bei großer Waldmenge sollen weit entfernte Bäume wirklich wie Ferne wirken. */
+.forest-stage.forest-landscape .forest-tree-spot{
+  transform-origin:center bottom !important;
+}
+
+/* Bewohner optisch unterordnen: Wald zuerst, Details danach. */
+.forest-companion{
+  opacity:.72 !important;
+  font-size:clamp(11px, 1.35vw, 20px) !important;
+}
+
+/* Ab 100: Details kleiner, damit sie nicht zwischen den Baumkronen dominieren. */
+.forest-stage.forest-dense .forest-companion{
+  opacity:.62 !important;
+  font-size:clamp(9px, 1.05vw, 16px) !important;
+}
+
+/* Ab 250 nur ein Teil sichtbar – gespeichert bleibt weiterhin alles. */
+.forest-stage.forest-landscape .forest-companion{
+  opacity:.54 !important;
+}
+
+/* Weit hinten sollen Namen/Details nicht die Vogelperspektive zerstören. */
+.forest-stage.forest-landscape .forest-tree-name{
+  display:none !important;
+}
