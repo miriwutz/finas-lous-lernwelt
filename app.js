@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5an Mehr Waldbewohner";
+const APP_VERSION = "2.5ao Waldbewohner nach Tiefenzonen";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -3225,23 +3225,18 @@ function renderForest() {
 
   decorateForestScene(forest.length);
 
-  // 2.5ae: Bewohner und Pflanzen als kleine Entdeckungen im Wald.
-  // Pflanzen überwiegen deutlich; Tiere sind seltener und kleiner.
+  // 2.5ao: Bewohner und Pflanzen nach Tiefenzonen.
+  // Bodenobjekte sitzen auf festen Bodenbändern und können nicht mehr schweben.
   if (forest.length >= 50) {
-    const plantPool = [
-      "🌿","🌿","🌱","🌱","🌱","🌾","🌼","🌸","🍄","🍄"
-    ];
-    const groundAnimalPool = [
-      "🐞","🐌","🐇","🦔","🪲","🐛"
-    ];
-    const treeAnimalPool = [
-      "🐿️","🐦","🦉","🦋"
-    ];
+    const backAnimals = ["🐦","🦉","🦋","🐦","🦋","🐦"];
+    const middleAnimals = ["🐿️","🐦","🦉","🦋","🐿️","🐦"];
+    const frontAnimals = ["🐇","🦔","🦊","🐿️","🐌","🐞","🪲","🐇","🦔"];
+    const middlePlants = ["🌱","🌿","🌼","🌱"];
+    const frontPlants = ["🍄","🌼","🌱","🌿","🍄","🌸"];
 
-    // Etwas weniger Details als zuvor.
     const decorCount = Math.max(
-      5,
-      Math.min(110, Math.max(18, Math.round(forest.length / 3.2)))
+      24,
+      Math.min(120, Math.round(forest.length / 2.7))
     );
 
     const frac = n => n - Math.floor(n);
@@ -3250,59 +3245,66 @@ function renderForest() {
 
     for (let d = 0; d < decorCount; d++) {
       const seed = forest.length * 911 + d * 137;
-      const kindRoll = decorHash(seed, 8);
+      const zoneRoll = decorHash(seed, 1);
 
-      // Rund 68 % Pflanzen, 20 % Bodenbewohner, 12 % Baum-/Flugtiere.
-      let icon;
-      let kind;
-      if (kindRoll < .68) {
-        icon = plantPool[Math.floor(decorHash(seed, 4) * plantPool.length)];
-        kind = "plant";
-      } else if (kindRoll < .88) {
-        icon = groundAnimalPool[Math.floor(decorHash(seed, 4) * groundAnimalPool.length)];
-        kind = "ground";
+      let zone;
+      if (zoneRoll < .30) zone = "back";
+      else if (zoneRoll < .64) zone = "middle";
+      else zone = "front";
+
+      const groundRoll = decorHash(seed, 8);
+      const useGround =
+        zone === "front" ? groundRoll < .28 :
+        zone === "middle" ? groundRoll < .12 :
+        false;
+
+      let pool;
+      if (useGround) {
+        pool = zone === "front" ? frontPlants : middlePlants;
       } else {
-        icon = treeAnimalPool[Math.floor(decorHash(seed, 4) * treeAnimalPool.length)];
-        kind = "tree";
+        pool =
+          zone === "back" ? backAnimals :
+          zone === "middle" ? middleAnimals :
+          frontAnimals;
       }
 
-      const depthRand = decorHash(seed, 1);
-      let topPct =
-        depthRand < .14
-          ? 31 + decorHash(seed, 2) * 18
-          : depthRand < .58
-            ? 51 + decorHash(seed, 2) * 20
-            : 72 + decorHash(seed, 2) * 14;
-
-      // Bodenbewohner/Pflanzen eher am Boden,
-      // Baum-/Flugtiere dürfen etwas höher zwischen den Kronen sitzen.
-      if (kind === "tree") topPct -= 4 + decorHash(seed, 9) * 7;
-      if (kind === "ground") topPct += 2 + decorHash(seed, 9) * 4;
-
-      topPct = Math.max(28, Math.min(87, topPct));
-
+      const icon = pool[Math.floor(decorHash(seed, 4) * pool.length)];
       const leftPct = 5 + decorHash(seed, 3) * 90;
 
-      // Tiefe bestimmt die Größe wesentlich stärker als zuvor.
+      let topPct;
+      if (useGround) {
+        // Echte Bodenbänder: Pilze/Blumen/Pflanzen stehen am Boden.
+        topPct =
+          zone === "middle"
+            ? 61 + decorHash(seed, 2) * 5
+            : 84 + decorHash(seed, 2) * 6;
+      } else {
+        // Tiere werden über alle Tiefenzonen verteilt.
+        topPct =
+          zone === "back"
+            ? 22 + decorHash(seed, 2) * 18
+            : zone === "middle"
+              ? 45 + decorHash(seed, 2) * 18
+              : 70 + decorHash(seed, 2) * 17;
+      }
+
       let scale =
-        topPct < 45 ? .30 + decorHash(seed, 5) * .08 :
-        topPct < 65 ? .42 + decorHash(seed, 5) * .10 :
-        .56 + decorHash(seed, 5) * .12;
+        zone === "back"
+          ? .48 + decorHash(seed, 5) * .13
+          : zone === "middle"
+            ? .70 + decorHash(seed, 5) * .17
+            : .96 + decorHash(seed, 5) * .22;
 
-      if (kind === "plant") scale *= 1.08;
-      if (kind === "tree") scale *= 1.05;
-      if (kind === "ground") scale *= 1.10;
-
-      scale *= 1.30;
+      if (useGround) scale *= 1.04;
 
       const opacity =
-        topPct < 45 ? .70 :
-        topPct < 65 ? .84 :
-        .96;
+        zone === "back" ? .76 :
+        zone === "middle" ? .88 :
+        .98;
 
       box.insertAdjacentHTML("beforeend", `
         <span
-          class="forest-world-detail forest-world-detail-${kind}"
+          class="forest-world-detail ${useGround ? "forest-world-detail-ground" : "forest-world-detail-animal"} forest-world-zone-${zone}"
           aria-hidden="true"
           style="
             left:${leftPct}%;
