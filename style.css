@@ -2866,3 +2866,19 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
     0 0 11px rgba(255,211,123,.70),
     0 0 20px rgba(225,123,146,.38) !important;
 }
+
+/* 2.4a */
+.root-growth-canvas .new-growth-root.root-growing-now{
+ z-index:1!important; filter:brightness(.35) contrast(1.75) saturate(1.35)!important;
+}
+.tree-root-png-layer,.root-growth-canvas .tree-root-png-layer{z-index:1!important}
+.tree-base-image,.root-growth-canvas .tree-base-image{z-index:5!important}
+.tree-leaf-overlay{z-index:6!important}
+.tree-flower-overlay{position:absolute;inset:0;z-index:7;pointer-events:none}
+.flying-heart{
+ text-shadow:0 0 6px rgba(255,255,220,1),0 0 14px rgba(255,235,145,1),
+ 0 0 28px rgba(255,199,93,.95),0 0 46px rgba(239,125,153,.82),
+ 0 0 68px rgba(239,125,153,.55)!important;
+}
+
+.tree-tiny-flower{position:absolute;transform:translate(-50%,-50%);font-size:13px;line-height:1;color:rgba(218,139,157,.48);text-shadow:0 0 2px rgba(255,235,188,.45)}
