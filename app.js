@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.4a Herz, Wurzeln, Blätter & Blümchen";
+const APP_VERSION = "2.4b Feinabstimmung Herz & Wurzel";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -466,8 +466,8 @@ function showRootGrowthCelebration() {
       Die rote Markierung liegt am geschnitzten Herz:
       ca. 50 % Breite / 62,7 % Höhe des sichtbaren Baum-PNGs.
     */
-    const targetX = imageRect.left + imageRect.width * 0.535 - previewRect.left;
-    const targetY = imageRect.top + imageRect.height * 0.627 - previewRect.top;
+    const targetX = imageRect.left + imageRect.width * 0.527 - previewRect.left;
+    const targetY = imageRect.top + imageRect.height * 0.640 - previewRect.top;
 
     heartTarget.style.left = `${targetX}px`;
     heartTarget.style.top = `${targetY}px`;
@@ -491,13 +491,13 @@ function showRootGrowthCelebration() {
         offset:.10,
         opacity:1,
         filter:"brightness(1.42) drop-shadow(0 0 10px rgba(255,216,124,.95)) drop-shadow(0 0 22px rgba(244,157,176,.72))",
-        transform:`translate(${startX}px, ${startY}px) translate(-50%,-50%) scale(3.20) rotate(-5deg)`
+        transform:`translate(${startX}px, ${startY}px) translate(-50%,-50%) scale(3.65) rotate(-5deg)`
       },
       {
         offset:.20,
         opacity:1,
         filter:"brightness(1.25) drop-shadow(0 0 7px rgba(255,226,151,.86)) drop-shadow(0 0 16px rgba(244,157,176,.55))",
-        transform:`translate(${startX + 5}px, ${startY + 18}px) translate(-50%,-50%) scale(2.65) rotate(4deg)`
+        transform:`translate(${startX + 5}px, ${startY + 18}px) translate(-50%,-50%) scale(2.85) rotate(4deg)`
       },
       {
         offset:.38,
