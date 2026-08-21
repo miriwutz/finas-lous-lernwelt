@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.4n Schmetterling erst bei Ankunft & Geschenk-Toggle";
+const APP_VERSION = "2.4o Verschenken-Toggle sauber";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
