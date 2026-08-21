@@ -6644,3 +6644,7 @@ label:has(textarea){
 .forest-world-detail-tree,
 .forest-world-detail-ground{filter:saturate(.94);}
 .forest-world-detail-plant{filter:saturate(.88);}
+
+/* 2.5an – ausschließlich Waldbewohner/Pflanzen:
+   deutlich häufiger und etwas besser sichtbar.
+   Archiv, Baumgröße (+22 %), Waldverteilung und Perspektive unverändert. */
