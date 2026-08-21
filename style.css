@@ -1,3691 +1,2180 @@
-:root{
-  --bg:#f8efe8; --card:#fffdf9; --text:#49382f; --muted:#7d6e64;
-  --sage:#9fb58f; --sage-dark:#6f8a63; --clay:#d58f7d; --clay-dark:#b96558;
-  --gold:#e6bd62; --blue:#86b7c9; --sand:#ead8c5; --line:#e8d6c9;
-  --shadow:0 12px 32px rgba(92,66,49,.10);
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{
-  margin:0; font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  color:var(--text);
-  background:
-    radial-gradient(circle at 8% 8%,rgba(213,143,125,.18),transparent 28%),
-    radial-gradient(circle at 92% 16%,rgba(159,181,143,.20),transparent 26%),
-    linear-gradient(180deg,#fff9f4 0%,var(--bg) 100%);
-  min-height:100vh;
-}
-button,input,select,textarea{font:inherit}
-button{cursor:pointer;border:0}
-.hidden{display:none!important}
-.center-screen{min-height:100vh;display:grid;place-items:center;padding:20px}
-.login-card,.card,dialog{background:rgba(255,253,249,.98);border:1px solid var(--line);box-shadow:var(--shadow)}
-.login-card{width:min(430px,100%);padding:32px;border-radius:28px;text-align:center}
-.brand{font-size:3rem}
-label{display:grid;gap:7px;font-weight:700;text-align:left;margin:13px 0}
-input,select,textarea{
-  width:100%;border:1px solid #dcc9bb;border-radius:12px;padding:12px;background:#fff;color:var(--text)
-}
-textarea{resize:vertical}
-.primary,.soft,.ghost{
-  border-radius:14px;padding:11px 15px;font-weight:800
-}
-.primary{background:var(--sage-dark);color:white}
-.soft{background:var(--sand);color:var(--text)}
-.ghost{background:transparent;color:var(--muted)}
-.message{min-height:1.3em;color:var(--clay-dark)}
-.topbar{
-  position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center;
-  padding:16px max(18px,calc((100vw - 1160px)/2));background:rgba(255,249,244,.92);
-  backdrop-filter:blur(14px);border-bottom:1px solid var(--line)
-}
-.topbar h1{margin:0;font-size:1.65rem}
-.top-actions{display:flex;gap:8px;flex-wrap:wrap}
-.page{max-width:1160px;margin:auto;padding:22px}
-.card{border-radius:26px;padding:24px;margin-bottom:20px}
-.eyebrow{text-transform:uppercase;letter-spacing:.11em;font-size:.76rem;color:var(--clay-dark);font-weight:900}
-.welcome h2{margin:5px 0}
-blockquote{font-family:Georgia,serif;font-size:clamp(1.35rem,3vw,2.1rem);color:var(--clay-dark);margin:14px 0 0}
-.children-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.child-heading,.section-heading{display:flex;justify-content:space-between;align-items:center;gap:12px}
-.child-heading h2,.section-heading h2{margin:4px 0 12px}
-.task-list{display:grid;gap:11px}
-.task{
-  display:flex;align-items:center;gap:13px;padding:14px;border-radius:17px;background:#f7e7e1;
-  border:1px solid rgba(185,101,88,.12)
-}
-.task:nth-child(even){background:#eaf1e6}
-.task:nth-child(3n){background:#f8edcf}
-.task-main{flex:1}
-.task-title{font-weight:900}
-.task-note{color:var(--muted);font-size:.91rem;margin-top:3px}
-.task-link{color:var(--clay-dark);font-weight:800;text-decoration:none}
-.leaf-toggle{width:44px;height:44px;padding:0;background:transparent;flex:0 0 auto}
-.leaf-toggle svg{width:44px;height:44px}
-.leaf-toggle .leaf-fill{fill:#fffaf4;stroke:#b59582;stroke-width:1.8}
-.leaf-toggle .vein{stroke:#b59582;fill:none;stroke-width:1.3}
-.leaf-toggle.done .leaf-fill{fill:var(--sage);stroke:var(--sage-dark)}
-.leaf-toggle.done .vein{stroke:#fff}
-.empty{padding:18px;text-align:center;color:var(--muted);font-style:italic}
-.tree-section{overflow:hidden;background:linear-gradient(180deg,#fffdf9,#fbf3ea)}
-.tree-layout{display:grid;grid-template-columns:1.35fr .65fr;gap:22px;align-items:center}
-.tree-wrap{min-width:0}
-#treeSvg{width:100%;max-height:560px}
-.branch{fill:none;stroke:#86634d;stroke-width:12;stroke-linecap:round;opacity:.95}
-.dynamic-leaf{filter:drop-shadow(0 2px 2px rgba(60,40,30,.12))}
-.dynamic-root{fill:none;stroke:#7d5b46;stroke-linecap:round;filter:drop-shadow(0 2px 2px rgba(60,40,30,.10))}
-.tree-story{padding:12px}
-.tree-mantra{font-family:Georgia,serif;font-size:1.15rem;line-height:1.5}
-.muted{color:var(--muted)}
-.hearts h2{margin:5px 0 15px}
-.heart-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.heart-choice{
-  text-align:left;padding:13px;border-radius:16px;background:#fff8f2;border:1px solid var(--line);
-  color:var(--text);min-height:92px
-}
-.heart-choice.selected{outline:3px solid rgba(159,181,143,.55);background:#eff5ec}
-.heart-icon{font-size:1.4rem}
-.heart-choice strong{display:block;margin-top:5px}
-.heart-form{display:grid;grid-template-columns:.35fr 1fr auto;gap:12px;align-items:end;margin-top:15px}
-.root-memory{margin-top:18px;display:grid;gap:9px}
-.memory-card{padding:12px 14px;border-radius:15px;background:#f7efe7;border:1px solid var(--line)}
-.memory-card strong{display:block}
-.memory-card small{color:var(--muted)}
-.forest-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
-.forest-tree{background:#f6f0e7;border:1px solid var(--line);border-radius:18px;padding:16px;text-align:center}
-.forest-tree .tree-emoji{font-size:3rem}
-dialog{border-radius:24px;width:min(960px,94vw);max-height:90vh;padding:0;color:var(--text)}
-dialog::backdrop{background:rgba(44,35,30,.55)}
-.dialog-shell{padding:26px;position:relative;overflow:auto;max-height:88vh}
-.dialog-close{position:absolute;right:14px;top:10px;background:transparent;font-size:2rem;color:var(--muted)}
-.tabs{display:flex;gap:8px;border-bottom:1px solid var(--line);margin:18px 0}
-.tab{background:transparent;padding:10px 12px;font-weight:800;color:var(--muted);border-bottom:3px solid transparent}
-.tab.active{color:var(--clay-dark);border-bottom-color:var(--clay)}
-.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.admin-task{display:grid;grid-template-columns:1.1fr .65fr auto;gap:8px;border-bottom:1px solid var(--line);padding:10px 0}
-.admin-task .full{grid-column:1/-1}
-.remove-task{background:#f0d7d1;color:#7b4a40;border-radius:10px;padding:8px 10px}
-.dialog-actions{display:flex;justify-content:flex-end;margin-top:18px}
-@media(max-width:820px){
-  .children-grid,.tree-layout,.admin-grid{grid-template-columns:1fr}
-  .heart-grid{grid-template-columns:repeat(2,1fr)}
-  .heart-form{grid-template-columns:1fr}
-  .forest-grid{grid-template-columns:repeat(2,1fr)}
-}
-@media(max-width:520px){
-  .page{padding:12px}.card{padding:18px;border-radius:20px}
-  .topbar{padding:12px}.top-actions{justify-content:flex-end}
-  .heart-grid,.forest-grid{grid-template-columns:1fr}
-  .admin-task{grid-template-columns:1fr}.admin-task .full{grid-column:auto}
-}
-#mamaDialog .dialog-shell {
-  max-height: 85vh;
-  overflow-y: auto;
+import {
+  auth, db, spaceRef, defaultState,
+  onAuthStateChanged, signInWithEmailAndPassword, signOut,
+  ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
+} from "./firebase.js";
+
+const APP_VERSION = "2.4i Archiv kompakt & Suche";
+
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => [...document.querySelectorAll(s)];
+
+let state = structuredClone(defaultState);
+let unsubscribe = null;
+let selectedHearts = [];
+let adminDraft = { fina: [], lou: [] };
+let attentionTicker = null;
+let pendingTreeGrowth = false;
+let pendingRootGrowth = false;
+let pendingGiftGrowth = false;
+let treeGrowthTimer = null;
+
+const DEFAULT_LEAF_COLORS = {
+  fina: {
+    easy: "#b89adf",
+    medium: "#f2cf63",
+    tricky: "#86b978"
+  },
+  lou: {
+    easy: "#ef9fb3",
+    medium: "#7fb7d2",
+    tricky: "#d49a3a"
+  }
+};
+
+let pendingDifficultyTaskId = null;
+
+const dailyMissions = [
+  "🌸 Nimm heute einmal bewusst etwas Schönes wahr.",
+  "🌞 Vielleicht wartet heute irgendwo ein kleiner Glücksmoment auf dich.",
+  "🍀 Halte Ausschau nach etwas, das dir ein Lächeln schenkt.",
+  "🌈 Manchmal sind die schönsten Dinge ganz klein.",
+  "💛 Schau heute, was dein Herz froh macht.",
+  "🦋 Entdecke etwas, das du gestern noch nicht gesehen hast.",
+  "🌼 Lass dich heute von etwas Schönem überraschen.",
+  "😊 Vielleicht zauberst du heute auch jemandem ein Lächeln ins Gesicht.",
+  "✨ Jeder Tag hält kleine Schätze bereit.",
+  "🌻 Öffne deine Augen für die schönen Farben des Tages.",
+  "🍃 Höre einmal ganz genau hin – vielleicht entdeckst du ein schönes Geräusch.",
+  "🐦 Vielleicht begegnet dir heute etwas, das dich staunen lässt.",
+  "🌺 Sammle heute drei schöne Momente.",
+  "💚 Es gibt jeden Tag etwas, worüber man sich freuen kann.",
+  "🌟 Die Welt steckt voller kleiner Wunder.",
+  "🌸 Heute ist ein guter Tag, um etwas Schönes zu entdecken.",
+  "☀️ Genieße einen Moment ganz bewusst.",
+  "🍎 Vielleicht macht dir heute etwas ganz Einfaches Freude.",
+  "🌈 Achte darauf, was heute gut gelingt.",
+  "🕊️ Lass dein Herz kleine Freuden sammeln.",
+  "🌼 Manchmal beginnt ein schöner Tag mit einem einzigen Lächeln.",
+  "🍀 Finde heute etwas, wofür du dankbar sein kannst.",
+  "🌷 Entdecke etwas, das dir guttut.",
+  "✨ Jeder neue Tag bringt neue Möglichkeiten zum Staunen.",
+  "🌞 Lass die schönen Momente heute besonders hell leuchten.",
+  "🦉 Schau neugierig auf die Welt – sie hat viel zu zeigen.",
+  "💐 Vielleicht findest du heute deinen Lieblingsmoment des Tages.",
+  "🌸 Freude versteckt sich oft in den kleinen Dingen.",
+  "🌻 Behalte die schönen Augenblicke gut in deinem Herzen."
+];
+
+const heartOptions = [
+  { key: "help", icon: "💗", title: "Hilfsbereitschaft", text: "Jemandem geholfen" },
+  { key: "comfort", icon: "🌸", title: "Mitgefühl", text: "Jemanden getröstet" },
+  { key: "courage", icon: "⭐", title: "Mut", text: "Etwas gewagt" },
+  { key: "persist", icon: "🌱", title: "Dranbleiben", text: "Nicht aufgegeben" },
+  { key: "beauty", icon: "☀️", title: "Schöner Moment", text: "Etwas Schönes entdeckt" },
+  { key: "curious", icon: "🦋", title: "Neugier", text: "Etwas wissen wollen" },
+  { key: "kindness", icon: "🤝", title: "Freundlichkeit", text: "Freundlichkeit erlebt" },
+  { key: "respect", icon: "🤍", title: "Rücksicht", text: "Auf jemanden Rücksicht genommen" },
+  { key: "other", icon: "✨", title: "Sonstiges", text: "Ein eigener Herzmoment" }
+];
+
+const leafPositions = [
+  [70,170,-42,1],[96,190,133,-1],[118,154,18,1],[139,210,171,-1],
+  [158,177,-61,1],[178,226,118,-1],[167,128,33,1],[192,151,146,-1],
+  [214,190,-23,1],[221,111,74,-1],[244,145,156,-1],[254,72,-11,1],
+  [279,102,109,-1],[299,139,-53,1],[321,72,37,1],[339,111,198,-1],
+  [360,139,7,1],[383,112,242,-1],[405,157,54,1],[425,126,183,-1],
+  [443,180,-17,1],[465,153,227,-1],[487,200,68,1],[507,169,151,-1],
+  [112,242,-71,1],[160,257,126,-1],[207,239,31,1],[352,244,94,1],
+  [402,257,214,-1],[454,238,-38,1]
+];
+
+
+function leafSvg() {
+  return `<svg viewBox="0 0 46 46" aria-hidden="true">
+    <path class="leaf-fill" d="M8 33 C9 17 20 7 36 8 C34 24 24 35 8 33 Z"/>
+    <path class="vein" d="M12 30 C18 24 25 18 32 12"/>
+    <path class="vein" d="M18 24 C17 19 17 16 18 13"/>
+    <path class="vein" d="M23 20 C27 22 31 22 34 21"/>
+  </svg>`;
 }
 
-#mamaPanel {
-  padding-bottom: 24px;
+function escapeHtml(value = "") {
+  return String(value).replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+  }[c]));
 }
 
-#adminRootsPanel {
-  margin-top: 28px;
-  padding-top: 20px;
-  border-top: 1px solid #e5d5c7;
+function learningDayKey(date = new Date()) {
+  const shifted = new Date(date);
+  shifted.setHours(shifted.getHours() - 1);
+  return `${shifted.getFullYear()}-${String(shifted.getMonth()+1).padStart(2,"0")}-${String(shifted.getDate()).padStart(2,"0")}`;
 }
 
-#adminRootsList {
-  display: grid;
-  gap: 10px;
-  margin-top: 12px;
-}
-/* Lernwald 2.2 – kleinerer Baum, Aufmerksamkeit und Sonnenstrahl */
-
-#treeSvg{
-  width:82%;
-  max-height:440px;
-  margin:0 auto;
-  display:block;
+function emptyTask(child) {
+  return { id: crypto.randomUUID(), child, title:"", note:"", type:"paper", url:"", done:false, attentionSeconds:0, activeSince:null };
 }
 
-.tree-section{
-  position:relative;
+function ensureMinimumTaskSlots(tasks, child, minimum = 4) {
+  const slots = (tasks || []).filter(t => t.child === child).map(t => ({...t}));
+  while (slots.length < minimum) slots.push(emptyTask(child));
+  return slots;
 }
 
-.attention-row{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-top:9px;
+function migrateRoot(root) {
+  return { ...root, kinds:(root.kinds || []).map(k => (k === "joy" || k === "consideration") ? "respect" : k) };
 }
 
-.attention-toggle{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:7px 12px;
-  border-radius:11px;
-  background:#f2e5cf;
-  color:var(--text);
-  font-size:.84rem;
-  font-weight:800;
-  white-space:nowrap;
+function chooseDailyMission(previous = "") {
+  const choices = dailyMissions.filter(m => m !== previous);
+  const pool = choices.length ? choices : dailyMissions;
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 
-.attention-toggle.running{
-  background:#f0d7d1;
-  color:#7b4a40;
+async function prepareLearningDay() {
+  const today = learningDayKey();
+
+  await runTransaction(db, async tx => {
+    const snap = await tx.get(spaceRef);
+    if (!snap.exists()) return;
+
+    const data = snap.data();
+    const previousDay = data.lastLearningDay || null;
+    const isNewDay = previousDay !== today;
+
+    let tasks = [...(data.tasks || [])];
+
+    if (previousDay && isNewDay) {
+      tasks = tasks.map(task =>
+        task.done
+          ? emptyTask(task.child)
+          : { ...task, done: false, activeSince: null }
+      );
+    }
+
+    const roots = (data.roots || []).map(migrateRoot);
+    const forest = (data.forest || []).map(tree => ({
+      ...tree,
+      roots: (tree.roots || []).map(migrateRoot)
+    }));
+
+    const dailyMission =
+      (!data.dailyMission || isNewDay)
+        ? chooseDailyMission(data.dailyMission || "")
+        : data.dailyMission;
+
+    tx.update(spaceRef, {
+      tasks: [
+        ...ensureMinimumTaskSlots(tasks, "fina"),
+        ...ensureMinimumTaskSlots(tasks, "lou")
+      ],
+      roots,
+      forest,
+      dailyMission,
+      lastLearningDay: today,
+      dayClosed: isNewDay ? false : Boolean(data.dayClosed),
+      dayClosedAt: isNewDay ? null : (data.dayClosedAt || null),
+      dayClosedKey: isNewDay ? null : (data.dayClosedKey || null),
+      dayClosingBackup: isNewDay ? null : (data.dayClosingBackup || null),
+      appVersion: APP_VERSION,
+      updatedAt: serverTimestamp()
+    });
+  });
 }
 
-.attention-time{
-  color:var(--clay-dark);
-  font-weight:800;
-  font-variant-numeric:tabular-nums;
+
+const MAX_SESSION_SECONDS = 120 * 60;
+
+function currentAttentionSeconds(task) {
+  const saved = Number(task.attentionSeconds || 0);
+  if (!task.activeSince) return saved;
+
+  const started = new Date(task.activeSince).getTime();
+  if (!Number.isFinite(started)) return saved;
+
+  const runningSeconds = Math.max(0, Math.floor((Date.now() - started) / 1000));
+  return saved + Math.min(runningSeconds, MAX_SESSION_SECONDS);
 }
 
-.tree-attention{
-  padding:10px 12px;
-  border-radius:14px;
-  background:#fff5d9;
-  color:#745b2d;
-  line-height:1.4;
+function currentSessionSeconds(task) {
+  if (!task.activeSince) return 0;
+
+  const started = new Date(task.activeSince).getTime();
+  if (!Number.isFinite(started)) return 0;
+
+  return Math.max(0, Math.floor((Date.now() - started) / 1000));
 }
 
-@media(max-width:820px){
-  #treeSvg{
-    width:72%;
-    max-height:390px;
+function formatAttentionMinutes(seconds) {
+  const totalMinutes = Math.max(0, Math.floor(Number(seconds || 0) / 60));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  if (hours > 0) {
+    return `${hours} Std. ${minutes} Min.`;
+  }
+
+  return `${totalMinutes} Min.`;
+}
+
+function updateAttentionDisplays() {
+  let needsRender = false;
+
+  $$("[data-attention-task]").forEach(element => {
+    const task = (state.tasks || []).find(item => item.id === element.dataset.attentionTask);
+    if (!task) return;
+
+    element.textContent = `💛 ${formatAttentionMinutes(currentAttentionSeconds(task))}`;
+
+    if (task.activeSince && currentSessionSeconds(task) >= MAX_SESSION_SECONDS) {
+      needsRender = true;
+    }
+  });
+
+  if (needsRender) {
+    stopExpiredAttentionSessions();
   }
 }
 
-@media(max-width:520px){
-  #treeSvg{
-    width:88%;
-    max-height:360px;
-  }
-
-  .attention-row{
-    align-items:flex-start;
-  }
-}
-/* Aufmerksamkeit – warme, ruhige Gestaltung */
-
-.attention-row{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  flex-wrap:wrap;
-  margin-top:9px;
+function startAttentionTicker() {
+  if (attentionTicker) clearInterval(attentionTicker);
+  attentionTicker = setInterval(updateAttentionDisplays, 15000);
+  updateAttentionDisplays();
 }
 
-.attention-toggle{
-  width:auto;
-  min-width:0;
-  padding:7px 12px;
-  border:1px solid #d6c0ab;
-  border-radius:11px;
-  background:#ead8c5;
-  color:#49382f;
-  font-size:.84rem;
-  font-weight:800;
-  line-height:1.2;
-  box-shadow:none;
-}
+async function stopExpiredAttentionSessions() {
+  try {
+    await runTransaction(db, async tx => {
+      const snap = await tx.get(spaceRef);
+      if (!snap.exists()) return;
 
-.attention-toggle:hover{
-  background:#f0dfb4;
-  border-color:#d5b76e;
-}
+      const tasks = [...(snap.data().tasks || [])];
+      let changed = false;
 
-.attention-toggle.running{
-  background:#f3dfae;
-  border-color:#d5b76e;
-  color:#604b24;
-}
+      const updatedTasks = tasks.map(task => {
+        if (!task.activeSince) return task;
 
-.attention-time{
-  color:#8b6826;
-  font-weight:800;
-  font-size:.9rem;
-  font-variant-numeric:tabular-nums;
-  white-space:nowrap;
-}
-/* Lernwald 2.2b – reduzierte Aufmerksamkeit und Zeitkorrektur */
+        const started = new Date(task.activeSince).getTime();
+        if (!Number.isFinite(started)) {
+          changed = true;
+          return { ...task, activeSince: null };
+        }
 
-.attention-row{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-top:9px;
-}
+        const elapsed = Math.max(0, Math.floor((Date.now() - started) / 1000));
+        if (elapsed < MAX_SESSION_SECONDS) return task;
 
-.attention-toggle{
-  width:auto;
-  min-width:0;
-  padding:7px 12px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  border:1px solid #d6c0ab;
-  border-radius:11px;
-  background:#ead8c5;
-  color:#49382f;
-  font-size:.84rem;
-  font-weight:800;
-  line-height:1.2;
-  white-space:nowrap;
-}
+        changed = true;
+        return {
+          ...task,
+          attentionSeconds: Number(task.attentionSeconds || 0) + MAX_SESSION_SECONDS,
+          activeSince: null
+        };
+      });
 
-.attention-toggle:hover{
-  background:#f0dfb4;
-  border-color:#d5b76e;
-}
-
-.attention-toggle.running{
-  background:#f3dfae;
-  border-color:#d5b76e;
-  color:#604b24;
-}
-
-.attention-time{
-  color:#8b6826;
-  font-weight:800;
-  font-size:.9rem;
-  font-variant-numeric:tabular-nums;
-  white-space:nowrap;
-}
-
-.attention-admin{
-  display:flex;
-  align-items:end;
-  gap:12px;
-  padding:10px 12px;
-  border-radius:13px;
-  background:#fff7e5;
-  border:1px solid #ead8c5;
-}
-
-.attention-admin label{
-  flex:1;
-  margin:0;
-  font-size:.86rem;
-}
-
-.attention-admin input{
-  max-width:160px;
-}
-
-.attention-running-note{
-  padding:8px 10px;
-  border-radius:10px;
-  background:#f3dfae;
-  color:#604b24;
-  font-size:.82rem;
-  font-weight:800;
-  white-space:nowrap;
-}
-
-@media(max-width:520px){
-  .attention-admin{
-    align-items:stretch;
-    flex-direction:column;
-  }
-
-  .attention-admin input{
-    max-width:none;
-  }
-}
-.task-order-buttons{
-  display:flex;
-  gap:4px;
-  align-items:center;
-}
-
-.task-order-buttons button{
-  min-width:32px;
-  height:32px;
-  padding:4px 7px;
-  border-radius:9px;
-  background:#ead8c5;
-  color:#49382f;
-  font-weight:800;
-}
-
-.task-order-buttons .remove-task{
-  background:#f0d7d1;
-  color:#7b4a40;
-}
-.dialog-actions{
-  display:flex;
-  justify-content:flex-end;
-  align-items:center;
-  gap:18px;
-  margin-top:28px;
-  margin-bottom:26px;
-}
-
-#startNextDayBtn{
-  background:#f2e5cf;
-  color:#49382f;
-  padding:11px 16px;
-  border-radius:14px;
-  font-weight:800;
-}
-[data-add-task]{
-  margin-top:18px;
-}
-#startNextDayBtn:hover{
-  background:#ead8c5;
-}
-/* =========================
-   AUFGABENARCHIV
-   ========================= */
-
-#taskArchiveList {
-  display: grid;
-  gap: 12px;
-  margin-top: 16px;
-  margin-bottom: 24px;
-}
-
-.archive-task {
-  padding: 14px 16px;
-  border: 1px solid #ead7c7;
-  border-radius: 14px;
-  background: #fffaf5;
-}
-
-.archive-task-meta {
-  margin-bottom: 6px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #9a6555;
-}
-
-.archive-task strong {
-  display: block;
-  margin-bottom: 4px;
-  font-size: 1rem;
-  color: #49382f;
-}
-
-.archive-task-time {
-  margin-top: 8px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #8b7049;
-}
-.reuse-archive-task{
-  margin-top:10px;
-  padding:8px 12px;
-  border:none;
-  border-radius:10px;
-  background:#f2e5cf;
-  color:#49382f;
-  font-weight:800;
-  cursor:pointer;
-}
-
-.reuse-archive-task:hover{
-  background:#ead8c5;
-}
-
-/* =========================
-   LERNTAG-ABSCHLUSS
-   ========================= */
-
-#reopenLearningDayBtn{
-  background:#f2e5cf;
-  color:#49382f;
-}
-
-#beginNewLearningDayBtn{
-  background:var(--sage-dark);
-  color:#fff;
-}
-
-.day-closing-admin{
-  display:block;
-  margin:24px auto 0;
-  opacity:.78;
-  font-size:.9rem;
-}
-
-#dayClosingDialog .day-closing-card{
-  text-align:center;
-}
-
-/* =========================
-   LERNTAG-STEUERUNG OBEN
-   ========================= */
-
-.learning-day-actions{
-  display:flex;
-  align-items:center;
-  justify-content:flex-start;
-  gap:12px;
-  flex-wrap:wrap;
-  padding:4px 0 18px;
-  margin:0 0 8px;
-  border-bottom:1px solid var(--line);
-}
-
-.learning-day-actions button{
-  padding:9px 13px;
-}
-
-#beginNewLearningDayBtn{
-  background:#f2e5cf;
-  color:#49382f;
-}
-
-#beginNewLearningDayBtn:hover,
-#reopenLearningDayBtn:hover,
-#startNextDayBtn:hover{
-  background:#ead8c5;
-}
-
-@media(max-width:520px){
-  .learning-day-actions{
-    align-items:stretch;
-  }
-
-  .learning-day-actions button{
-    width:100%;
+      if (changed) {
+        tx.update(spaceRef, {
+          tasks: updatedTasks,
+          updatedAt: serverTimestamp()
+        });
+      }
+    });
+  } catch (err) {
+    console.error("Automatische Aufmerksamkeitspause fehlgeschlagen:", err);
   }
 }
 
-/* =========================
-   SICHTBARES BAUMWACHSTUM
-   ========================= */
+async function toggleAttention(taskId) {
+  try {
+    await runTransaction(db, async tx => {
+      const snap = await tx.get(spaceRef);
+      if (!snap.exists()) return;
 
-#treeGrowthDialog{
-  width:min(760px,94vw);
-  max-height:94vh;
-  padding:0;
-  border:none;
-  border-radius:28px;
-  overflow:hidden;
-}
+      const tasks = [...(snap.data().tasks || [])];
+      const index = tasks.findIndex(task => task.id === taskId);
+      if (index < 0) return;
 
-#treeGrowthDialog::backdrop{
-  background:rgba(54,43,36,.46);
-  backdrop-filter:blur(2px);
-}
+      const task = { ...tasks[index] };
 
-.tree-growth-card{
-  padding:24px 26px 20px;
-  background:
-    radial-gradient(circle at 50% 8%,rgba(230,189,98,.16),transparent 31%),
-    linear-gradient(180deg,#fffdf9,#fbf3ea);
-  text-align:center;
-}
+      if (task.activeSince) {
+        const started = new Date(task.activeSince).getTime();
+        const elapsed = Number.isFinite(started)
+          ? Math.max(0, Math.floor((Date.now() - started) / 1000))
+          : 0;
 
-.tree-growth-copy{
-  position:relative;
-  z-index:2;
-}
+        task.attentionSeconds =
+          Number(task.attentionSeconds || 0) +
+          Math.min(elapsed, MAX_SESSION_SECONDS);
 
-.tree-growth-kicker{
-  color:var(--clay-dark);
-  font-size:.78rem;
-  font-weight:900;
-  letter-spacing:.10em;
-  text-transform:uppercase;
-}
+        task.activeSince = null;
+      } else {
+        task.activeSince = new Date().toISOString();
+      }
 
-.tree-growth-card h2{
-  margin:7px auto 5px;
-  max-width:620px;
-  font-family:Georgia,serif;
-  font-size:clamp(1.35rem,3vw,1.9rem);
-  line-height:1.25;
-  color:var(--text);
-}
+      tasks[index] = task;
 
-.tree-growth-card p{
-  margin:0 auto 8px;
-  color:var(--muted);
-}
-
-.tree-growth-preview{
-  height:min(58vh,480px);
-  min-height:280px;
-  display:grid;
-  place-items:center;
-  overflow:hidden;
-}
-
-.tree-growth-svg{
-  width:min(100%,620px);
-  height:100%;
-  max-height:470px;
-  display:block;
-}
-
-.tree-growth-svg .new-growth-leaf{
-  transform-box:fill-box;
-  transform-origin:center;
-  animation:newLeafGrow 1.55s cubic-bezier(.2,.85,.25,1) both;
-  filter:drop-shadow(0 0 8px rgba(230,189,98,.9));
-}
-
-.tree-growth-svg .new-growth-leaf path:first-child{
-  animation:newLeafGlow 1.8s ease-out both;
-}
-
-@keyframes newLeafGrow{
-  0%{opacity:0;transform:scale(.12)}
-  45%{opacity:1;transform:scale(1.28)}
-  72%{transform:scale(.92)}
-  100%{opacity:1;transform:scale(1)}
-}
-
-@keyframes newLeafGlow{
-  0%,35%{filter:brightness(1.55)}
-  100%{filter:brightness(1)}
-}
-
-@media(max-width:820px){
-  #treeGrowthDialog{
-    width:min(680px,96vw);
-  }
-
-  .tree-growth-card{
-    padding:20px 18px 14px;
-  }
-
-  .tree-growth-preview{
-    height:min(60vh,430px);
-    min-height:260px;
-  }
-
-  .tree-growth-svg{
-    width:100%;
-    max-height:420px;
+      tx.update(spaceRef, {
+        tasks,
+        updatedAt: serverTimestamp()
+      });
+    });
+  } catch (err) {
+    alert("Die Aufmerksamkeitszeit konnte nicht gespeichert werden: " + err.message);
   }
 }
 
-@media(max-width:520px){
-  .tree-growth-card{
-    padding:18px 12px 12px;
+function showTreeGrowthCelebration() {
+  const dialog = $("#treeGrowthDialog");
+  const preview = $("#treeGrowthPreview");
+  const tree = $("#treeCanvas");
+  const flyingLeaf = $("#flyingLeaf");
+
+  if (!dialog || !preview || !tree) return;
+
+  if (treeGrowthTimer) {
+    clearTimeout(treeGrowthTimer);
+    treeGrowthTimer = null;
   }
 
-  .tree-growth-card h2{
-    font-size:1.28rem;
+  const treeClone = tree.cloneNode(true);
+  treeClone.removeAttribute("id");
+  treeClone.classList.add("tree-growth-canvas");
+  treeClone.querySelectorAll("[id]").forEach(el => el.removeAttribute("id"));
+
+  const newestLeaf = treeClone.querySelector(".dynamic-leaf:last-of-type");
+  const newestShape = newestLeaf?.querySelector(".leaf-shape");
+  newestShape?.classList.add("new-growth-leaf");
+
+  preview.querySelector(".tree-growth-canvas")?.remove();
+  preview.appendChild(treeClone);
+
+  if (!dialog.open) dialog.showModal();
+
+  requestAnimationFrame(() => {
+    dialog.classList.remove("rainbow-bloom");
+    void dialog.offsetWidth;
+    dialog.classList.add("rainbow-bloom");
+
+    if (!flyingLeaf || !newestLeaf) return;
+
+    const previewRect = preview.getBoundingClientRect();
+    const leafRect = newestLeaf.getBoundingClientRect();
+
+    const startX = 18;
+    const startY = 12;
+    const targetX = leafRect.left + leafRect.width / 2 - previewRect.left;
+    const targetY = leafRect.top + leafRect.height / 2 - previewRect.top;
+
+    flyingLeaf.getAnimations().forEach(animation => animation.cancel());
+    flyingLeaf.style.opacity = "0";
+
+    const frames = [];
+    const steps = 34;
+
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      const arc = Math.sin(Math.PI * t) * Math.min(74, Math.max(34, targetY * 0.16));
+      const wave = Math.sin(t * Math.PI * 3.4) * (1 - t) * 11;
+      const x = startX + (targetX - startX) * t + wave;
+      const y = startY + (targetY - startY) * t - arc;
+
+      frames.push({
+        offset: t,
+        opacity: t < 0.03 ? 0 : (t > 0.96 ? 0 : 1),
+        transform:
+          `translate(${x - startX}px, ${y - startY}px) ` +
+          `rotate(${(-12 + 22 * t + Math.sin(t * Math.PI * 3.6) * 6)}deg) ` +
+          `scale(${0.80 + Math.sin(Math.PI * t) * 0.16})`
+      });
+    }
+
+    flyingLeaf.animate(frames, {
+      duration: 2100,
+      easing: "linear",
+      fill: "forwards"
+    });
+  });
+
+  treeGrowthTimer = setTimeout(() => {
+    if (dialog.open) dialog.close();
+    dialog.classList.remove("rainbow-bloom");
+
+    if (flyingLeaf) {
+      flyingLeaf.getAnimations().forEach(animation => animation.cancel());
+      flyingLeaf.style.opacity = "0";
+    }
+
+    treeGrowthTimer = null;
+  }, 4600);
+}
+
+function showRootGrowthCelebration() {
+  const dialog = $("#treeGrowthDialog");
+  const preview = $("#treeGrowthPreview");
+  const tree = $("#treeCanvas");
+  const flyingLeaf = $("#flyingLeaf");
+  const flyingHeart = $("#flyingHeart");
+  const kicker = dialog?.querySelector(".tree-growth-kicker");
+  const title = $("#treeGrowthTitle");
+  const text = dialog?.querySelector(".tree-growth-copy p");
+
+  if (!dialog || !preview || !tree) return;
+
+  if (treeGrowthTimer) {
+    clearTimeout(treeGrowthTimer);
+    treeGrowthTimer = null;
   }
 
-  .tree-growth-preview{
-    height:54vh;
-    min-height:240px;
+  if (kicker) kicker.textContent = "♥ EIN HERZMOMENT STÄRKT EUREN BAUM";
+  if (title) title.textContent = "Eine neue Wurzel wächst.";
+  if (text) text.textContent = "Schau genau hin – gleich wächst unten eine neue Wurzel.";
+
+  if (flyingLeaf) flyingLeaf.style.display = "none";
+  if (flyingHeart) flyingHeart.style.display = "grid";
+
+  const treeClone = tree.cloneNode(true);
+  treeClone.removeAttribute("id");
+  treeClone.classList.add("tree-growth-canvas", "root-growth-canvas");
+  treeClone.querySelectorAll("[id]").forEach(el => el.removeAttribute("id"));
+
+  const roots = [...treeClone.querySelectorAll(".root-growth-piece")];
+  const newestRoot = roots.at(-1);
+
+  newestRoot?.classList.add("new-growth-root", "root-waiting");
+
+  preview.querySelector(".tree-growth-canvas")?.remove();
+  preview.appendChild(treeClone);
+
+  let heartTarget = preview.querySelector(".heart-target-pulse");
+  if (!heartTarget) {
+    heartTarget = document.createElement("div");
+    heartTarget.className = "heart-target-pulse";
+    preview.appendChild(heartTarget);
   }
+  heartTarget.classList.remove("is-pulsing");
+
+  if (!dialog.open) dialog.showModal();
+
+  requestAnimationFrame(() => {
+    dialog.classList.remove("rainbow-bloom");
+    dialog.classList.add("heart-bloom");
+
+    const previewRect = preview.getBoundingClientRect();
+    const baseImage = treeClone.querySelector(".tree-base-image");
+    const imageRect = baseImage?.getBoundingClientRect() || treeClone.getBoundingClientRect();
+
+    /*
+      Ziel nicht mehr über das gesamte Canvas berechnen,
+      sondern direkt über das tatsächlich sichtbare PNG.
+      Die rote Markierung liegt am geschnitzten Herz:
+      ca. 50 % Breite / 62,7 % Höhe des sichtbaren Baum-PNGs.
+    */
+    const targetX = imageRect.left + imageRect.width * 0.527 - previewRect.left;
+    const targetY = imageRect.top + imageRect.height * 0.640 - previewRect.top;
+
+    heartTarget.style.left = `${targetX}px`;
+    heartTarget.style.top = `${targetY}px`;
+
+    if (!flyingHeart) return;
+
+    const startX = previewRect.width * 0.50;
+    const startY = Math.max(34, previewRect.height * 0.08);
+
+    flyingHeart.getAnimations().forEach(a => a.cancel());
+    flyingHeart.style.opacity = "0";
+
+    const heartAnimation = flyingHeart.animate([
+      {
+        offset:0,
+        opacity:0,
+        filter:"brightness(1.35) drop-shadow(0 0 0 rgba(255,223,146,0))",
+        transform:`translate(${startX}px, ${startY}px) translate(-50%,-50%) scale(.70)`
+      },
+      {
+        offset:.10,
+        opacity:1,
+        filter:"brightness(1.42) drop-shadow(0 0 10px rgba(255,216,124,.95)) drop-shadow(0 0 22px rgba(244,157,176,.72))",
+        transform:`translate(${startX}px, ${startY}px) translate(-50%,-50%) scale(3.65) rotate(-5deg)`
+      },
+      {
+        offset:.20,
+        opacity:1,
+        filter:"brightness(1.25) drop-shadow(0 0 7px rgba(255,226,151,.86)) drop-shadow(0 0 16px rgba(244,157,176,.55))",
+        transform:`translate(${startX + 5}px, ${startY + 18}px) translate(-50%,-50%) scale(2.85) rotate(4deg)`
+      },
+      {
+        offset:.38,
+        opacity:1,
+        filter:"brightness(1.12) drop-shadow(0 0 5px rgba(255,220,142,.64))",
+        transform:`translate(${startX - 28}px, ${startY + (targetY-startY)*.34}px) translate(-50%,-50%) scale(1.55) rotate(-3deg)`
+      },
+      {
+        offset:.64,
+        opacity:1,
+        filter:"brightness(1.05) drop-shadow(0 0 3px rgba(255,220,142,.42))",
+        transform:`translate(${targetX + 18}px, ${startY + (targetY-startY)*.70}px) translate(-50%,-50%) scale(1.02) rotate(2deg)`
+      },
+      {
+        offset:.90,
+        opacity:1,
+        filter:"brightness(1) drop-shadow(0 0 2px rgba(255,220,142,.25))",
+        transform:`translate(${targetX}px, ${targetY}px) translate(-50%,-50%) scale(.56)`
+      },
+      {
+        offset:1,
+        opacity:0,
+        filter:"brightness(1)",
+        transform:`translate(${targetX}px, ${targetY}px) translate(-50%,-50%) scale(.15)`
+      }
+    ], {
+      duration:3000,
+      easing:"cubic-bezier(.20,.72,.18,1)",
+      fill:"forwards"
+    });
+
+    heartAnimation.finished.then(() => {
+      heartTarget.classList.add("is-pulsing");
+
+      if (newestRoot) {
+        newestRoot.classList.remove("root-waiting");
+        newestRoot.classList.add("root-growing-now");
+      }
+
+      if (text) {
+        text.textContent = "Da ist sie – diese Wurzel ist gerade dazugekommen.";
+      }
+    }).catch(() => {});
+  });
+
+  treeGrowthTimer = setTimeout(() => {
+    if (dialog.open) dialog.close();
+    dialog.classList.remove("heart-bloom");
+
+    if (flyingHeart) {
+      flyingHeart.getAnimations().forEach(a => a.cancel());
+      flyingHeart.style.opacity = "0";
+      flyingHeart.style.display = "none";
+    }
+
+    preview.querySelector(".heart-target-pulse")?.remove();
+
+    if (flyingLeaf) flyingLeaf.style.display = "block";
+    treeGrowthTimer = null;
+  }, 6100);
 }
 
-/* =========================
-   NEUER LERNBAUM 2.3c
-   ========================= */
-
-#treeSvg{
-  width:82%;
-  max-height:440px;
-  margin:0 auto;
-  display:block;
-  overflow:visible;
+const TREE_LEAF_LAYOUT_50=[
+[49,12,-8],[42,15,-24],[57,15,20],[35,19,-38],[64,19,34],[47,21,12],[53,22,-18],[29,24,-54],[70,24,48],[39,26,31],
+[60,27,-32],[23,29,-67],[76,29,62],[33,31,-18],[49,31,45],[66,32,15],[18,34,-78],[81,35,76],[27,37,28],[42,37,-42],
+[57,38,38],[72,39,-16],[14,41,-86],[85,42,84],[34,43,55],[50,44,-12],[64,45,-51],[22,47,12],[77,48,45],[30,50,-35],
+[44,50,26],[58,51,-24],[69,52,61],[17,54,-72],[83,55,70],[26,57,43],[38,57,-58],[52,58,17],[63,59,-39],[74,60,33],
+[21,63,-48],[32,64,68],[46,64,-21],[58,65,52],[69,66,-62],[79,67,44],[28,69,-17],[40,70,36],[55,70,-46],[66,71,18]
+];
+const TREE_FLOWERS=[[45,17],[62,22],[31,28],[72,34],[22,42],[55,43],[35,52],[76,54],[47,61],[64,66]];
+function decorateTree24a(){
+ const leaves=[...document.querySelectorAll("#treeLeafOverlay > *")];
+ leaves.slice(0,50).forEach((el,i)=>{const p=TREE_LEAF_LAYOUT_50[i];if(!p)return;el.style.left=p[0]+"%";el.style.top=p[1]+"%";el.style.transform=`translate(-50%,-50%) rotate(${p[2]}deg)`;});
+ const o=document.querySelector("#treeFlowerOverlay");if(!o)return;
+ const n=Math.min(10,Math.floor(Math.min(50,leaves.length)/5));
+ o.innerHTML=TREE_FLOWERS.slice(0,n).map((p,i)=>`<span class="tree-tiny-flower" style="left:${p[0]}%;top:${p[1]}%">✿</span>`).join("");
 }
 
-.tree-ground{
-  fill:none;
-  stroke:#decfc0;
-  stroke-width:7;
-  stroke-linecap:round;
-  opacity:.55;
+function createGiftButterflyElement(color = "rgba(177,151,211,.60)") {
+  const el = document.createElement("span");
+  el.className = "gift-butterfly";
+  el.style.setProperty("--bf-color", color);
+  el.style.setProperty("--bf-rot", "0deg");
+  el.innerHTML =
+    '<i class="wing left"></i>' +
+    '<i class="wing right"></i>' +
+    '<i class="bf-body"></i>';
+  return el;
 }
 
-.tree-trunk{
-  filter:drop-shadow(0 3px 3px rgba(74,52,39,.10));
-}
+function createGiftSparkles(preview, x, y, amount = 18) {
+  const layer = document.createElement("div");
+  layer.className = "gift-sparkle-layer";
+  preview.appendChild(layer);
 
-.tree-trunk-light{
-  stroke-width:3.2;
-  stroke-linecap:round;
-}
-
-.branch{
-  fill:none;
-  stroke:#7d5d48;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-}
-
-.branch-main{
-  stroke-width:8.5;
-}
-
-.branch-soft{
-  stroke-width:5.8;
-}
-
-.twig{
-  fill:none;
-  stroke:#896a54;
-  stroke-width:3.1;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-  opacity:.94;
-}
-
-.dynamic-leaf{
-  filter:drop-shadow(0 1.5px 1.5px rgba(60,40,30,.12));
-}
-
-.dynamic-root{
-  fill:none;
-  stroke:#80604b;
-  stroke-linecap:round;
-  opacity:.88;
-  filter:drop-shadow(0 1px 1px rgba(60,40,30,.08));
-}
-
-@media(max-width:820px){
-  #treeSvg{
-    width:74%;
-    max-height:390px;
+  for (let i = 0; i < amount; i++) {
+    const s = document.createElement("i");
+    s.className = "gift-sparkle";
+    const angle = (Math.PI * 2 * i) / amount + Math.random() * .35;
+    const distance = 30 + Math.random() * 75;
+    s.style.left = `${x}px`;
+    s.style.top = `${y}px`;
+    s.style.setProperty("--sx", `${Math.cos(angle) * distance}px`);
+    s.style.setProperty("--sy", `${Math.sin(angle) * distance}px`);
+    s.style.setProperty("--delay", `${Math.random() * .30}s`);
+    s.style.setProperty("--size", `${3 + Math.random() * 6}px`);
+    layer.appendChild(s);
   }
+
+  setTimeout(() => layer.remove(), 1800);
 }
 
-@media(max-width:520px){
-  #treeSvg{
-    width:90%;
-    max-height:360px;
+function showGiftGrowthCelebration() {
+  const dialog = $("#treeGrowthDialog");
+  const preview = $("#treeGrowthPreview");
+  const tree = $("#treeCanvas");
+  const flyingLeaf = $("#flyingLeaf");
+  const flyingHeart = $("#flyingHeart");
+  const kicker = dialog?.querySelector(".tree-growth-kicker");
+  const title = $("#treeGrowthTitle");
+  const text = dialog?.querySelector(".tree-growth-copy p");
+
+  if (!dialog || !preview || !tree) return;
+
+  if (treeGrowthTimer) {
+    clearTimeout(treeGrowthTimer);
+    treeGrowthTimer = null;
   }
+
+  if (kicker) kicker.textContent = "🦋 EIN HERZMOMENT WIRD VERSCHENKT";
+  if (title) title.textContent = "Ein kleiner Schmetterling entsteht.";
+  if (text) text.textContent = "Das Herz findet zuerst seinen Platz im Baum.";
+
+  if (flyingLeaf) flyingLeaf.style.display = "none";
+  if (flyingHeart) flyingHeart.style.display = "grid";
+
+  const treeClone = tree.cloneNode(true);
+  treeClone.removeAttribute("id");
+  treeClone.classList.add("tree-growth-canvas", "gift-growth-canvas");
+  treeClone.querySelectorAll("[id]").forEach(el => el.removeAttribute("id"));
+
+  let butterflies = [...treeClone.querySelectorAll(".gift-butterfly")];
+  let newestButterfly = butterflies.at(-1);
+
+  // Sicherheitsnetz: selbst wenn die permanente Ebene noch nicht gerendert wurde,
+  // bekommt die Geschenk-Animation immer einen sichtbaren Schmetterling.
+  if (!newestButterfly) {
+    let layer = treeClone.querySelector(".tree-gift-butterfly-layer");
+    if (!layer) {
+      layer = document.createElement("div");
+      layer.className = "tree-gift-butterfly-layer";
+      treeClone.appendChild(layer);
+    }
+
+    newestButterfly = createGiftButterflyElement("rgba(177,151,211,.66)");
+    newestButterfly.style.left = "76%";
+    newestButterfly.style.top = "61%";
+    newestButterfly.style.setProperty("--bf-rot", "12deg");
+    layer.appendChild(newestButterfly);
+  }
+
+  newestButterfly.classList.add("new-gift-butterfly", "gift-butterfly-waiting");
+
+  preview.querySelector(".tree-growth-canvas")?.remove();
+  preview.querySelector(".flying-gift-butterfly")?.remove();
+  preview.appendChild(treeClone);
+
+  if (!dialog.open) dialog.showModal();
+
+  requestAnimationFrame(() => {
+    dialog.classList.remove("rainbow-bloom");
+    dialog.classList.remove("heart-bloom");
+    void dialog.offsetWidth;
+    dialog.classList.add("heart-bloom");
+
+    const previewRect = preview.getBoundingClientRect();
+    const baseImage = treeClone.querySelector(".tree-base-image");
+    const imageRect = baseImage?.getBoundingClientRect() || treeClone.getBoundingClientRect();
+
+    // Gleicher, inzwischen gut passender Herz-Zielpunkt wie beim normalen Herzmoment.
+    const heartX = imageRect.left + imageRect.width * 0.527 - previewRect.left;
+    const heartY = imageRect.top + imageRect.height * 0.640 - previewRect.top;
+
+    const startX = previewRect.width * 0.50;
+    const startY = Math.max(34, previewRect.height * 0.08);
+
+    // Sichtbarer Glitzer schon beim Auftauchen des großen Herzens.
+    createGiftSparkles(preview, startX, startY + 18, 22);
+
+    if (!flyingHeart) return;
+
+    flyingHeart.getAnimations().forEach(a => a.cancel());
+    flyingHeart.style.opacity = "0";
+
+    const heartAnimation = flyingHeart.animate([
+      {
+        offset:0,
+        opacity:0,
+        filter:"brightness(1.45) drop-shadow(0 0 0 rgba(255,223,146,0))",
+        transform:`translate(${startX}px, ${startY}px) translate(-50%,-50%) scale(.8)`
+      },
+      {
+        offset:.10,
+        opacity:1,
+        filter:"brightness(1.65) drop-shadow(0 0 13px rgba(255,241,164,1)) drop-shadow(0 0 30px rgba(255,199,93,.95)) drop-shadow(0 0 48px rgba(239,125,153,.80))",
+        transform:`translate(${startX}px, ${startY}px) translate(-50%,-50%) scale(3.5) rotate(-5deg)`
+      },
+      {
+        offset:.22,
+        opacity:1,
+        filter:"brightness(1.35) drop-shadow(0 0 9px rgba(255,226,151,.86))",
+        transform:`translate(${startX + 5}px, ${startY + 20}px) translate(-50%,-50%) scale(2.7) rotate(4deg)`
+      },
+      {
+        offset:.58,
+        opacity:1,
+        filter:"brightness(1.12) drop-shadow(0 0 5px rgba(255,220,142,.60))",
+        transform:`translate(${heartX + 20}px, ${startY + (heartY-startY)*.68}px) translate(-50%,-50%) scale(1.05)`
+      },
+      {
+        offset:.90,
+        opacity:1,
+        filter:"brightness(1)",
+        transform:`translate(${heartX}px, ${heartY}px) translate(-50%,-50%) scale(.56)`
+      },
+      {
+        offset:1,
+        opacity:0,
+        filter:"brightness(1)",
+        transform:`translate(${heartX}px, ${heartY}px) translate(-50%,-50%) scale(.16)`
+      }
+    ], {
+      duration:2900,
+      easing:"cubic-bezier(.20,.72,.18,1)",
+      fill:"forwards"
+    });
+
+    heartAnimation.finished.then(() => {
+      createGiftSparkles(preview, heartX, heartY, 26);
+      if (text) text.textContent = "Und daraus fliegt ein kleiner Gruß weiter.";
+
+      if (!newestButterfly) return;
+
+      const targetRect = newestButterfly.getBoundingClientRect();
+      const butterflyX = targetRect.left + targetRect.width / 2 - previewRect.left;
+      const butterflyY = targetRect.top + targetRect.height / 2 - previewRect.top;
+
+      const flyer = document.createElement("span");
+      flyer.className = "gift-butterfly flying-gift-butterfly";
+      flyer.style.setProperty("--bf-color", getComputedStyle(newestButterfly).getPropertyValue("--bf-color") || "rgba(177,151,211,.55)");
+      flyer.style.setProperty("--bf-rot", "0deg");
+      flyer.innerHTML =
+        '<i class="wing left"></i>' +
+        '<i class="wing right"></i>' +
+        '<i class="bf-body"></i>';
+      preview.appendChild(flyer);
+
+      const frames = [];
+      const steps = 32;
+
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const x = heartX + (butterflyX - heartX) * t;
+        const yBase = heartY + (butterflyY - heartY) * t;
+        const flutter = Math.sin(t * Math.PI * 5) * (1 - t) * 12;
+        const lift = Math.sin(Math.PI * t) * 30;
+        const y = yBase - lift + flutter;
+
+        frames.push({
+          offset:t,
+          opacity:t < .03 ? 0 : (t > .97 ? 0 : 1),
+          transform:
+            `translate(${x}px, ${y}px) translate(-50%,-50%) ` +
+            `rotate(${Math.sin(t * Math.PI * 6) * 10}deg) ` +
+            `scale(${1.15 - .15 * t})`
+        });
+      }
+
+      const butterflyAnimation = flyer.animate(frames, {
+        duration:1900,
+        easing:"linear",
+        fill:"forwards"
+      });
+
+      butterflyAnimation.finished.then(() => {
+        createGiftSparkles(preview, butterflyX, butterflyY, 14);
+        newestButterfly.classList.remove("gift-butterfly-waiting");
+        newestButterfly.classList.add("gift-butterfly-arrived");
+        flyer.remove();
+        if (text) text.textContent = "Dieser Schmetterling bleibt als kleines Geschenk bei eurem Baum.";
+      }).catch(() => flyer.remove());
+    }).catch(() => {});
+  });
+
+  treeGrowthTimer = setTimeout(() => {
+    if (dialog.open) dialog.close();
+    dialog.classList.remove("heart-bloom");
+
+    if (flyingHeart) {
+      flyingHeart.getAnimations().forEach(a => a.cancel());
+      flyingHeart.style.opacity = "0";
+      flyingHeart.style.display = "none";
+    }
+
+    preview.querySelector(".flying-gift-butterfly")?.remove();
+    if (flyingLeaf) flyingLeaf.style.display = "block";
+    treeGrowthTimer = null;
+  }, 7600);
 }
 
-/* Im Wachstumsfenster darf derselbe Baum größer erscheinen. */
-.tree-growth-svg{
-  width:min(100%,620px);
-  height:100%;
-  max-height:470px;
-  display:block;
-  overflow:visible;
+function renderTreeAttention() {
+  const story = $(".tree-story");
+  if (!story) return;
+
+  let line = $("#treeAttention");
+  if (!line) {
+    line = document.createElement("p");
+    line.id = "treeAttention";
+    line.className = "tree-attention";
+    story.insertBefore(line, $("#treeStatus"));
+  }
+
+  const seconds = (state.learningLeaves || [])
+    .reduce((sum, leaf) => sum + Number(leaf.attentionSeconds || 0), 0);
+
+  line.textContent = seconds > 0
+    ? `💛 Dieser Baum hat schon ${formatAttentionMinutes(seconds)} Aufmerksamkeit bekommen.`
+    : "💛 Dieser Baum wartet auf seine erste geschenkte Aufmerksamkeit.";
 }
 
-.tree-growth-svg .branch-main{
-  stroke-width:8.5;
-}
+onAuthStateChanged(auth, async user => {
+  if (user) {
+    $("#loginView")?.classList.add("hidden");
+    $("#appView")?.classList.remove("hidden");
 
-.tree-growth-svg .branch-soft{
-  stroke-width:5.8;
-}
+    await ensureSpace();
+    await prepareLearningDay();
 
-.tree-growth-svg .twig{
-  stroke-width:3.1;
-}
+    if (unsubscribe) unsubscribe();
+    unsubscribe = onSnapshot(spaceRef, snap => {
+      if (snap.exists()) {
+        state = { ...structuredClone(defaultState), ...snap.data() };
+        renderAll();
+      }
+    }, err => alert("Daten konnten nicht geladen werden: " + err.message));
+  } else {
+    if (unsubscribe) unsubscribe();
+    $("#appView")?.classList.add("hidden");
+    $("#loginView")?.classList.remove("hidden");
+  }
+});
 
-/* =========================
-   REGENBOGEN-WACHSTUM 2.3d
-   ========================= */
+$("#loginForm")?.addEventListener("submit", async e => {
+  e.preventDefault();
+  $("#loginMessage").textContent = "Anmeldung läuft …";
 
-#treeGrowthDialog{
-  overflow:visible;
-}
-
-#treeGrowthDialog .tree-growth-card{
-  position:relative;
-  overflow:hidden;
-  isolation:isolate;
-}
-
-#treeGrowthDialog .tree-growth-card::before{
-  content:"";
-  position:absolute;
-  inset:-28%;
-  z-index:-2;
-  opacity:0;
-  background:
-    radial-gradient(circle at 18% 22%, rgba(255,169,177,.34), transparent 24%),
-    radial-gradient(circle at 82% 20%, rgba(145,207,255,.30), transparent 24%),
-    radial-gradient(circle at 22% 80%, rgba(255,225,126,.28), transparent 25%),
-    radial-gradient(circle at 78% 82%, rgba(191,157,255,.27), transparent 25%),
-    radial-gradient(circle at 50% 50%, rgba(161,232,190,.25), transparent 34%);
-  filter:blur(26px);
-  transform:scale(.9);
-  pointer-events:none;
-}
-
-#treeGrowthDialog.rainbow-bloom .tree-growth-card::before{
-  animation:rainbowBloom 3.7s ease-out both;
-}
-
-#treeGrowthDialog .tree-growth-card::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  z-index:-1;
-  opacity:0;
-  pointer-events:none;
-  background:
-    linear-gradient(125deg,
-      rgba(255,188,194,.10),
-      rgba(255,228,160,.10),
-      rgba(180,231,190,.10),
-      rgba(174,219,255,.10),
-      rgba(204,181,255,.10)
+  try {
+    await signInWithEmailAndPassword(
+      auth,
+      $("#loginEmail").value.trim(),
+      $("#loginPassword").value
     );
+    $("#loginPassword").value = "";
+    $("#loginMessage").textContent = "";
+  } catch {
+    $("#loginMessage").textContent =
+      "Anmeldung nicht möglich. Bitte E-Mail und Passwort prüfen.";
+  }
+});
+
+if ($("#logoutBtn")) {
+  $("#logoutBtn").onclick = () => signOut(auth);
+
+ setTimeout(decorateTree24a,0);
 }
 
-#treeGrowthDialog.rainbow-bloom .tree-growth-card::after{
-  animation:rainbowWash 3.8s ease-out both;
+function stopTaskAttention(task, now = Date.now()) {
+  const updated = { ...task };
+
+  if (!updated.activeSince) {
+    updated.activeSince = null;
+    return updated;
+  }
+
+  const started = new Date(updated.activeSince).getTime();
+  const elapsed = Number.isFinite(started)
+    ? Math.max(0, Math.floor((now - started) / 1000))
+    : 0;
+
+  updated.attentionSeconds =
+    Number(updated.attentionSeconds || 0) +
+    Math.min(elapsed, MAX_SESSION_SECONDS);
+
+  updated.activeSince = null;
+  return updated;
 }
 
-@keyframes rainbowBloom{
-  0%{opacity:0;transform:scale(.86) rotate(-2deg)}
-  22%{opacity:.9;transform:scale(1.02) rotate(0deg)}
-  72%{opacity:.62;transform:scale(1.08) rotate(1deg)}
-  100%{opacity:0;transform:scale(1.12) rotate(2deg)}
-}
+function syncLearningDayUi() {
+  const closed = Boolean(state.dayClosed);
+  const closingDialog = $("#dayClosingDialog");
+  const mamaDialog = $("#mamaDialog");
 
-@keyframes rainbowWash{
-  0%{opacity:0}
-  18%{opacity:.7}
-  74%{opacity:.4}
-  100%{opacity:0}
-}
+  $("#startNextDayBtn")?.classList.toggle("hidden", closed);
+  $("#reopenLearningDayBtn")?.classList.toggle("hidden", !closed);
+  $("#beginNewLearningDayBtn")?.classList.toggle("hidden", !closed);
 
-.tree-growth-preview{
-  position:relative;
-}
+  if (!closingDialog) return;
 
-/* Das neue Blatt startet links oben und fliegt an seine echte Position. */
-.flying-leaf{
-  --leaf-target-x: 50%;
-  --leaf-target-y: 50%;
-  position:absolute;
-  left:22px;
-  top:18px;
-  width:46px;
-  height:46px;
-  z-index:8;
-  opacity:0;
-  pointer-events:none;
-  transform-origin:center;
-  filter:
-    drop-shadow(0 0 7px rgba(255,255,255,.95))
-    drop-shadow(0 0 12px rgba(230,189,98,.65));
-}
-
-.flying-leaf svg{
-  width:100%;
-  height:100%;
-  overflow:visible;
-}
-
-.flying-leaf .leaf-fill{
-  fill:#9fb58f;
-  stroke:#765f52;
-  stroke-width:1.4;
-}
-
-.flying-leaf .vein{
-  fill:none;
-  stroke:#fffaf4;
-  stroke-width:1.2;
-}
-
-@media(max-width:520px){
-  .flying-leaf{
-    width:40px;
-    height:40px;
-    left:14px;
-    top:12px;
+  if (closed) {
+    if (!closingDialog.open && !mamaDialog?.open) {
+      closingDialog.showModal();
+    }
+  } else if (closingDialog.open) {
+    closingDialog.close();
   }
 }
 
-/* =========================
-   BLÄTTER & WURZELN 2.3e
-   ========================= */
-
-/* Das fliegende Blatt wird jetzt per Web-Animation bewegt. */
-.flying-leaf{
-  opacity:0;
-  will-change:transform, opacity;
-}
-
-.flying-leaf .leaf-fill{
-  fill:#a9bea0;
-  stroke:#725e51;
-  stroke-width:1.15;
-}
-
-.flying-leaf .vein{
-  stroke:#f8fbf6;
-  stroke-width:1.15;
-}
-
-/* Der äußere Blatt-Container hält ausschließlich die Position am Ast.
-   So kann das Blatt nicht mehr nach links oben springen. */
-.dynamic-leaf{
-  filter:drop-shadow(0 2px 2px rgba(75,55,42,.10));
-}
-
-.leaf-shape{
-  transform-box:fill-box;
-  transform-origin:center;
-}
-
-.leaf-shadow{
-  fill:rgba(82,63,51,.10);
-  transform:translate(1.2px,1.4px);
-}
-
-.leaf-body{
-  stroke:#756052;
-  stroke-width:1.05;
-  stroke-linejoin:round;
-}
-
-.leaf-soft-light{
-  fill:none;
-  stroke-width:1.4;
-  stroke-linecap:round;
-  opacity:.62;
-}
-
-.leaf-vein{
-  fill:none;
-  stroke:#f8fbf6;
-  stroke-width:1.05;
-  stroke-linecap:round;
-  opacity:.9;
-}
-
-.leaf-vein-small{
-  stroke-width:.78;
-  opacity:.72;
-}
-
-/* Nur die innere Blattform pulsiert.
-   Die Position des äußeren <g> bleibt dadurch unangetastet. */
-.tree-growth-svg .new-growth-leaf{
-  opacity:0;
-  animation:newLeafArrive 1.25s 1.72s cubic-bezier(.18,.82,.25,1) forwards;
-}
-
-@keyframes newLeafArrive{
-  0%{
-    opacity:0;
-    transform:scale(.20) rotate(-10deg);
-    filter:drop-shadow(0 0 0 rgba(255,255,255,0));
-  }
-  44%{
-    opacity:1;
-    transform:scale(1.32) rotate(3deg);
-    filter:
-      drop-shadow(0 0 7px rgba(255,255,255,.96))
-      drop-shadow(0 0 14px rgba(230,189,98,.66));
-  }
-  72%{
-    opacity:1;
-    transform:scale(.94) rotate(-1deg);
-  }
-  100%{
-    opacity:1;
-    transform:scale(1) rotate(0);
-    filter:drop-shadow(0 2px 2px rgba(75,55,42,.10));
-  }
-}
-
-/* Wurzeln: weichere, organischere Mehrlinien-Zeichnung. */
-.dynamic-root{
-  fill:none;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-  filter:none;
-}
-
-.root-shadow{
-  fill:none;
-  stroke:rgba(78,55,42,.11);
-}
-
-.root-main{
-  fill:none;
-  stroke:#80614d;
-}
-
-.root-light{
-  fill:none;
-  stroke:#b99577;
-  opacity:.58;
-}
-
-/* Im großen Fenster darf alles etwas feiner wirken. */
-.tree-growth-svg .leaf-body{
-  stroke-width:.95;
-}
-
-.tree-growth-svg .root-main{
-  opacity:.94;
-}
-
-.tree-growth-svg .root-light{
-  opacity:.64;
-}
-
-/* =========================
-   NATÜRLICHER BAUM 2.3f
-   ========================= */
-
-/* Äste und Wurzeln kommen aus derselben warmen Stamm-Farbfamilie. */
-.branch,
-.twig,
-.root-main{
-  stroke:#8f694f;
-}
-
-.branch-main{
-  stroke-width:8.1;
-}
-
-.branch-soft{
-  stroke-width:5.4;
-}
-
-.twig{
-  stroke-width:2.7;
-  opacity:.92;
-}
-
-.root-main{
-  stroke:#8f694f;
-}
-
-.root-light{
-  stroke:#b78f70;
-  opacity:.42;
-}
-
-.root-shadow{
-  stroke:rgba(83,58,43,.08);
-}
-
-/* Blätter noch etwas weicher und naturhafter. */
-.leaf-body{
-  stroke:#7a6658;
-  stroke-width:.9;
-}
-
-.leaf-soft-light{
-  opacity:.48;
-}
-
-.leaf-vein{
-  opacity:.72;
-}
-
-.dynamic-leaf{
-  filter:drop-shadow(0 1.5px 1.5px rgba(70,50,38,.08));
-}
-
-/* =========================
-   SCHWIERIGKEITSFRAGE
-   ========================= */
-
-#difficultyDialog{
-  width:min(520px,92vw);
-  border:none;
-  border-radius:26px;
-  padding:0;
-}
-
-#difficultyDialog::backdrop{
-  background:rgba(55,44,37,.48);
-  backdrop-filter:blur(2px);
-}
-
-.difficulty-card{
-  padding:30px 28px 26px;
-  text-align:center;
-  background:linear-gradient(180deg,#fffdf9,#fbf3ea);
-}
-
-.difficulty-kicker{
-  color:var(--clay-dark);
-  font-size:.78rem;
-  font-weight:900;
-  letter-spacing:.09em;
-  text-transform:uppercase;
-}
-
-.difficulty-card h2{
-  margin:8px 0 6px;
-  font-family:Georgia,serif;
-  font-size:1.65rem;
-}
-
-.difficulty-task-title{
-  margin:0 0 22px;
-  color:var(--muted);
-  font-weight:700;
-}
-
-.difficulty-actions{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:12px;
-}
-
-.difficulty-option{
-  padding:15px 12px;
-  border-radius:15px;
-  font-weight:900;
-  color:var(--text);
-}
-
-.difficulty-option.easy{
-  background:#f1e8f8;
-}
-
-.difficulty-option.medium{
-  background:#f8edcf;
-}
-
-.difficulty-option.tricky{
-  background:#e6efdf;
-}
-
-.difficulty-option:hover{
-  transform:translateY(-1px);
-  filter:brightness(.98);
-}
-
-/* =========================
-   FREIE BLATTFARBEN
-   ========================= */
-
-.leaf-color-settings{
-  margin:24px 0;
-  padding:18px;
-  border:1px solid var(--line);
-  border-radius:18px;
-  background:#fffaf5;
-}
-
-.leaf-color-settings h3{
-  margin:0 0 4px;
-}
-
-.leaf-color-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:16px;
-  margin-top:14px;
-}
-
-.leaf-color-card{
-  padding:14px;
-  border-radius:14px;
-  background:#fff;
-  border:1px solid #ead8c5;
-}
-
-.leaf-color-card h4{
-  margin:0 0 10px;
-}
-
-.leaf-color-card label{
-  display:grid;
-  grid-template-columns:1fr 58px;
-  align-items:center;
-  gap:10px;
-  margin:8px 0;
-}
-
-.leaf-color-card input[type="color"]{
-  width:58px;
-  height:38px;
-  padding:3px;
-  border-radius:10px;
-  cursor:pointer;
-}
-
-@media(max-width:620px){
-  .leaf-color-grid,
-  .difficulty-actions{
-    grid-template-columns:1fr;
-  }
-}
-
-/* =========================
-   HOMOGENE ÜBERGÄNGE 2.3g
-   ========================= */
-
-:root{
-  --tree-bark:#936c50;
-  --tree-bark-light:#b78d6c;
-  --tree-bark-dark:#765642;
-}
-
-/* Äste und Wurzeln exakt dieselbe Grundfarbe.
-   Keine getrennten Braunwerte mehr. */
-.branch,
-.twig,
-.root-main{
-  stroke:var(--tree-bark) !important;
-}
-
-/* An den Ansatzstellen etwas kräftiger und rund:
-   dadurch verschwinden die sichtbaren "angesetzten" Übergänge. */
-.branch{
-  stroke-linecap:round;
-  stroke-linejoin:round;
-}
-
-.branch-main{
-  stroke-width:8.4;
-}
-
-.branch-soft{
-  stroke-width:5.5;
-}
-
-.twig{
-  stroke-width:2.7;
-}
-
-/* Wurzeln laufen optisch aus dem Stamm heraus. */
-.root-main{
-  stroke:var(--tree-bark) !important;
-}
-
-.root-light{
-  stroke:var(--tree-bark-light) !important;
-  opacity:.30;
-}
-
-.root-shadow{
-  stroke:rgba(82,58,43,.06) !important;
-}
-
-/* Die ersten Zentimeter der dynamischen Wurzeln liegen über dem Stammfuß.
-   Dadurch ist keine sichtbare Ansatzkante mehr vorhanden. */
-#rootLayer{
-  pointer-events:none;
-}
-
-#rootLayer .dynamic-root{
-  stroke-linecap:round;
-  stroke-linejoin:round;
-}
-
-/* Die Stamm-Lichtkante wird unten deutlich schwächer,
-   damit sie nicht wie eine Trennlinie zu den Wurzeln wirkt. */
-.tree-trunk-light{
-  opacity:.58;
-}
-
-/* Im großen Wachstumsfenster dieselben Übergänge. */
-.tree-growth-svg .branch,
-.tree-growth-svg .twig,
-.tree-growth-svg .root-main{
-  stroke:var(--tree-bark) !important;
-}
-
-/* =========================
-   EBENEN & NATÜRLICHE KRONE 2.3h
-   ========================= */
-
-/* Äste und Wurzeln liegen im SVG nun wirklich hinter dem Stamm.
-   Die Farben bleiben bewusst identisch. */
-.branch,
-.twig,
-.root-main{
-  stroke:var(--tree-bark) !important;
-}
-
-.tree-trunk{
-  position:relative;
-}
-
-/* Noch weichere Übergänge an Ast- und Wurzelansätzen. */
-.branch-main{
-  stroke-width:8.2;
-}
-
-.branch-soft{
-  stroke-width:5.2;
-}
-
-.twig{
-  stroke-width:2.55;
-  opacity:.90;
-}
-
-.root-main{
-  stroke-width:inherit;
-}
-
-.root-light{
-  opacity:.22;
-}
-
-.root-shadow{
-  opacity:.45;
-}
-
-/* Die Blätter sollen wirken, als säßen sie auf dem Ast,
-   nicht wie in einem Raster. */
-.dynamic-leaf{
-  filter:drop-shadow(0 1.2px 1.3px rgba(70,50,38,.07));
-}
-
-.leaf-body{
-  stroke-width:.82;
-}
-
-.leaf-soft-light{
-  opacity:.42;
-}
-
-.leaf-vein{
-  opacity:.66;
-}
-
-/* =========================
-   ARCHIV – SCHWIERIGKEIT SICHTBAR
-   ========================= */
-
-.archive-task-details{
-  display:flex;
-  align-items:center;
-  gap:14px;
-  flex-wrap:wrap;
-  margin-top:8px;
-}
-
-.archive-task-time{
-  margin-top:0;
-}
-
-.archive-difficulty{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  font-size:.84rem;
-  font-weight:800;
-  color:#6f6258;
-}
-
-.archive-difficulty-dot{
-  width:12px;
-  height:12px;
-  border-radius:50%;
-  border:1px solid rgba(73,56,47,.22);
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.45);
-}
-
-.archive-difficulty-old{
-  font-weight:600;
-  color:var(--muted);
-  font-style:italic;
-}
-
-/* =========================
-   WIESE & NATÜRLICHERE KRONE 2.3i
-   ========================= */
-
-.tree-meadow{
-  fill:#cdd9a9;
-  opacity:.72;
-}
-
-.tree-meadow-soft{
-  fill:#b8c98d;
-  opacity:.36;
-}
-
-.twig-natural{
-  stroke-width:3.25 !important;
-  opacity:.94;
-}
-
-/* Wurzeln organischer und etwas sichtbarer. */
-.root-main{
-  stroke:var(--tree-bark) !important;
-  opacity:.96;
-}
-
-.root-light{
-  stroke:var(--tree-bark-light) !important;
-  opacity:.38;
-}
-
-.root-shadow{
-  stroke:rgba(82,58,43,.12) !important;
-  opacity:.58;
-}
-
-/* Feinere, natürlichere Blätter. */
-.leaf-body{
-  stroke-width:.74;
-}
-
-.leaf-soft-light{
-  opacity:.34;
-  stroke-width:1.05;
-}
-
-.leaf-vein{
-  opacity:.62;
-  stroke-width:.82;
-}
-
-.leaf-vein-small{
-  stroke-width:.62;
-  opacity:.56;
-}
-
-.dynamic-leaf{
-  filter:drop-shadow(0 .8px 1px rgba(70,50,38,.055));
-}
-
-/* Etwas mehr Luft zwischen Krone und Wiese. */
-#treeSvg{
-  overflow:visible;
-}
-
-/* =========================
-   ORGANISCHER CHARAKTERBAUM 2.3j
-   ========================= */
-
-.tree-meadow{
-  fill:url(#meadowGrad) !important;
-  opacity:1 !important;
-}
-
-.tree-meadow-soft{
-  fill:url(#meadowGlow) !important;
-  opacity:1 !important;
-}
-
-.branch,
-.twig,
-.root-main{
-  stroke:#846148 !important;
-  fill:none;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-}
-
-.branch-heavy{
-  stroke-width:9.2;
-}
-
-.branch-main{
-  stroke-width:7.1;
-}
-
-.branch-soft{
-  stroke-width:4.5;
-}
-
-.twig-natural{
-  stroke-width:3.15 !important;
-  opacity:.94;
-}
-
-.root-main{
-  stroke-width:inherit;
-  opacity:.90;
-}
-
-.root-light{
-  stroke:#b38a68 !important;
-  opacity:.32;
-}
-
-.root-shadow{
-  stroke:rgba(74,52,39,.13) !important;
-  opacity:.54;
-}
-
-.bark-line{
-  fill:none;
-  stroke:#6f503e;
-  stroke-width:2.15;
-  stroke-linecap:round;
-  opacity:.42;
-}
-
-.bark-line-soft{
-  stroke:#c09a78;
-  stroke-width:1.65;
-  opacity:.42;
-}
-
-.bark-line-short{
-  stroke-width:1.25;
-  opacity:.30;
-}
-
-/* etwas schmalere, feinere Blätter */
-.leaf-body{
-  stroke-width:.68;
-}
-
-.leaf-soft-light{
-  opacity:.30;
-  stroke-width:.92;
-}
-
-.leaf-vein{
-  stroke-width:.72;
-  opacity:.58;
-}
-
-.leaf-vein-small{
-  stroke-width:.52;
-  opacity:.50;
-}
-
-.dynamic-leaf{
-  filter:drop-shadow(0 .65px .85px rgba(64,45,34,.05));
-}
-
-/* =========================
-   MODERNER LERNBAUM 2.3k
-   ========================= */
-
-.modern-meadow{
-  fill:url(#modernMeadowGrad);
-}
-
-.modern-meadow-glow{
-  fill:none;
-  stroke:url(#modernMeadowGlow);
-  stroke-width:26;
-  stroke-linecap:round;
-  opacity:.75;
-}
-
-.modern-tree-shape{
-  filter:drop-shadow(0 2px 2px rgba(68,49,38,.08));
-}
-
-.modern-branch{
-  fill:none;
-  stroke:#765a48;
-  stroke-width:7.4;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-}
-
-.modern-branch-light{
-  stroke-width:5.2;
-  opacity:.96;
-}
-
-.modern-trunk-highlight{
-  fill:none;
-  stroke:#ba9270;
-  stroke-width:2.3;
-  stroke-linecap:round;
-  opacity:.30;
-}
-
-/* keine antiquierten Rindenzeichnungen */
-.bark-line,
-.bark-line-soft,
-.bark-line-short,
-.branch-heavy,
-.branch-main,
-.branch-soft,
-.twig,
-.twig-natural{
-  display:none !important;
-}
-
-/* Wurzeln reduziert und weich */
-.root-main{
-  stroke:#765a48 !important;
-  opacity:.80;
-}
-
-.root-light{
-  stroke:#a98162 !important;
-  opacity:.20;
-}
-
-.root-shadow{
-  stroke:rgba(68,49,38,.08) !important;
-  opacity:.42;
-}
-
-/* Blätter etwas moderner und leichter */
-.leaf-body{
-  stroke:#766257;
-  stroke-width:.58;
-}
-
-.leaf-soft-light{
-  opacity:.22;
-  stroke-width:.80;
-}
-
-.leaf-vein{
-  stroke-width:.62;
-  opacity:.52;
-}
-
-.leaf-vein-small{
-  stroke-width:.46;
-  opacity:.44;
-}
-
-.dynamic-leaf{
-  filter:drop-shadow(0 .5px .7px rgba(64,45,34,.045));
-}
-
-@media(max-width:820px){
-  #treeSvg{
-    width:76%;
-    max-height:400px;
-  }
-}
-
-@media(max-width:520px){
-  #treeSvg{
-    width:92%;
-    max-height:360px;
-  }
-}
-
-/* =========================
-   PNG-LERNBAUM 2.3l
-   ========================= */
-
-.modern-tree-shape,
-.modern-branch,
-.modern-branch-light,
-.modern-trunk-highlight,
-.tree-trunk,
-.tree-trunk-light,
-.tree-ground,
-.modern-meadow,
-.modern-meadow-glow{
-  display:none !important;
-}
-
-.tree-wrap{
-  min-width:0;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-
-.tree-canvas{
-  position:relative;
-  width:min(100%,560px);
-  aspect-ratio:560 / 500;
-  margin:0 auto;
-  isolation:isolate;
-}
-
-.tree-base-image{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:contain;
-  object-position:center bottom;
-  z-index:3;
-  pointer-events:none;
-  user-select:none;
-}
-
-.tree-overlay{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  overflow:visible;
-  pointer-events:none;
-}
-
-.tree-root-overlay{ z-index:2; }
-.tree-leaf-overlay{ z-index:4; }
-
-.tree-meadow-layer{
-  position:absolute;
-  left:2%;
-  right:2%;
-  bottom:0;
-  height:29%;
-  z-index:1;
-  pointer-events:none;
-  border-radius:50% 50% 18% 18% / 38% 38% 12% 12%;
-  background:
-    radial-gradient(
-      ellipse at 50% 78%,
-      rgba(153,178,105,.58) 0%,
-      rgba(184,203,137,.42) 38%,
-      rgba(218,228,189,.20) 62%,
-      rgba(240,244,226,0) 82%
+async function closeLearningDay() {
+  await runTransaction(db, async tx => {
+    const snap = await tx.get(spaceRef);
+    if (!snap.exists()) return;
+
+    const data = snap.data();
+    if (data.dayClosed) return;
+
+    const now = Date.now();
+    const stoppedTasks = (data.tasks || []).map(task => stopTaskAttention(task, now));
+
+    const nextTasks = stoppedTasks.map(task =>
+      task.done
+        ? emptyTask(task.child)
+        : { ...task, done: false, activeSince: null }
     );
-  filter:blur(1.8px);
+
+    tx.update(spaceRef, {
+      tasks: [
+        ...ensureMinimumTaskSlots(nextTasks, "fina"),
+        ...ensureMinimumTaskSlots(nextTasks, "lou")
+      ],
+      dayClosed: true,
+      dayClosedAt: new Date(now).toISOString(),
+      dayClosedKey: data.lastLearningDay || learningDayKey(),
+      dayClosingBackup: {
+        tasks: stoppedTasks,
+        dailyMission: data.dailyMission || "",
+        lastLearningDay: data.lastLearningDay || learningDayKey()
+      },
+      updatedAt: serverTimestamp()
+    });
+  });
 }
 
-.dynamic-root{
-  fill:none;
-  stroke-linecap:round;
-  stroke-linejoin:round;
+async function reopenLearningDay() {
+  await runTransaction(db, async tx => {
+    const snap = await tx.get(spaceRef);
+    if (!snap.exists()) return;
+
+    const data = snap.data();
+    const backup = data.dayClosingBackup;
+
+    if (!data.dayClosed || !backup?.tasks) return;
+
+    const restoredTasks = backup.tasks.map(task => ({
+      ...task,
+      activeSince: null
+    }));
+
+    tx.update(spaceRef, {
+      tasks: [
+        ...ensureMinimumTaskSlots(restoredTasks, "fina"),
+        ...ensureMinimumTaskSlots(restoredTasks, "lou")
+      ],
+      dailyMission: backup.dailyMission || data.dailyMission || "",
+      lastLearningDay: backup.lastLearningDay || data.lastLearningDay || learningDayKey(),
+      dayClosed: false,
+      dayClosedAt: null,
+      dayClosedKey: null,
+      dayClosingBackup: null,
+      updatedAt: serverTimestamp()
+    });
+  });
 }
 
-.root-shadow{
-  fill:none;
-  stroke:rgba(84,55,38,.13) !important;
+async function beginNewLearningDay() {
+  await runTransaction(db, async tx => {
+    const snap = await tx.get(spaceRef);
+    if (!snap.exists()) return;
+
+    const data = snap.data();
+    const now = Date.now();
+
+    const tasks = (data.tasks || []).map(task => ({
+      ...stopTaskAttention(task, now),
+      done: false,
+      activeSince: null
+    }));
+
+    tx.update(spaceRef, {
+      tasks: [
+        ...ensureMinimumTaskSlots(tasks, "fina"),
+        ...ensureMinimumTaskSlots(tasks, "lou")
+      ],
+      dailyMission: chooseDailyMission(data.dailyMission || ""),
+      lastLearningDay: learningDayKey(),
+      dayClosed: false,
+      dayClosedAt: null,
+      dayClosedKey: null,
+      dayClosingBackup: null,
+      manualDayStartedAt: new Date(now).toISOString(),
+      updatedAt: serverTimestamp()
+    });
+  });
 }
 
-.root-main{
-  fill:none;
-  stroke:#916548 !important;
-  opacity:.92;
-}
+function renderAll() {
+  const now = new Date();
+  $("#todayLabel").textContent = now.toLocaleDateString("de-AT", {
+    weekday: "long", day: "2-digit", month: "long", year: "numeric"
+  });
+  $("#dailyQuote").textContent = state.dailyMission || dailyMissions[0];
+  $("#treeTitle").textContent = state.tree?.name || "Unser Wochenbaum";
 
-.root-light{
-  fill:none;
-  stroke:#c09672 !important;
-  opacity:.34;
-}
+  renderTasks("fina");
+  renderTasks("lou");
+  renderTree();
 
-.dynamic-leaf{
-  filter:drop-shadow(0 .7px .9px rgba(64,45,34,.055));
-}
+  if (pendingTreeGrowth) {
+    pendingTreeGrowth = false;
+    requestAnimationFrame(() => showTreeGrowthCelebration());
+  } else if (pendingRootGrowth) {
+    pendingRootGrowth = false;
+    requestAnimationFrame(() => showRootGrowthCelebration());
+  } else if (pendingGiftGrowth) {
+    pendingGiftGrowth = false;
+    requestAnimationFrame(() => showGiftGrowthCelebration());
+  }
 
-.leaf-body{
-  stroke:#765f52;
-  stroke-width:.58;
-}
+  renderHearts();
+  renderRootMemories();
+  renderForest();
+  renderAdminRoots();
+  renderTreeAttention();
+  syncLearningDayUi();
+  startAttentionTicker();
 
-.leaf-soft-light{
-  opacity:.25;
-  stroke-width:.82;
-}
-
-.leaf-vein{
-  stroke-width:.64;
-  opacity:.54;
-}
-
-.leaf-vein-small{
-  stroke-width:.46;
-  opacity:.45;
-}
-
-.tree-growth-canvas{
-  position:relative;
-  width:min(100%,620px);
-  aspect-ratio:560 / 500;
-  margin:auto;
-}
-
-.tree-growth-canvas .tree-canvas{
-  width:100%;
-}
-
-.tree-growth-preview{
-  height:min(60vh,500px);
-  min-height:300px;
-  display:grid;
-  place-items:center;
-  overflow:hidden;
-  position:relative;
-}
-
-.tree-growth-canvas .new-growth-leaf{
-  opacity:0;
-  animation:newLeafArrive 1.25s 1.72s cubic-bezier(.18,.82,.25,1) forwards;
-}
-
-@media(max-width:820px){
-  .tree-canvas{ width:min(100%,520px); }
-  .tree-growth-preview{ height:min(59vh,440px); }
-}
-
-@media(max-width:520px){
-  .tree-canvas{ width:100%; }
-  .tree-growth-preview{
-    min-height:260px;
-    height:54vh;
+  if ($("#heartDate") && !$("#heartDate").value) {
+    $("#heartDate").value = learningDayKey();
   }
 }
 
-/* =========================================================
-   2.3m – organische Wurzeln + dezentere Lernblätter
-   ========================================================= */
+function renderTasks(child) {
+  const box = $("#" + child + "Tasks");
+  if (!box) return;
 
-/* Die Wurzeln sind jetzt FLÄCHEN statt Striche:
-   am Stamm kräftig, nach außen schmal auslaufend. */
-#rootLayer .dynamic-root{
-  fill-rule:nonzero;
-  stroke:none !important;
-  filter:drop-shadow(0 1px 1px rgba(72,46,31,.055));
-}
+  const tasks = (state.tasks || []).filter(t => t.child === child && t.title?.trim());
+  box.innerHTML = "";
 
-#rootLayer .root-organic-shadow{
-  fill:#654431;
-  opacity:.13;
-  transform:translateY(1.2px);
-}
-
-#rootLayer .root-organic-body{
-  fill:#8d6247;
-  opacity:.88;
-}
-
-#rootLayer .root-organic-light{
-  fill:#b98a67;
-  opacity:.16;
-  transform:translate(-.8px,-.45px) scale(.985);
-  transform-origin:292px 392px;
-}
-
-/* leichte Unterschiede verhindern einen "Fächer"-Eindruck */
-#rootLayer .root-shape-2,
-#rootLayer .root-shape-5,
-#rootLayer .root-shape-7{
-  opacity:.90;
-}
-
-#rootLayer .root-shape-3,
-#rootLayer .root-shape-8,
-#rootLayer .root-shape-10{
-  opacity:.82;
-}
-
-/* Lernblätter deutlich zurücknehmen:
-   Farbe bleibt erkennbar, aber der schöne PNG-Baum dominiert. */
-#leafLayer .dynamic-leaf{
-  opacity:.74;
-  filter:drop-shadow(0 .4px .55px rgba(64,45,34,.035));
-}
-
-#leafLayer .leaf-body{
-  stroke:rgba(104,84,72,.52);
-  stroke-width:.42;
-}
-
-#leafLayer .leaf-shadow{
-  opacity:.10;
-}
-
-#leafLayer .leaf-soft-light{
-  opacity:.16;
-  stroke-width:.60;
-}
-
-#leafLayer .leaf-vein{
-  opacity:.34;
-  stroke-width:.50;
-}
-
-#leafLayer .leaf-vein-small{
-  opacity:.27;
-  stroke-width:.38;
-}
-
-/* Auch in der Wachstumsansicht dieselbe ruhigere Blattwirkung. */
-.tree-growth-canvas .dynamic-leaf{
-  opacity:.74;
-}
-
-.tree-growth-canvas .new-growth-leaf{
-  opacity:0;
-  animation:newLeafArriveSoft 1.25s 1.72s cubic-bezier(.18,.82,.25,1) forwards;
-}
-
-@keyframes newLeafArriveSoft{
-  0%   { opacity:0; transform:scale(.72); }
-  58%  { opacity:.82; transform:scale(1.05); }
-  100% { opacity:.74; transform:scale(1); }
-}
-
-/* =========================================================
-   2.3n – sehr geschwungene Wurzeln + feinere Blätter
-   ========================================================= */
-
-#rootLayer .dynamic-root{
-  stroke:none !important;
-  filter:drop-shadow(0 1px 1px rgba(66,43,30,.045));
-}
-
-#rootLayer .root-organic-shadow{
-  fill:#654633;
-  opacity:.10;
-  transform:translateY(1px);
-}
-
-#rootLayer .root-organic-body{
-  fill:#8c6248;
-  opacity:.80;
-}
-
-#rootLayer .root-organic-light{
-  fill:#c19773;
-  opacity:.12;
-  transform:translate(-.5px,-.3px) scale(.988);
-  transform-origin:292px 392px;
-}
-
-#rootLayer .root-shape-1,
-#rootLayer .root-shape-2{
-  opacity:.96;
-}
-
-#rootLayer .root-shape-3,
-#rootLayer .root-shape-4,
-#rootLayer .root-shape-5,
-#rootLayer .root-shape-6{
-  opacity:.88;
-}
-
-#rootLayer .root-shape-7,
-#rootLayer .root-shape-8,
-#rootLayer .root-shape-9,
-#rootLayer .root-shape-10{
-  opacity:.76;
-}
-
-#leafLayer .dynamic-leaf{
-  opacity:.72;
-  filter:drop-shadow(0 .35px .5px rgba(64,45,34,.03));
-}
-
-#leafLayer .leaf-body{
-  stroke:rgba(95,76,65,.44);
-  stroke-width:.38;
-}
-
-#leafLayer .leaf-shadow{
-  opacity:.06;
-}
-
-#leafLayer .leaf-soft-light{
-  opacity:.13;
-  stroke-width:.48;
-}
-
-#leafLayer .leaf-vein{
-  opacity:.40;
-  stroke-width:.46;
-}
-
-#leafLayer .leaf-vein-small{
-  opacity:.30;
-  stroke-width:.34;
-}
-
-.tree-growth-canvas .dynamic-leaf{
-  opacity:.72;
-}
-
-.tree-growth-canvas .new-growth-leaf{
-  opacity:0;
-  animation:newLeafArriveSoftN 1.25s 1.72s cubic-bezier(.18,.82,.25,1) forwards;
-}
-
-@keyframes newLeafArriveSoftN{
-  0%   { opacity:0; transform:scale(.70) rotate(-4deg); }
-  55%  { opacity:.82; transform:scale(1.04) rotate(2deg); }
-  100% { opacity:.72; transform:scale(1) rotate(0deg); }
-}
-
-/* =========================================================
-   2.3o – Baum höher + tiefer ansetzende natürliche Wurzeln
-   ========================================================= */
-
-/* Mehr Platz unter dem Stamm für echtes Wurzelwachstum.
-   Nur das PNG wird angehoben; die Wurzelebene bleibt unten. */
-.tree-base-image{
-  transform:translateY(-6.5%);
-  transform-origin:center bottom;
-}
-
-/* Die Wiese bleibt unter Baum und Wurzeln weich sichtbar. */
-.tree-meadow-layer{
-  height:27%;
-  bottom:0;
-}
-
-/* Wurzeln beginnen jetzt erst am unteren Stammfuß.
-   Sie liegen weiterhin HINTER dem PNG-Baum. */
-.tree-root-overlay{
-  z-index:2;
-}
-
-.tree-base-image{
-  z-index:3;
-}
-
-#rootLayer .dynamic-root{
-  stroke:none !important;
-  filter:drop-shadow(0 .8px .8px rgba(61,40,28,.035));
-}
-
-/* Körper etwas dunkler am Ansatz, aber ohne harte Kontur. */
-#rootLayer .root-organic-shadow{
-  fill:#654634;
-  opacity:.08;
-  transform:translateY(.8px);
-}
-
-#rootLayer .root-organic-body{
-  fill:#8b6045;
-  opacity:.84;
-}
-
-#rootLayer .root-organic-light{
-  fill:#c79a74;
-  opacity:.10;
-  transform:translate(-.35px,-.2px) scale(.992);
-  transform-origin:292px 421px;
-}
-
-/* Unterschiedliche Stärke erzeugt weniger Symmetrie. */
-#rootLayer .root-shape-1{ opacity:.96; }
-#rootLayer .root-shape-2{ opacity:.84; }
-#rootLayer .root-shape-3{ opacity:.78; }
-#rootLayer .root-shape-4{ opacity:.91; }
-#rootLayer .root-shape-5{ opacity:.72; }
-#rootLayer .root-shape-6{ opacity:.82; }
-#rootLayer .root-shape-7{ opacity:.86; }
-#rootLayer .root-shape-8{ opacity:.70; }
-#rootLayer .root-shape-9{ opacity:.76; }
-#rootLayer .root-shape-10{ opacity:.88; }
-
-/* Blätter aus 2.3n grundsätzlich beibehalten:
-   fein, leicht transparent, unterschiedliche Winkel,
-   Adern nur subtil sichtbar. */
-#leafLayer .dynamic-leaf{
-  opacity:.72;
-}
-
-#leafLayer .leaf-vein{
-  opacity:.38;
-}
-
-#leafLayer .leaf-vein-small{
-  opacity:.28;
-}
-
-/* Wachstumsfenster verwendet dieselbe angehobene PNG-Position. */
-.tree-growth-canvas .tree-base-image{
-  transform:translateY(-6.5%);
-}
-
-/* =========================================================
-   2.3p – Wurzeln als transparente PNG-Ebenen
-   ========================================================= */
-
-/* Alte SVG-Wurzeltechnik vollständig abschalten. */
-.tree-root-overlay,
-#rootLayer,
-.dynamic-root,
-.root-organic-shadow,
-.root-organic-body,
-.root-organic-light,
-.root-main,
-.root-light,
-.root-shadow{
-  display:none !important;
-}
-
-/* PNG-Wurzelebene liegt hinter dem Baum, aber über der Wiese. */
-.tree-root-png-layer{
-  position:absolute;
-  inset:0;
-  z-index:2;
-  pointer-events:none;
-}
-
-/* Jede Wurzelgrafik verwendet dieselbe Zeichenfläche wie der Baum.
-   Die PNGs selbst sollen NUR die jeweilige Wurzel enthalten. */
-.root-png{
-  position:absolute;
-  left:0;
-  top:0;
-  width:100%;
-  height:100%;
-  object-fit:contain;
-  object-position:center bottom;
-  opacity:0;
-  transform:scale(.94);
-  transform-origin:50% 82%;
-  transition:
-    opacity .75s ease,
-    transform 1.05s cubic-bezier(.18,.82,.25,1);
-  pointer-events:none;
-  user-select:none;
-}
-
-.root-png.visible{
-  opacity:1;
-  transform:scale(1);
-}
-
-/* Etwas unterschiedliche Einblendrichtung, damit das Wachstum lebendiger wirkt. */
-.root-png.root-left{
-  transform-origin:53% 82%;
-}
-
-.root-png.root-right{
-  transform-origin:47% 82%;
-}
-
-.root-png.root-left:not(.visible){
-  transform:translateX(7px) scale(.93);
-}
-
-.root-png.root-right:not(.visible){
-  transform:translateX(-7px) scale(.93);
-}
-
-/* Der Stamm bleibt davor und verdeckt den Wurzelansatz. */
-.tree-base-image{
-  z-index:3;
-}
-
-/* Lernblätter weiterhin ganz vorne. */
-.tree-leaf-overlay{
-  z-index:4;
-}
-
-/* Die weich auslaufende Wiese bleibt ganz hinten. */
-.tree-meadow-layer{
-  z-index:1;
-}
-
-/* Auch im Wachstumsdialog funktionieren dieselben PNG-Wurzeln. */
-.tree-growth-canvas .tree-root-png-layer{
-  z-index:2;
-}
-
-.tree-growth-canvas .tree-base-image{
-  z-index:3;
-}
-
-.tree-growth-canvas .tree-leaf-overlay{
-  z-index:4;
-}
-
-/* =========================================================
-   2.3q – feines Wurzelgeflecht aus 3 PNG-Grundgrafiken
-   ========================================================= */
-.tree-root-png-layer{
-  position:absolute; inset:0 0 -5% 0; z-index:2;
-  pointer-events:none; overflow:visible;
-}
-.root-png.root-growth-piece{
-  position:absolute;
-  left:50%; top:77%;
-  width:42%; height:30%;
-  object-fit:contain; object-position:50% 0%;
-  opacity:0;
-  transform:translate(calc(-50% + var(--root-x)),var(--root-y))
-            rotate(var(--root-rot)) scale(var(--root-scale));
-  transform-origin:50% 0%;
-  pointer-events:none; user-select:none;
-  animation:rootGrowInQ .95s var(--root-delay) cubic-bezier(.18,.82,.25,1) forwards;
-  filter:none;
-}
-@keyframes rootGrowInQ{
-  0%{
-    opacity:0;
-    transform:translate(calc(-50% + var(--root-x)),calc(var(--root-y) - 4px))
-              rotate(var(--root-rot)) scale(calc(var(--root-scale) * .82));
+  if (!tasks.length) {
+    box.innerHTML = '<div class="empty">Heute wartet hier nichts auf dich.</div>';
+    return;
   }
-  100%{
-    opacity:var(--root-opacity);
-    transform:translate(calc(-50% + var(--root-x)),var(--root-y))
-              rotate(var(--root-rot)) scale(var(--root-scale));
+
+  tasks.forEach(task => {
+    const row = document.createElement("div");
+    row.className = "task";
+
+    const running = Boolean(task.activeSince);
+    const attention = currentAttentionSeconds(task);
+    const hasAttention = attention > 0;
+
+    row.innerHTML = `
+      <button class="leaf-toggle ${task.done ? "done" : ""}"
+        aria-label="Aufgabe ${task.done ? "wieder öffnen" : "abschließen"}">
+        ${leafSvg()}
+      </button>
+
+      <div class="task-main">
+        <div class="task-title">${escapeHtml(task.title)}</div>
+        <div class="task-note">${escapeHtml(task.note || "")}</div>
+
+        <div class="attention-row">
+          <button
+            type="button"
+            class="attention-toggle ${running ? "running" : ""}"
+            aria-label="${running ? "Aufmerksamkeit pausieren" : hasAttention ? "Aufmerksamkeit fortsetzen" : "Aufmerksamkeit starten"}"
+            title="${running ? "Pause" : hasAttention ? "Weiter" : "Aufmerksamkeit"}"
+          >
+            ${running ? "⏸ Pause" : hasAttention ? "▶ Weiter" : "▶ Aufmerksamkeit schenken"}
+          </button>
+
+          <span class="attention-time" data-attention-task="${task.id}">
+            💛 ${formatAttentionMinutes(attention)}
+          </span>
+        </div>
+      </div>
+
+      ${task.type === "online" && task.url
+        ? `<a class="task-link" href="${escapeHtml(task.url)}"
+             target="_blank" rel="noopener">Öffnen ↗</a>`
+        : ""}
+    `;
+
+    row.querySelector(".leaf-toggle").onclick = () => toggleTask(task.id);
+    row.querySelector(".attention-toggle").onclick = () => toggleAttention(task.id);
+    box.appendChild(row);
+  });
+}
+
+function getLeafColor(child, difficulty) {
+  const configured = state.tree?.leafColors?.[child]?.[difficulty];
+  if (configured) return configured;
+
+  return DEFAULT_LEAF_COLORS?.[child]?.[difficulty]
+    || DEFAULT_LEAF_COLORS.fina.medium;
+}
+
+function askTaskDifficulty(taskId) {
+  const task = (state.tasks || []).find(item => item.id === taskId);
+  if (!task) return;
+
+  pendingDifficultyTaskId = taskId;
+
+  const dialog = $("#difficultyDialog");
+  const title = $("#difficultyTaskTitle");
+
+  if (title) {
+    title.textContent = task.title || "Diese Aufgabe";
   }
-}
-.tree-base-image{position:relative;z-index:3;}
-.tree-leaf-overlay{z-index:4;}
-.tree-meadow-layer{z-index:1;}
-@media (max-width:900px){
-  .root-png.root-growth-piece{width:45%;height:29%;top:77%;}
+
+  if (dialog && !dialog.open) dialog.showModal();
 }
 
-/* =========================================================
-   2.3r – Wurzeln tiefer unter dem Stamm + Mitte korrigiert
-   ========================================================= */
+async function completeTaskWithDifficulty(taskId, difficulty) {
+  let completedNow = false;
 
-.root-png.root-growth-piece{
-  top:82.5% !important;
-  width:38% !important;
-  height:27% !important;
-  object-position:50% 0%;
-  transform-origin:50% 0%;
-}
+  try {
+    await runTransaction(db, async tx => {
+      const snap = await tx.get(spaceRef);
+      const data = snap.data();
 
-.tree-root-png-layer{
-  bottom:-12% !important;
-  overflow:visible !important;
-}
+      const tasks = [...(data.tasks || [])];
+      const leaves = [...(data.learningLeaves || [])];
+      const archive = [...(data.taskArchive || [])];
 
-.tree-meadow-layer{
-  height:25% !important;
-}
+      const index = tasks.findIndex(t => t.id === taskId);
+      if (index < 0) return;
 
-@media (max-width:900px){
-  .root-png.root-growth-piece{
-    top:82% !important;
-    width:40% !important;
-    height:27% !important;
+      const task = { ...tasks[index] };
+
+      if (task.activeSince) {
+        const started = new Date(task.activeSince).getTime();
+        const elapsed = Number.isFinite(started)
+          ? Math.max(0, Math.floor((Date.now() - started) / 1000))
+          : 0;
+
+        task.attentionSeconds =
+          Number(task.attentionSeconds || 0) +
+          Math.min(elapsed, MAX_SESSION_SECONDS);
+
+        task.activeSince = null;
+      }
+
+      task.done = true;
+      task.difficulty = difficulty;
+      tasks[index] = task;
+
+      const alreadyArchived = archive.some(entry => entry.taskId === task.id);
+
+      if (!alreadyArchived) {
+        archive.push({
+          id: crypto.randomUUID(),
+          taskId: task.id,
+          child: task.child,
+          title: task.title || "",
+          note: task.note || "",
+          type: task.type || "paper",
+          url: task.url || "",
+          attentionSeconds: Number(task.attentionSeconds || 0),
+          difficulty,
+          completedAt: new Date().toISOString()
+        });
+      }
+
+      const leafIndex = leaves.findIndex(l => l.taskId === taskId);
+
+      if (leafIndex < 0) {
+        leaves.push({
+          id: crypto.randomUUID(),
+          taskId,
+          child: task.child,
+          title: task.title,
+          difficulty,
+          color: getLeafColor(task.child, difficulty),
+          attentionSeconds: Number(task.attentionSeconds || 0),
+          createdAt: (() => {
+            const chosen = $("#heartDate")?.value;
+            return chosen
+              ? new Date(`${chosen}T12:00:00`).toISOString()
+              : new Date().toISOString();
+          })()
+        });
+
+        completedNow = true;
+      }
+
+      tx.update(spaceRef, {
+        tasks,
+        learningLeaves: leaves,
+        taskArchive: archive,
+        updatedAt: serverTimestamp()
+      });
+    });
+
+    if (completedNow) pendingTreeGrowth = true;
+  } catch (err) {
+    alert("Die Aufgabe konnte nicht gespeichert werden: " + err.message);
   }
 }
 
-/* =========================================================
-   2.3s – Korrektur: Wurzelansatz direkt unter dem Stamm
-   ========================================================= */
+async function toggleTask(taskId) {
+  const task = (state.tasks || []).find(item => item.id === taskId);
+  if (!task) return;
 
-/* 2.3r lag mit 82.5% deutlich zu tief.
-   Der Ansatz sitzt jetzt wieder am Stammfuß; die PNGs wachsen nach unten. */
-.root-png.root-growth-piece{
-  top:73.5% !important;
-  width:34% !important;
-  height:25% !important;
-  object-fit:contain !important;
-  object-position:50% 0% !important;
-  transform-origin:50% 0% !important;
-}
+  // Beim ersten Abschließen fragt das Kind, wie sich die Aufgabe angefühlt hat.
+  if (!task.done) {
+    askTaskDifficulty(taskId);
+    return;
+  }
 
-/* Kein Herausrutschen unter die Baumkarte mehr. */
-.tree-root-png-layer{
-  inset:0 !important;
-  overflow:hidden !important;
-}
+  // Bereits erledigte Aufgabe wieder öffnen.
+  try {
+    await runTransaction(db, async tx => {
+      const snap = await tx.get(spaceRef);
+      const data = snap.data();
 
-/* Stamm weiterhin vor den Wurzeln: der obere PNG-Ansatz wird verdeckt
-   und wirkt dadurch wie ein natürlicher Übergang aus dem Stammfuß. */
-.tree-base-image{
-  z-index:3 !important;
-}
-.tree-root-png-layer{
-  z-index:2 !important;
-}
-.tree-meadow-layer{
-  z-index:1 !important;
-}
+      const tasks = [...(data.tasks || [])];
+      const leaves = [...(data.learningLeaves || [])];
 
-/* Tablet proportional gleich halten. */
-@media (max-width:900px){
-  .root-png.root-growth-piece{
-    top:73.5% !important;
-    width:36% !important;
-    height:25% !important;
+      const index = tasks.findIndex(t => t.id === taskId);
+      if (index < 0) return;
+
+      tasks[index] = {
+        ...tasks[index],
+        done: false,
+        difficulty: null,
+        activeSince: null
+      };
+
+      const leafIndex = leaves.findIndex(l => l.taskId === taskId);
+      if (leafIndex >= 0) leaves.splice(leafIndex, 1);
+
+      tx.update(spaceRef, {
+        tasks,
+        learningLeaves: leaves,
+        updatedAt: serverTimestamp()
+      });
+    });
+  } catch (err) {
+    alert("Die Aufgabe konnte nicht wieder geöffnet werden: " + err.message);
   }
 }
 
-/* =========================================================
-   2.3t – EXAKTE AUSRICHTUNG NACH DEN ROTEN HILFSLINIEN
 
-   Gemessen im Screenshot:
-   links  ≈ x 360
-   mitte  ≈ x 391
-   rechts ≈ x 415
+const ROOT_GROWTH_LAYOUT = [
+  { type:"middle", file:"wurzel-mitte.png",  anchor:50.0, y:0, rot:0,   scale:1.14, opacity:.94, height:22.5 },
 
-   Daraus ergibt sich für die Baumfläche:
-   links 44 %, mitte 50 %, rechts 55 %.
-   ========================================================= */
+  { type:"right",  file:"wurzel-rechts.png", anchor:52.0, y:0, rot:14,  scale:.86, opacity:.86, height:14.5 },
+  { type:"left",   file:"wurzel-links.png",  anchor:48.0, y:0, rot:-14, scale:.86, opacity:.86, height:14.5 },
 
-.tree-root-png-layer{
-  position:absolute !important;
-  inset:0 !important;
-  z-index:2 !important;
-  overflow:hidden !important;
-  pointer-events:none !important;
+  { type:"right",  file:"wurzel-rechts.png", anchor:53.0, y:1, rot:28,  scale:.84, opacity:.82, height:14.0 },
+  { type:"left",   file:"wurzel-links.png",  anchor:47.0, y:1, rot:-28, scale:.84, opacity:.82, height:14.0 },
+
+  { type:"right",  file:"wurzel-rechts.png", anchor:54.0, y:2, rot:42,  scale:.82, opacity:.78, height:13.8 },
+  { type:"left",   file:"wurzel-links.png",  anchor:46.0, y:2, rot:-42, scale:.82, opacity:.78, height:13.8 },
+
+  { type:"right",  file:"wurzel-rechts.png", anchor:55.0, y:3, rot:56,  scale:.80, opacity:.74, height:13.5 },
+  { type:"left",   file:"wurzel-links.png",  anchor:45.0, y:3, rot:-56, scale:.80, opacity:.74, height:13.5 },
+
+  { type:"right",  file:"wurzel-rechts.png", anchor:56.0, y:4, rot:69,  scale:.78, opacity:.70, height:13.2 },
+  { type:"left",   file:"wurzel-links.png",  anchor:44.0, y:4, rot:-69, scale:.78, opacity:.70, height:13.2 },
+
+  { type:"right",  file:"wurzel-rechts.png", anchor:57.0, y:5, rot:80,  scale:.76, opacity:.66, height:13.0 },
+  { type:"left",   file:"wurzel-links.png",  anchor:43.0, y:5, rot:-80, scale:.76, opacity:.66, height:13.0 },
+
+  { type:"right",  file:"wurzel-rechts.png", anchor:58.0, y:6, rot:89,  scale:.74, opacity:.62, height:12.8 },
+  { type:"left",   file:"wurzel-links.png",  anchor:42.0, y:6, rot:-89, scale:.74, opacity:.62, height:12.8 }
+];
+
+function renderRootPngs() {
+  const layer = $("#rootPngLayer");
+  if (!layer) return;
+
+  const rootCount = Math.min(
+    (state.roots || []).filter(root => !root.isGift).length,
+    ROOT_GROWTH_LAYOUT.length
+  );
+
+  layer.innerHTML = "";
+
+  ROOT_GROWTH_LAYOUT.slice(0, rootCount).forEach((cfg, index) => {
+    const img = document.createElement("img");
+
+    img.className = `root-png root-growth-piece root-${cfg.type}`;
+    img.src = cfg.file;
+    img.alt = "";
+    img.draggable = false;
+
+    img.style.left = `${cfg.anchor}%`;
+    img.style.setProperty("--root-y", `${cfg.y}px`);
+    img.style.setProperty("--root-rot", `${cfg.rot}deg`);
+    img.style.setProperty("--root-scale", cfg.scale);
+    img.style.setProperty("--root-opacity", cfg.opacity);
+    img.style.setProperty("--root-height", `${cfg.height}%`);
+    img.dataset.rootOrder = String(index + 1);
+    img.style.setProperty(
+      "--root-delay",
+      `${Math.min(index * 30, 160)}ms`
+    );
+
+    layer.appendChild(img);
+  });
 }
 
-/* Der obere Wurzelansatz kommt jetzt auf Höhe der drei roten Linien.
-   Die Grafiken sind bewusst klein genug, um unter dem Baum Platz zu haben. */
-.root-png.root-growth-piece{
-  position:absolute !important;
-  top:84% !important;
-  height:16% !important;
-  width:auto !important;
-  max-width:none !important;
-  object-fit:contain !important;
-  object-position:50% 0 !important;
+const GIFT_BUTTERFLY_POSITIONS = [
+  [24,58,-12],[76,58,13],
+  [19,64,-6],[81,64,8],
+  [28,69,10],[72,69,-10],
+  [22,73,7],[78,73,-7],
+  [33,61,-15],[67,61,15],
+  [17,69,-10],[83,69,10]
+];
+const GIFT_BUTTERFLY_COLORS = [
+  [219,145,166],[177,151,211],[123,178,199],[224,176,91],[141,181,137],[203,154,116]
+];
 
-  opacity:0;
-  pointer-events:none;
-  user-select:none;
+function renderGiftButterflies() {
+  const tree = $("#treeCanvas");
+  if (!tree) return;
 
-  transform:
-    translateX(var(--asset-shift))
-    translateY(var(--root-y))
-    rotate(var(--root-rot))
-    scale(var(--root-scale)) !important;
-
-  transform-origin:var(--asset-origin) 0 !important;
-
-  animation:
-    rootGrowExact .9s var(--root-delay)
-    cubic-bezier(.18,.82,.25,1) forwards !important;
-}
-
-/* Aus den tatsächlichen transparenten PNG-Dateien berechnet:
-   MITTE: sichtbarer Ansatz bei ca. 51.2 % der PNG-Breite
-   LINKS: sichtbarer Ansatz bei ca. 85.0 %
-   RECHTS: sichtbarer Ansatz bei ca. 10.1 %
-   Dadurch liegt nicht der Bildrahmen, sondern der echte Wurzelansatz
-   auf der gewünschten roten Linie. */
-.root-png.root-middle{
-  --asset-shift:-51.2%;
-  --asset-origin:51.2%;
-}
-
-.root-png.root-left{
-  --asset-shift:-85%;
-  --asset-origin:85%;
-}
-
-.root-png.root-right{
-  --asset-shift:-10.1%;
-  --asset-origin:10.1%;
-}
-
-@keyframes rootGrowExact{
-  0%{
-    opacity:0;
-    transform:
-      translateX(var(--asset-shift))
-      translateY(calc(var(--root-y) - 3px))
-      rotate(var(--root-rot))
-      scale(calc(var(--root-scale) * .84)) !important;
+  let layer = $("#giftButterflyLayer");
+  if (!layer) {
+    layer = document.createElement("div");
+    layer.id = "giftButterflyLayer";
+    layer.className = "tree-gift-butterfly-layer";
+    layer.setAttribute("aria-hidden", "true");
+    tree.appendChild(layer);
   }
-  100%{
-    opacity:var(--root-opacity);
-    transform:
-      translateX(var(--asset-shift))
-      translateY(var(--root-y))
-      rotate(var(--root-rot))
-      scale(var(--root-scale)) !important;
+
+  layer.innerHTML = "";
+
+  const gifts = (state.roots || []).filter(root => root.isGift);
+
+  gifts.slice(0, GIFT_BUTTERFLY_POSITIONS.length).forEach((gift, i) => {
+    const [x,y,rot] = GIFT_BUTTERFLY_POSITIONS[i];
+    const [r,g,b] = GIFT_BUTTERFLY_COLORS[i % GIFT_BUTTERFLY_COLORS.length];
+
+    const el = document.createElement("span");
+    el.className = "gift-butterfly";
+    el.dataset.giftIndex = String(i);
+    el.style.left = `${x}%`;
+    el.style.top = `${y}%`;
+    el.style.setProperty("--bf-rot", `${rot}deg`);
+    el.style.setProperty("--bf-color", `rgba(${r},${g},${b},.48)`);
+    el.title = `${gift.author || "Jemand"} → ${gift.recipient || "jemand"}`;
+    el.innerHTML =
+      '<i class="wing left"></i>' +
+      '<i class="wing right"></i>' +
+      '<i class="bf-body"></i>';
+
+    layer.appendChild(el);
+  });
+}
+
+function renderTree() {
+  const leafLayer = $("#leafLayer");
+  if (!leafLayer) return;
+
+  leafLayer.innerHTML = "";
+
+  const leaves = (state.learningLeaves || []).slice(0, leafPositions.length);
+
+  leaves.forEach((leaf, i) => {
+    const [x, y, rot, mirror] = leafPositions[i];
+    const color = leaf.color || getLeafColor(
+      leaf.child || "fina",
+      leaf.difficulty || "medium"
+    );
+    const highlight = "#f7f4ea";
+
+    leafLayer.insertAdjacentHTML("beforeend", `
+      <g
+        transform="translate(${x} ${y}) rotate(${rot}) scale(1 ${mirror})"
+        class="dynamic-leaf"
+      >
+        <g class="leaf-shape">
+          <path
+            class="leaf-shadow"
+            d="M1 1 C8 -13 21 -18 33 -9 C30 7 17 14 1 1Z"
+          />
+          <path
+            class="leaf-body"
+            d="M0 0
+               C5 -7 11 -12 18 -14
+               C24 -16 30 -13 34 -9
+               C31 -2 27 4 21 8
+               C14 11 7 8 0 0 Z"
+            fill="${color}"
+          />
+          <path
+            class="leaf-soft-light"
+            d="M7 -2 C13 -6 20 -9 27 -9"
+            stroke="${highlight}"
+          />
+          <path
+            class="leaf-vein"
+            d="M4 1 C12 -1 20 -5 29 -10"
+          />
+          <path
+            class="leaf-vein leaf-vein-small"
+            d="M12 -2 C11 -5 11 -8 12 -10"
+          />
+          <path
+            class="leaf-vein leaf-vein-small"
+            d="M18 -5 C21 -5 24 -4 27 -5"
+          />
+          <path
+            class="leaf-vein leaf-vein-small"
+            d="M23 -7 C25 -9 27 -10 28 -12"
+          />
+        </g>
+      </g>
+    `);
+  });
+
+  renderRootPngs();
+  renderGiftButterflies();
+  requestAnimationFrame(() => renderGiftButterflies());
+
+  const target = Number(state.tree?.targetLeaves || 20);
+  const complete = leaves.length >= target;
+
+  $("#treeStatus").textContent = complete
+    ? "Die Krone ist vollständig gewachsen. Dieser Baum darf in den Lernwald ziehen."
+    : "Der Baum wächst still mit euren Lernaufgaben und Herzmomenten.";
+
+  $("#finishTreeBtn")?.classList.toggle("hidden", !complete);
+}
+
+function renderHearts() {
+  const box = $("#heartChoices");
+  if (!box) return;
+
+  box.innerHTML = "";
+
+  heartOptions.forEach(opt => {
+    const btn = document.createElement("button");
+    const selected = selectedHearts.includes(opt.key);
+
+    btn.type = "button";
+    btn.className = "heart-choice" + (selected ? " selected" : "");
+    btn.setAttribute("aria-pressed", selected ? "true" : "false");
+    btn.innerHTML = `
+      <span class="heart-icon">${opt.icon}</span>
+      <strong>${opt.title}</strong>
+      <span>${opt.text}</span>
+    `;
+
+    btn.onclick = () => {
+      selectedHearts = selected
+        ? selectedHearts.filter(x => x !== opt.key)
+        : [...selectedHearts, opt.key];
+
+      renderHearts();
+    };
+
+    box.appendChild(btn);
+  });
+
+  const otherSelected = selectedHearts.includes("other");
+  $("#heartOtherField")?.classList.toggle("hidden", !otherSelected);
+}
+
+function updateHeartNoteVisibility() {
+  const noteField = $("#heartNoteField");
+
+  if (!noteField) return;
+
+  noteField.classList.remove("hidden");
+}
+
+if ($("#heartAuthor")) {
+  $("#heartAuthor").addEventListener("change", updateHeartNoteVisibility);
+  updateHeartNoteVisibility();
+}
+
+function updateHeartGiftVisibility() {
+  const isGift = !!$("#heartGiftToggle")?.checked;
+  $("#heartGiftRecipientField")?.classList.toggle("hidden", !isGift);
+}
+
+if ($("#heartGiftToggle")) {
+  $("#heartGiftToggle").addEventListener("change", updateHeartGiftVisibility);
+  updateHeartGiftVisibility();
+}
+
+if ($("#addRootBtn")) {
+  $("#addRootBtn").onclick = async () => {
+    const reason = $("#heartReason")?.value.trim() || "";
+    const otherText = $("#heartOtherText")?.value.trim() || "";
+    const isGift = !!$("#heartGiftToggle")?.checked;
+    const recipient = isGift ? ($("#heartGiftRecipient")?.value || "Mama") : "";
+
+    if (!selectedHearts.length) {
+      alert("Wählt mindestens einen Herzmoment aus.");
+      return;
+    }
+
+    if (selectedHearts.includes("other") && !otherText) {
+      alert("Schreibt bei Sonstiges kurz dazu, welcher Herzmoment gemeint ist.");
+      $("#heartOtherText")?.focus();
+      return;
+    }
+
+    // Ein eigener Herzmoment stärkt den Baum als Wurzel.
+    // Ein verschenkter Herzmoment bekommt bewusst ein anderes Symbol: einen Schmetterling.
+    pendingRootGrowth = !isGift;
+    pendingGiftGrowth = isGift;
+
+    try {
+      await runTransaction(db, async tx => {
+        const snap = await tx.get(spaceRef);
+        const roots = [...(snap.data().roots || [])];
+
+        roots.push({
+          id: crypto.randomUUID(),
+          kinds: [...selectedHearts],
+          author: $("#heartAuthor")?.value || "Gemeinsam",
+          reason,
+          otherText,
+          isGift,
+          recipient,
+          createdAt: (() => {
+            const chosen = $("#heartDate")?.value;
+            return chosen ? new Date(`${chosen}T12:00:00`).toISOString() : new Date().toISOString();
+          })()
+        });
+
+        tx.update(spaceRef, {
+          roots,
+          updatedAt: serverTimestamp()
+        });
+      });
+
+      selectedHearts = [];
+      if ($("#heartReason")) $("#heartReason").value = "";
+      if ($("#heartOtherText")) $("#heartOtherText").value = "";
+      if ($("#heartGiftToggle")) $("#heartGiftToggle").checked = false;
+      updateHeartGiftVisibility();
+      renderHearts();
+    } catch (err) {
+      pendingRootGrowth = false;
+      pendingGiftGrowth = false;
+      alert("Der Herzmoment konnte nicht gespeichert werden: " + err.message);
+    }
+  };
+}
+
+function renderRootMemories() {
+  const box = $("#rootMemory");
+  if (!box) return;
+
+  const roots = (state.roots || []).slice().reverse().slice(0, 4);
+  box.innerHTML = "";
+
+  if (!roots.length) return;
+
+  roots.forEach(root => {
+    const labels = (root.kinds || [])
+      .map(k => k === "other" && root.otherText ? root.otherText : (heartOptions.find(x => x.key === k)?.title || k))
+      .join(", ");
+
+    box.insertAdjacentHTML("beforeend", `
+      <div class="memory-card">
+        <strong>${root.isGift ? "🦋" : "🌱"} ${escapeHtml(root.author || "Gemeinsam")}${root.isGift ? ` → ${escapeHtml(root.recipient || "")}` : ""}: ${escapeHtml(labels)}</strong>
+        ${root.reason ? `<div>${escapeHtml(root.reason)}</div>` : ""}
+        <small>${new Date(root.createdAt).toLocaleDateString("de-AT")}</small>
+      </div>
+    `);
+  });
+}
+
+function ensureAdminRootsPanel() {
+  const panel = $("#mamaPanel");
+  if (!panel || $("#adminRootsPanel")) return;
+
+  const section = document.createElement("section");
+  section.id = "adminRootsPanel";
+  section.innerHTML = `
+    <hr>
+    <h3>🌱 Gespeicherte Wurzeln</h3>
+    <p class="muted">Hier kannst du versehentlich angelegte Wurzeln löschen.</p>
+    <div id="adminRootsList"></div>
+  `;
+
+  panel.appendChild(section);
+}
+
+function renderAdminRoots() {
+  const list = $("#adminRootsList");
+  if (!list) return;
+
+  const roots = (state.roots || []).slice().reverse();
+  list.innerHTML = "";
+
+  if (!roots.length) {
+    list.innerHTML = '<div class="empty">Noch keine Wurzeln gespeichert.</div>';
+    return;
   }
+
+  roots.forEach(root => {
+    const labels = (root.kinds || [])
+      .map(k => k === "other" && root.otherText ? root.otherText : (heartOptions.find(x => x.key === k)?.title || k))
+      .join(", ");
+
+    const row = document.createElement("div");
+    row.className = "memory-card";
+    row.style.display = "flex";
+    row.style.justifyContent = "space-between";
+    row.style.alignItems = "flex-start";
+    row.style.gap = "12px";
+
+    row.innerHTML = `
+      <div>
+        <strong>${root.isGift ? "🦋" : "🌱"} ${escapeHtml(root.author || "Gemeinsam")}${root.isGift ? ` → ${escapeHtml(root.recipient || "")}` : ""}: ${escapeHtml(labels)}</strong>
+        ${root.reason ? `<div>${escapeHtml(root.reason)}</div>` : ""}
+        <small>${new Date(root.createdAt).toLocaleDateString("de-AT")}</small>
+      </div>
+      <button type="button" class="remove-task" title="Wurzel löschen"
+        aria-label="Wurzel löschen">🗑️</button>
+    `;
+
+    row.querySelector("button").onclick = () => deleteRoot(root.id);
+    list.appendChild(row);
+  });
 }
 
-/* Baum vor den Ansätzen, damit der Übergang weich bleibt. */
-.tree-base-image{
-  z-index:3 !important;
-}
+async function deleteRoot(rootId) {
+  const root = (state.roots || []).find(r => r.id === rootId);
+  if (!root) return;
 
-.tree-leaf-overlay{
-  z-index:4 !important;
-}
+  if (!confirm("Soll diese Wurzel wirklich gelöscht werden?")) return;
 
-.tree-meadow-layer{
-  z-index:1 !important;
-}
+  try {
+    await runTransaction(db, async tx => {
+      const snap = await tx.get(spaceRef);
+      const roots = (snap.data().roots || []).filter(r => r.id !== rootId);
 
-/* Auf kleineren Geräten proportional nur wenig kleiner. */
-@media(max-width:900px){
-  .root-png.root-growth-piece{
-    top:84% !important;
-    height:15.5% !important;
-  }
-}
-
-/* =========================================================
-   2.3u – Wurzeln BREITER statt TIEFER
-   ========================================================= */
-
-.tree-root-png-layer{
-  position:absolute !important;
-  inset:0 !important;
-  z-index:2 !important;
-  overflow:hidden !important;
-  pointer-events:none !important;
-}
-
-.root-png.root-growth-piece{
-  top:84.2% !important;
-  height:12.8% !important;
-  width:auto !important;
-  max-width:none !important;
-  object-fit:contain !important;
-  object-position:50% 0% !important;
-
-  opacity:0;
-  pointer-events:none;
-  user-select:none;
-
-  transform:
-    translateX(var(--asset-shift))
-    translateY(var(--root-y))
-    rotate(var(--root-rot))
-    scale(var(--root-scale)) !important;
-
-  transform-origin:var(--asset-origin) 0% !important;
-
-  animation:
-    rootGrowSidewaysU .9s var(--root-delay)
-    cubic-bezier(.18,.82,.25,1) forwards !important;
-}
-
-.root-png.root-middle{
-  --asset-shift:-51.2%;
-  --asset-origin:51.2%;
-}
-
-.root-png.root-left{
-  --asset-shift:-85%;
-  --asset-origin:85%;
-}
-
-.root-png.root-right{
-  --asset-shift:-10.1%;
-  --asset-origin:10.1%;
-}
-
-@keyframes rootGrowSidewaysU{
-  0%{
-    opacity:0;
-    transform:
-      translateX(var(--asset-shift))
-      translateY(calc(var(--root-y) - 2px))
-      rotate(var(--root-rot))
-      scale(calc(var(--root-scale) * .86)) !important;
-  }
-  100%{
-    opacity:var(--root-opacity);
-    transform:
-      translateX(var(--asset-shift))
-      translateY(var(--root-y))
-      rotate(var(--root-rot))
-      scale(var(--root-scale)) !important;
-  }
-}
-
-.tree-base-image{ z-index:3 !important; }
-.tree-leaf-overlay{ z-index:4 !important; }
-.tree-meadow-layer{ z-index:1 !important; }
-
-@media(max-width:900px){
-  .root-png.root-growth-piece{
-    top:84.0% !important;
-    height:12.5% !important;
-  }
-}
-
-/* =========================================================
-   2.3v – Wachstum von der Mitte nach außen
-   1 Mitte, dann rechts/links im Wechsel.
-   Je weiter außen, desto stärker die Drehung bis fast 90°.
-   ========================================================= */
-
-.root-png.root-growth-piece{
-  top:84.0% !important;
-  height:14.0% !important;
-}
-
-/* Mittelwurzel darf bewusst länger nach unten wachsen. */
-.root-png.root-middle{
-  height:18.5% !important;
-  --asset-shift:-51.2%;
-  --asset-origin:51.2%;
-}
-
-/* Seitenwurzeln bleiben flacher und werden durch die Layout-Rotation
-   mit zunehmendem Abstand immer stärker nach außen gelegt. */
-.root-png.root-left{
-  height:13.5% !important;
-  --asset-shift:-85%;
-  --asset-origin:85%;
-}
-
-.root-png.root-right{
-  height:13.5% !important;
-  --asset-shift:-10.1%;
-  --asset-origin:10.1%;
-}
-
-@media(max-width:900px){
-  .root-png.root-middle{ height:18% !important; }
-  .root-png.root-left,
-  .root-png.root-right{ height:13% !important; }
-}
-
-/* =========================================================
-   2.3w – sichtbares Wurzelwachstum + Herzanimation
-   ========================================================= */
-
-.root-png.root-growth-piece{
-  top:84.0% !important;
-  height:var(--root-height) !important;
-  width:auto !important;
-}
-
-.root-png.root-middle{ z-index:3; }
-.root-png.root-right,
-.root-png.root-left{ z-index:2; }
-
-.root-growth-canvas .new-growth-root{
-  filter:drop-shadow(0 0 5px rgba(181,132,87,.28));
-  animation:newRootPulseW 1.55s cubic-bezier(.18,.82,.25,1) both !important;
-}
-
-@keyframes newRootPulseW{
-  0%{ opacity:0; }
-  28%{ opacity:1; filter:drop-shadow(0 0 9px rgba(190,135,84,.38)); }
-  100%{ opacity:var(--root-opacity); filter:none; }
-}
-
-.flying-heart{
-  position:absolute;
-  left:0;
-  top:0;
-  width:58px;
-  height:58px;
-  display:none;
-  place-items:center;
-  z-index:9;
-  font-size:54px;
-  line-height:1;
-  color:#d98278;
-  text-shadow:0 2px 12px rgba(179,103,91,.18);
-  opacity:0;
-  transform:translate(-50%,-50%);
-  pointer-events:none;
-}
-
-#treeGrowthDialog.heart-bloom .tree-growth-card{
-  box-shadow:
-    0 18px 52px rgba(107,75,57,.16),
-    0 0 34px rgba(226,162,150,.18),
-    0 0 52px rgba(225,196,116,.10);
-}
-
-@media(max-width:900px){
-  .flying-heart{
-    width:50px;
-    height:50px;
-    font-size:46px;
-  }
-}
-
-/* =========================================================
-   2.3x – Herz fliegt wirklich INS Baumherz,
-   danach wächst die neue Wurzel sichtbar.
-   ========================================================= */
-
-/* Herz langsamer, größer und klarer lesbar. */
-.flying-heart{
-  width:66px !important;
-  height:66px !important;
-  font-size:62px !important;
-  color:#df7d78 !important;
-  text-shadow:
-    0 3px 14px rgba(167,88,78,.20),
-    0 0 22px rgba(232,154,144,.18) !important;
-}
-
-/* Zielglimmen sitzt exakt über dem geschnitzten Herz des PNG-Baums. */
-.heart-target-pulse{
-  position:absolute;
-  width:18px;
-  height:18px;
-  border-radius:50%;
-  transform:translate(-50%,-50%);
-  pointer-events:none;
-  z-index:8;
-  opacity:0;
-}
-
-.heart-target-pulse.is-pulsing{
-  animation:heartTargetPulseX .78s ease-out both;
-}
-
-@keyframes heartTargetPulseX{
-  0%{
-    opacity:0;
-    box-shadow:0 0 0 0 rgba(224,124,118,.42);
-  }
-  28%{
-    opacity:1;
-    box-shadow:
-      0 0 0 8px rgba(224,124,118,.18),
-      0 0 22px 9px rgba(224,124,118,.26);
-  }
-  100%{
-    opacity:0;
-    box-shadow:0 0 0 18px rgba(224,124,118,0);
-  }
-}
-
-/* Die neueste Wurzel wird im Dialog anfangs vollständig versteckt. */
-.root-growth-canvas .new-growth-root.root-waiting{
-  opacity:0 !important;
-  clip-path:inset(0 0 100% 0) !important;
-  animation:none !important;
-}
-
-/* Nach Ankunft des Herzens wird die PNG-Wurzel von oben nach unten enthüllt.
-   Gleichzeitig ist sie kurz heller/größer, damit man wirklich sieht,
-   WELCHE Wurzel gerade hinzugekommen ist. */
-.root-growth-canvas .new-growth-root.root-growing-now{
-  animation:rootGrowVisibleX 1.65s cubic-bezier(.16,.78,.20,1) both !important;
-  filter:
-    drop-shadow(0 0 4px rgba(169,111,69,.42))
-    drop-shadow(0 0 9px rgba(213,165,113,.20)) !important;
-}
-
-@keyframes rootGrowVisibleX{
-  0%{
-    opacity:0;
-    clip-path:inset(0 0 100% 0);
-  }
-  18%{
-    opacity:1;
-    clip-path:inset(0 0 78% 0);
-  }
-  50%{
-    opacity:1;
-    clip-path:inset(0 0 42% 0);
-  }
-  82%{
-    opacity:1;
-    clip-path:inset(0 0 8% 0);
-  }
-  100%{
-    opacity:var(--root-opacity);
-    clip-path:inset(0 0 0 0);
-    filter:none;
-  }
-}
-
-/* Im Wachstumsfenster vorhandene ältere Wurzeln etwas zurücknehmen,
-   damit die neue optisch hervortritt. */
-.root-growth-canvas .root-growth-piece:not(.new-growth-root){
-  opacity:.38 !important;
-}
-
-/* Die Mittelwurzel bleibt in der normalen Baumansicht länger,
-   damit sie bei mehreren Herzmomenten auch wirklich sichtbar bleibt. */
-.root-png.root-middle{
-  min-height:22.5% !important;
-}
-
-@media(max-width:900px){
-  .flying-heart{
-    width:58px !important;
-    height:58px !important;
-    font-size:54px !important;
-  }
-}
-
-/* =========================================================
-   2.3y – Herz exakt ins Stammherz + Wurzel wirklich sichtbar
-   ========================================================= */
-
-/* Für Herzmomente wird der komplette Baum im Dialog etwas höher
-   und kleiner dargestellt. So entsteht UNTEN Platz für die Wurzeln. */
-.root-growth-canvas{
-  transform:translateY(-6%) scale(.91) !important;
-  transform-origin:center top !important;
-}
-
-/* Im Herzmoment-Dialog dürfen die Wurzeln nicht am unteren Canvasrand
-   abgeschnitten werden. */
-.root-growth-canvas .tree-root-png-layer{
-  overflow:visible !important;
-}
-
-/* Die normale Baumansicht bleibt unverändert.
-   Nur im Herzmoment-Dialog wird die Wurzelzone etwas weiter nach oben geholt,
-   damit das Wachsen tatsächlich im sichtbaren Bereich stattfindet. */
-.root-growth-canvas .root-png.root-growth-piece{
-  top:80.5% !important;
-}
-
-/* Ältere Wurzeln treten während der Animation deutlich zurück. */
-.root-growth-canvas .root-growth-piece:not(.new-growth-root){
-  opacity:.20 !important;
-  filter:saturate(.72) brightness(1.08) !important;
-}
-
-/* Die neue Wurzel ist zunächst komplett weg. */
-.root-growth-canvas .new-growth-root.root-waiting{
-  opacity:0 !important;
-  visibility:hidden !important;
-  clip-path:inset(0 0 100% 0) !important;
-  animation:none !important;
-}
-
-/* Nach dem Herzflug wird genau die neue Wurzel deutlich enthüllt. */
-.root-growth-canvas .new-growth-root.root-growing-now{
-  visibility:visible !important;
-  z-index:8 !important;
-  animation:rootGrowVeryVisibleY 2.05s cubic-bezier(.14,.78,.18,1) both !important;
-}
-
-@keyframes rootGrowVeryVisibleY{
-  0%{
-    opacity:0;
-    clip-path:inset(0 0 100% 0);
-    filter:
-      sepia(.35)
-      saturate(1.55)
-      brightness(1.16)
-      drop-shadow(0 0 10px rgba(185,121,67,.48));
-  }
-  20%{
-    opacity:1;
-    clip-path:inset(0 0 76% 0);
-  }
-  48%{
-    opacity:1;
-    clip-path:inset(0 0 43% 0);
-    filter:
-      sepia(.28)
-      saturate(1.40)
-      brightness(1.12)
-      drop-shadow(0 0 9px rgba(185,121,67,.40));
-  }
-  78%{
-    opacity:1;
-    clip-path:inset(0 0 10% 0);
-  }
-  100%{
-    opacity:var(--root-opacity);
-    clip-path:inset(0 0 0 0);
-    filter:none;
+      tx.update(spaceRef, {
+        roots,
+        updatedAt: serverTimestamp()
+      });
+    });
+  } catch (err) {
+    alert("Die Wurzel konnte nicht gelöscht werden: " + err.message);
   }
 }
 
-/* Das Ziel am Stammherz pulsiert nur kurz nach dem Auftreffen. */
-.heart-target-pulse.is-pulsing{
-  animation:heartTargetPulseY .90s ease-out both !important;
-}
+async function sendCurrentTreeToForest({ force = false } = {}) {
+  const target = Math.max(1, Math.min(50, Number(state.tree?.targetLeaves || 24)));
+  const currentLeaves = (state.learningLeaves || []).length;
 
-@keyframes heartTargetPulseY{
-  0%{
-    opacity:0;
-    box-shadow:0 0 0 0 rgba(224,124,118,.42);
-  }
-  24%{
-    opacity:1;
-    box-shadow:
-      0 0 0 8px rgba(224,124,118,.19),
-      0 0 24px 10px rgba(224,124,118,.28);
-  }
-  100%{
-    opacity:0;
-    box-shadow:0 0 0 19px rgba(224,124,118,0);
-  }
-}
+  if (!force && currentLeaves < target) return;
 
-/* =========================================================
-   2.3z – Herz weiter rechts + größer/glitzernd am Start
-   + neue Wurzel dunkler + ALLE Wurzeln sicher hinter Stamm
-   ========================================================= */
+  const name = state.tree?.name || "Unser Wochenbaum";
+  const message = force && currentLeaves < target
+    ? `„${name}“ hat aktuell ${currentLeaves} von ${target} Lernblättern. Trotzdem jetzt in den Lernwald setzen?`
+    : `Soll „${name}“ in den Lernwald wandern?`;
 
-/* Wurzelebene zwingend hinter dem PNG-Baum halten. */
-.tree-root-png-layer{
-  z-index:1 !important;
-  isolation:isolate !important;
-}
+  if (!confirm(message)) return;
 
-.tree-root-png-layer .root-png,
-.tree-root-png-layer .root-growth-piece,
-.root-png.root-middle,
-.root-png.root-left,
-.root-png.root-right{
-  z-index:1 !important;
-}
+  try {
+    await runTransaction(db, async tx => {
+      const snap = await tx.get(spaceRef);
+      const data = snap.data();
+      const forest = [...(data.forest || [])];
 
-.tree-base-image{
-  position:absolute !important;
-  z-index:5 !important;
-}
+      forest.push({
+        id: crypto.randomUUID(),
+        name: data.tree?.name || "Wochenbaum",
+        completedAt: new Date().toISOString(),
+        leaves: (data.learningLeaves || []).length,
+        roots: structuredClone(data.roots || []),
 
-.tree-leaf-overlay{
-  z-index:6 !important;
-}
+        // Ab 2.4h wird ein vollständiger Schnappschuss gespeichert.
+        // Dadurch kann der Baum später wirklich wieder aktiviert werden.
+        snapshot: {
+          tree: structuredClone(data.tree || {}),
+          learningLeaves: structuredClone(data.learningLeaves || []),
+          roots: structuredClone(data.roots || []),
+          tasks: structuredClone(data.tasks || [])
+        }
+      });
 
-.tree-meadow-layer{
-  z-index:0 !important;
-}
+      const tasks = (data.tasks || []).map(t => ({ ...t, done: false }));
 
-/* Auch im Herzmoment-Fenster dürfen Wurzeln niemals vor dem Stamm stehen. */
-.root-growth-canvas .tree-root-png-layer{
-  z-index:1 !important;
-}
+      tx.update(spaceRef, {
+        forest,
+        learningLeaves: [],
+        roots: [],
+        tasks,
+        tree: {
+          ...data.tree,
+          name: "Neuer Wochenbaum",
+          startedAt: new Date().toISOString()
+        },
+        updatedAt: serverTimestamp()
+      });
+    });
 
-.root-growth-canvas .tree-base-image{
-  z-index:5 !important;
-}
-
-.root-growth-canvas .tree-leaf-overlay{
-  z-index:6 !important;
-}
-
-/* Neue Wurzel: deutlich dunkler und kontrastreicher statt blass/hell. */
-.root-growth-canvas .new-growth-root.root-growing-now{
-  z-index:1 !important;
-  filter:
-    brightness(.72)
-    contrast(1.28)
-    saturate(1.18)
-    drop-shadow(0 0 5px rgba(116,70,39,.34)) !important;
-}
-
-@keyframes rootGrowVeryVisibleZ{
-  0%{
-    opacity:0;
-    clip-path:inset(0 0 100% 0);
-    filter:
-      brightness(.66)
-      contrast(1.35)
-      saturate(1.22)
-      drop-shadow(0 0 8px rgba(116,70,39,.38));
-  }
-  22%{
-    opacity:1;
-    clip-path:inset(0 0 74% 0);
-  }
-  50%{
-    opacity:1;
-    clip-path:inset(0 0 40% 0);
-    filter:
-      brightness(.70)
-      contrast(1.32)
-      saturate(1.20)
-      drop-shadow(0 0 6px rgba(116,70,39,.32));
-  }
-  80%{
-    opacity:1;
-    clip-path:inset(0 0 8% 0);
-  }
-  100%{
-    opacity:var(--root-opacity);
-    clip-path:inset(0 0 0 0);
-    filter:
-      brightness(.82)
-      contrast(1.18)
-      saturate(1.08);
+    alert("✓ Der Baum ist jetzt im Lernwald.");
+  } catch (err) {
+    alert("Der Baum konnte nicht in den Lernwald gesetzt werden: " + err.message);
   }
 }
 
-.root-growth-canvas .new-growth-root.root-growing-now{
-  animation:rootGrowVeryVisibleZ 2.15s cubic-bezier(.14,.78,.18,1) both !important;
+if ($("#finishTreeBtn")) {
+  $("#finishTreeBtn").onclick = () => sendCurrentTreeToForest({ force: false });
 }
 
-/* Alte Wurzeln im Vorschaufenster sichtbar lassen, aber klar zurücknehmen. */
-.root-growth-canvas .root-growth-piece:not(.new-growth-root){
-  opacity:.30 !important;
-  filter:brightness(.82) saturate(.90) !important;
+if ($("#adminFinishTreeBtn")) {
+  $("#adminFinishTreeBtn").onclick = () => sendCurrentTreeToForest({ force: true });
 }
 
-/* Das große Herz bekommt zusätzlich ein sanftes Funkeln über Textschatten. */
-.flying-heart{
-  text-shadow:
-    0 0 5px rgba(255,238,174,.95),
-    0 0 11px rgba(255,211,123,.70),
-    0 0 20px rgba(225,123,146,.38) !important;
+if ($("#openForest")) {
+  $("#openForest").onclick = () => $("#forestSection")?.classList.remove("hidden");
 }
 
-/* 2.4a */
-.root-growth-canvas .new-growth-root.root-growing-now{
- z-index:1!important; filter:brightness(.35) contrast(1.75) saturate(1.35)!important;
-}
-.tree-root-png-layer,.root-growth-canvas .tree-root-png-layer{z-index:1!important}
-.tree-base-image,.root-growth-canvas .tree-base-image{z-index:5!important}
-.tree-leaf-overlay{z-index:6!important}
-.tree-flower-overlay{position:absolute;inset:0;z-index:7;pointer-events:none}
-.flying-heart{
- text-shadow:0 0 6px rgba(255,255,220,1),0 0 14px rgba(255,235,145,1),
- 0 0 28px rgba(255,199,93,.95),0 0 46px rgba(239,125,153,.82),
- 0 0 68px rgba(239,125,153,.55)!important;
+if ($("#closeForest")) {
+  $("#closeForest").onclick = () => $("#forestSection")?.classList.add("hidden");
 }
 
-.tree-tiny-flower{position:absolute;transform:translate(-50%,-50%);font-size:13px;line-height:1;color:rgba(218,139,157,.48);text-shadow:0 0 2px rgba(255,235,188,.45)}
+async function restoreTreeFromForest(treeId) {
+  const archived = (state.forest || []).find(tree => tree.id === treeId);
+  if (!archived) return;
 
-/* =========================================================
-   2.4b – Feinabstimmung
-   ========================================================= */
-
-/* Wurzel nicht mehr fast schwarz:
-   klar sichtbar, aber farblich passend zum Stamm. */
-.root-growth-canvas .new-growth-root.root-growing-now{
-  filter:
-    brightness(.58)
-    contrast(1.34)
-    saturate(1.16)
-    drop-shadow(0 1px 4px rgba(88,50,28,.30)) !important;
-  animation:rootGrow24b 2.35s cubic-bezier(.14,.78,.18,1) both !important;
-}
-
-@keyframes rootGrow24b{
-  0%{
-    opacity:0;
-    clip-path:inset(0 0 100% 0);
-    filter:brightness(.52) contrast(1.42) saturate(1.20);
-  }
-  22%{
-    opacity:1;
-    clip-path:inset(0 0 74% 0);
-    filter:brightness(.54) contrast(1.40) saturate(1.19);
-  }
-  52%{
-    opacity:1;
-    clip-path:inset(0 0 38% 0);
-    filter:brightness(.58) contrast(1.34) saturate(1.16);
-  }
-  80%{
-    opacity:1;
-    clip-path:inset(0 0 8% 0);
-    filter:brightness(.64) contrast(1.28) saturate(1.12);
-  }
-  100%{
-    opacity:var(--root-opacity);
-    clip-path:inset(0);
-    filter:brightness(.78) contrast(1.16) saturate(1.06);
-  }
-}
-
-/* Herz am Start noch größer und stärker funkelnd.
-   Während des Fluges nimmt das Funkeln bewusst ab. */
-.flying-heart{
-  text-shadow:
-    0 0 6px rgba(255,255,232,1),
-    0 0 14px rgba(255,241,164,1),
-    0 0 28px rgba(255,208,101,.96),
-    0 0 48px rgba(242,137,161,.86),
-    0 0 72px rgba(242,137,161,.58) !important;
-}
-
-/* Blümchen bewusst sehr dezent lassen. */
-.tree-tiny-flower{
-  opacity:.44 !important;
-}
-
-/* =========================================================
-   2.4c – Datum / Einklappen / Baum manuell abschließen / Zielwahl
-   ========================================================= */
-
-.heart-form{
-  align-items:end;
-}
-
-#heartDate{
-  min-width:150px;
-}
-
-/* Fina/Lou im Baumpfleger-Bereich kompakt einklappbar */
-.admin-child-details{
-  border:1px solid var(--line, #ead2c2);
-  border-radius:16px;
-  background:rgba(255,252,248,.76);
-  overflow:hidden;
-}
-
-.admin-child-details > summary{
-  list-style:none;
-  cursor:pointer;
-  padding:14px 16px;
-  font-weight:800;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-}
-
-.admin-child-details > summary::-webkit-details-marker{
-  display:none;
-}
-
-.admin-child-details > summary::after{
-  content:"⌄";
-  font-size:18px;
-  opacity:.62;
-  transition:transform .18s ease;
-}
-
-.admin-child-details[open] > summary::after{
-  transform:rotate(180deg);
-}
-
-.admin-child-details > summary span{
-  margin-left:auto;
-  font-size:12px;
-  font-weight:500;
-  opacity:.55;
-}
-
-.admin-child-details-body{
-  padding:0 12px 14px;
-}
-
-/* Eigene Blattanzahl */
-.tree-target-custom{
-  margin:-4px 0 14px;
-  padding:12px 14px;
-  border-radius:14px;
-  background:rgba(245,232,210,.58);
-}
-
-.tree-target-custom input{
-  max-width:130px;
-}
-
-.admin-finish-tree{
-  margin-left:10px;
-}
-
-.admin-finish-hint{
-  margin-top:10px;
-  max-width:620px;
-}
-
-@media(max-width:760px){
-  .admin-finish-tree{
-    margin-left:0;
-    margin-top:8px;
-    width:100%;
+  if (!archived.snapshot) {
+    alert("Dieser ältere Lernwald-Baum wurde noch ohne vollständigen Schnappschuss gespeichert. Seine Wurzeln sind vorhanden, aber Lernblätter und Aufgaben lassen sich nicht zuverlässig zurückholen.");
+    return;
   }
 
-  .admin-child-details > summary span{
-    display:none;
-  }
-}
-\n\n/* =========================================================\n   2.4d – kompakte Planung + geschenkte Herzmomente\n   ========================================================= */\n.admin-child-details > summary{\n  color:#5a4438;\n  padding:13px 15px;\n}\n.admin-child-details > summary::after{\n  content:"⌄";\n  width:28px;height:28px;border-radius:50%;\n  display:grid;place-items:center;\n  margin-left:auto;\n  font-size:22px;font-weight:900;line-height:1;\n  color:#c76552;\n  background:rgba(199,101,82,.11);\n  border:1px solid rgba(199,101,82,.22);\n  opacity:1;\n}\n.admin-child-details[open] > summary::after{transform:rotate(180deg)}\n.admin-child-details > summary span{display:none!important}\n\n.heart-gift-toggle{\n  min-height:44px;display:flex!important;align-items:center;gap:9px;\n  padding:10px 12px;border:1px solid rgba(214,180,155,.65);\n  border-radius:12px;background:rgba(255,249,241,.72);\n}\n.heart-gift-toggle input{width:18px;height:18px;accent-color:#c76552}\n#heartOtherField,#heartGiftRecipientField{min-width:190px}\n\n.tree-gift-butterfly-layer{\n  position:absolute;inset:0;z-index:7;pointer-events:none;\n}\n.gift-butterfly{\n  position:absolute;width:18px;height:13px;\n  transform:translate(-50%,-50%) rotate(var(--bf-rot));\n  opacity:.78;filter:drop-shadow(0 1px 1px rgba(91,64,49,.10));\n}\n.gift-butterfly .wing{\n  position:absolute;top:1px;width:8px;height:10px;\n  background:var(--bf-color);border:1px solid rgba(112,86,70,.16);\n}\n.gift-butterfly .wing.left{left:0;border-radius:80% 35% 70% 35%;transform:rotate(-18deg)}\n.gift-butterfly .wing.right{right:0;border-radius:35% 80% 35% 70%;transform:rotate(18deg)}\n.gift-butterfly .bf-body{\n  position:absolute;left:8px;top:3px;width:2px;height:8px;border-radius:50%;\n  background:rgba(101,75,60,.42);\n}\n
+  const activeName = state.tree?.name || "aktueller Baum";
+  const ok = confirm(
+    `„${archived.name || "Dieser Baum"}“ wieder aktivieren?\n\n` +
+    `Der derzeit aktive Baum „${activeName}“ wird vorher automatisch sicher im Lernwald abgelegt.`
+  );
+  if (!ok) return;
 
-/* =========================================================
-   2.4e – Herzmoment-Bereich kompakter und aufgeräumter
-   ========================================================= */
+  try {
+    await runTransaction(db, async tx => {
+      const snap = await tx.get(spaceRef);
+      const data = snap.data();
+      const forest = [...(data.forest || [])];
 
-/* Gesamten Eingabebereich ruhiger und dichter setzen */
-.heart-form{
-  display:grid !important;
-  grid-template-columns: 150px 170px minmax(220px, 1fr) !important;
-  gap:12px 14px !important;
-  align-items:end !important;
-  margin-top:14px !important;
-}
+      const targetIndex = forest.findIndex(tree => tree.id === treeId);
+      if (targetIndex < 0) return;
 
-/* "Von wem?" kompakt */
-.heart-form label:has(#heartAuthor){
-  grid-column:1 !important;
-}
+      const target = forest[targetIndex];
+      if (!target.snapshot) throw new Error("Für diesen Baum gibt es keinen vollständigen Schnappschuss.");
 
-/* Datum bewusst klein halten */
-.heart-form label:has(#heartDate){
-  grid-column:2 !important;
-}
+      // Den derzeit aktiven Baum nicht verlieren:
+      const currentHasContent =
+        (data.learningLeaves || []).length > 0 ||
+        (data.roots || []).length > 0 ||
+        (data.tasks || []).some(task => task.done);
 
-#heartDate{
-  width:170px !important;
-  min-width:0 !important;
-  max-width:170px !important;
-}
+      if (currentHasContent) {
+        forest.push({
+          id: crypto.randomUUID(),
+          name: data.tree?.name || "Zwischengespeicherter Baum",
+          completedAt: new Date().toISOString(),
+          leaves: (data.learningLeaves || []).length,
+          roots: structuredClone(data.roots || []),
+          paused: true,
+          snapshot: {
+            tree: structuredClone(data.tree || {}),
+            learningLeaves: structuredClone(data.learningLeaves || []),
+            roots: structuredClone(data.roots || []),
+            tasks: structuredClone(data.tasks || [])
+          }
+        });
+      }
 
-/* Geschenk-Option rechts daneben, nicht als großer eigener Leerraum */
-.heart-gift-option,
-label:has(#heartGiftToggle),
-.gift-heart-toggle{
-  grid-column:3 !important;
-  align-self:center !important;
-  margin:0 !important;
-  padding:0 0 7px !important;
-  white-space:nowrap;
-}
+      // Wieder aktivierter Baum verschwindet aus dem Lernwald,
+      // weil er nun wieder der aktuelle Baum ist.
+      forest.splice(targetIndex, 1);
 
-/* Freitext bekommt nun wirklich Platz */
-.heart-note-wrap,
-label:has(#heartNote),
-label:has(#heartText),
-label:has(textarea){
-  grid-column:1 / span 2 !important;
-}
+      tx.update(spaceRef, {
+        forest,
+        tree: structuredClone(target.snapshot.tree || {}),
+        learningLeaves: structuredClone(target.snapshot.learningLeaves || []),
+        roots: structuredClone(target.snapshot.roots || []),
+        tasks: structuredClone(target.snapshot.tasks || []),
+        updatedAt: serverTimestamp()
+      });
+    });
 
-#heartNote,
-#heartText,
-.heart-form textarea{
-  width:100% !important;
-  min-width:0 !important;
-  min-height:132px !important;
-  height:132px !important;
-  resize:vertical !important;
-  padding:14px !important;
-  line-height:1.45 !important;
-}
-
-/* Button rechts vom großen Textfeld, optisch sauber ausgerichtet */
-#addRootBtn{
-  grid-column:3 !important;
-  align-self:end !important;
-  min-height:48px !important;
-  width:100% !important;
-  margin:0 !important;
-}
-
-/* Falls beim Geschenk Empfängerfelder erscheinen */
-#heartGiftRecipientWrap,
-.heart-gift-recipient{
-  grid-column:3 !important;
-  margin-top:0 !important;
-}
-
-/* Sonstiges-Freitext direkt unter den Kategorien, ohne unnötige Luft */
-#heartCustomWrap,
-.heart-custom-wrap{
-  margin-top:8px !important;
-  margin-bottom:8px !important;
-}
-
-/* Kategorien etwas kompakter und gleichmäßiger */
-.heart-options,
-.heart-choice-grid,
-.heart-grid{
-  gap:8px !important;
-  margin-bottom:12px !important;
-}
-
-.heart-option,
-.heart-choice{
-  min-height:76px !important;
-  padding:12px !important;
-}
-
-/* Verlauf enger an den Eingabebereich rücken */
-#rootMemories,
-.root-memories{
-  margin-top:14px !important;
-}
-
-/* Kleine Bildschirme: wieder untereinander, aber ohne riesige Abstände */
-@media(max-width:820px){
-  .heart-form{
-    grid-template-columns:1fr !important;
-    gap:10px !important;
-  }
-
-  .heart-form label,
-  .heart-form label:has(#heartAuthor),
-  .heart-form label:has(#heartDate),
-  .heart-form label:has(textarea),
-  .heart-note-wrap,
-  .heart-gift-option,
-  label:has(#heartGiftToggle),
-  .gift-heart-toggle,
-  #addRootBtn,
-  #heartGiftRecipientWrap,
-  .heart-gift-recipient{
-    grid-column:1 !important;
-  }
-
-  #heartDate{
-    width:100% !important;
-    max-width:none !important;
-  }
-
-  #addRootBtn{
-    width:100% !important;
+    $("#forestSection")?.classList.add("hidden");
+    alert("✓ Der Baum ist wieder aktiv.");
+  } catch (err) {
+    alert("Der Baum konnte nicht zurückgeholt werden: " + err.message);
   }
 }
 
-/* =========================================================
-   2.4f – Geschenk-Herzmoment: Baumfenster + Schmetterling
-   ========================================================= */
+function renderForest() {
+  const box = $("#forestGrid");
+  if (!box) return;
 
-/* Im Herzmoment-Fenster Baum merklich kleiner, damit unten und seitlich Luft bleibt. */
-.root-growth-canvas,
-.gift-growth-canvas{
-  transform:translateY(-3%) scale(.84) !important;
-  transform-origin:center top !important;
-}
+  const forest = (state.forest || []).slice().reverse();
+  box.innerHTML = "";
 
-/* Hauptbaum: Schmetterlinge im freien Bereich unter/seitlich der Krone. */
-#treeCanvas{
-  position:relative;
-}
-
-.tree-gift-butterfly-layer{
-  position:absolute;
-  inset:0;
-  z-index:7;
-  pointer-events:none;
-  overflow:visible;
-}
-
-/* Etwas feiner und transparenter als bisher. */
-.gift-butterfly{
-  width:16px !important;
-  height:12px !important;
-  opacity:.62 !important;
-}
-
-.gift-butterfly .wing{
-  width:7px !important;
-  height:9px !important;
-  background:var(--bf-color) !important;
-}
-
-.gift-butterfly .bf-body{
-  left:7px !important;
-  width:2px !important;
-  height:7px !important;
-}
-
-/* Im Geschenkfenster ist der neueste Schmetterling zunächst weg. */
-.gift-growth-canvas .new-gift-butterfly.gift-butterfly-waiting{
-  opacity:0 !important;
-}
-
-/* Erst nach seinem Flug bleibt er sichtbar an seiner natürlichen Position. */
-.gift-growth-canvas .new-gift-butterfly.gift-butterfly-arrived{
-  animation:giftButterflyArrive24f .75s ease-out both !important;
-}
-
-@keyframes giftButterflyArrive24f{
-  0%{
-    opacity:0;
-    filter:drop-shadow(0 0 8px rgba(255,222,153,.65));
-  }
-  55%{
-    opacity:.82;
-    filter:drop-shadow(0 0 6px rgba(255,222,153,.42));
-  }
-  100%{
-    opacity:.62;
-    filter:none;
-  }
-}
-
-/* Fliegender Schmetterling im Dialog. */
-.flying-gift-butterfly{
-  position:absolute !important;
-  left:0 !important;
-  top:0 !important;
-  z-index:12 !important;
-  opacity:0;
-  pointer-events:none;
-  transform-origin:center;
-  filter:
-    drop-shadow(0 0 4px rgba(255,255,255,.90))
-    drop-shadow(0 0 8px rgba(230,189,98,.36));
-}
-
-.flying-gift-butterfly .wing{
-  animation:giftWingFlutter24f .18s ease-in-out infinite alternate;
-}
-
-@keyframes giftWingFlutter24f{
-  from{transform:rotate(-12deg) scaleX(.86)}
-  to{transform:rotate(12deg) scaleX(1.10)}
-}
-
-/* Die Seitenpositionen sollen frei bleiben und nicht mit dem Stamm konkurrieren. */
-.gift-growth-canvas .tree-gift-butterfly-layer{
-  z-index:8 !important;
-}
-
-/* Tablet: Baum weiterhin vollständig sichtbar. */
-@media(max-width:820px){
-  .root-growth-canvas,
-  .gift-growth-canvas{
-    transform:translateY(-2%) scale(.80) !important;
-  }
-}
-
-/* =========================================================
-   2.4g – Herzmomentbereich übersichtlich
-   ========================================================= */
-
-/* 9 Herzmoment-Karten: auf Desktop exakt in zwei Reihen (5 + 4). */
-.heart-grid{
-  grid-template-columns:repeat(5,minmax(0,1fr)) !important;
-  gap:8px !important;
-  margin-bottom:16px !important;
-}
-
-.heart-choice{
-  min-height:68px !important;
-  padding:9px 10px !important;
-  border-radius:14px !important;
-}
-
-.heart-choice .heart-icon{
-  font-size:1.15rem !important;
-}
-
-.heart-choice strong{
-  margin-top:2px !important;
-  font-size:.90rem !important;
-  line-height:1.15 !important;
-}
-
-.heart-choice span:last-child{
-  display:block;
-  margin-top:2px;
-  font-size:.78rem !important;
-  line-height:1.18 !important;
-}
-
-/* Klare Trennung: Meta-Daten oben, Text unten. */
-.heart-form-clean{
-  display:block !important;
-  margin-top:8px !important;
-}
-
-.heart-meta-row{
-  display:grid;
-  grid-template-columns:150px 145px auto 145px;
-  gap:10px;
-  align-items:end;
-  margin-bottom:10px;
-}
-
-.heart-meta-row label{
-  margin:0 !important;
-}
-
-.heart-date-field input{
-  width:145px !important;
-  min-width:0 !important;
-}
-
-.heart-gift-toggle{
-  min-height:43px !important;
-  margin:0 !important;
-  padding:8px 10px !important;
-  display:flex !important;
-  align-items:center !important;
-  gap:7px !important;
-  white-space:nowrap;
-  font-size:.90rem !important;
-}
-
-.heart-gift-toggle input{
-  width:17px !important;
-  height:17px !important;
-  flex:0 0 auto;
-}
-
-.heart-recipient-field{
-  margin:0 !important;
-}
-
-.heart-other-field{
-  display:grid;
-  max-width:520px;
-  margin:10px 0 12px !important;
-}
-
-.heart-note-row{
-  display:grid;
-  grid-template-columns:minmax(0,1fr) 250px;
-  gap:12px;
-  align-items:end;
-}
-
-.heart-note-field{
-  margin:0 !important;
-}
-
-#heartReason{
-  min-height:125px !important;
-  height:125px !important;
-  width:100% !important;
-  resize:vertical;
-}
-
-.heart-save-btn{
-  width:250px !important;
-  min-height:46px !important;
-  margin:0 !important;
-  align-self:end;
-}
-
-/* Schmetterlinge sichtbar, aber weiterhin fein und transparent. */
-.tree-gift-butterfly-layer{
-  position:absolute !important;
-  inset:0 !important;
-  z-index:8 !important;
-  pointer-events:none !important;
-  overflow:visible !important;
-}
-
-.gift-butterfly{
-  width:22px !important;
-  height:16px !important;
-  opacity:.72 !important;
-  filter:
-    drop-shadow(0 1px 1px rgba(91,64,49,.14))
-    drop-shadow(0 0 3px rgba(255,255,255,.48)) !important;
-}
-
-.gift-butterfly .wing{
-  width:10px !important;
-  height:12px !important;
-  border-color:rgba(112,86,70,.20) !important;
-}
-
-.gift-butterfly .bf-body{
-  left:10px !important;
-  top:4px !important;
-  width:2px !important;
-  height:9px !important;
-}
-
-/* Baum im Geschenk-/Herzmomentfenster etwas kleiner. */
-.root-growth-canvas,
-.gift-growth-canvas{
-  transform:translateY(-2%) scale(.78) !important;
-  transform-origin:center top !important;
-}
-
-@media(max-width:980px){
-  .heart-grid{
-    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  if (!forest.length) {
+    box.innerHTML = '<div class="empty">Hier wartet euer erster fertiger Baum.</div>';
+    return;
   }
 
-  .heart-meta-row{
-    grid-template-columns:1fr 150px;
+  forest.forEach(tree => {
+    const canRestore = !!tree.snapshot;
+    box.insertAdjacentHTML("beforeend", `
+      <article class="forest-tree">
+        <div class="tree-emoji">🌳</div>
+        <strong>${escapeHtml(tree.name)}</strong>
+        <div class="muted">
+          ${new Date(tree.completedAt).toLocaleDateString("de-AT", {
+            month: "long", year: "numeric"
+          })}
+        </div>
+        <small>${tree.roots?.length || 0} Herzmomente begleiten diesen Baum.</small>
+        ${tree.paused ? '<span class="forest-paused-note">Zwischengespeichert</span>' : ""}
+        ${
+          canRestore
+            ? `<button type="button" class="forest-restore-btn" data-restore-tree="${escapeHtml(tree.id)}">↩ Baum wieder aktivieren</button>`
+            : `<span class="forest-old-note">Älterer Baum – nur Ansicht</span>`
+        }
+      </article>
+    `);
+  });
+
+  $$("[data-restore-tree]").forEach(btn => {
+    btn.onclick = () => restoreTreeFromForest(btn.dataset.restoreTree);
+  });
+}
+
+$$("[data-difficulty]").forEach(btn => {
+  btn.onclick = async () => {
+    if (!pendingDifficultyTaskId) return;
+
+    const taskId = pendingDifficultyTaskId;
+    pendingDifficultyTaskId = null;
+
+    $("#difficultyDialog")?.close();
+    await completeTaskWithDifficulty(taskId, btn.dataset.difficulty);
+  };
+});
+
+$("#difficultyDialog")?.addEventListener("cancel", event => {
+  event.preventDefault();
+  pendingDifficultyTaskId = null;
+  $("#difficultyDialog")?.close();
+});
+
+// Baumpfleger-Bereich
+function openMamaDialog() {
+  $("#dayClosingDialog")?.close();
+
+  $("#mamaUnlock")?.classList.remove("hidden");
+  $("#mamaPanel")?.classList.add("hidden");
+
+  if ($("#mamaEmail") && auth.currentUser?.email) {
+    $("#mamaEmail").value = auth.currentUser.email;
   }
 
-  .heart-gift-toggle,
-  .heart-recipient-field{
-    grid-column:auto;
-  }
+  if ($("#mamaPassword")) $("#mamaPassword").value = "";
+  if ($("#mamaUnlockMessage")) $("#mamaUnlockMessage").textContent = "";
+
+  $("#mamaDialog")?.showModal();
 }
 
-@media(max-width:720px){
-  .heart-grid{
-    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
-  }
-
-  .heart-meta-row,
-  .heart-note-row{
-    grid-template-columns:1fr !important;
-  }
-
-  .heart-date-field input,
-  .heart-save-btn{
-    width:100% !important;
-  }
+if ($("#openMama")) {
+  $("#openMama").onclick = openMamaDialog;
 }
 
-/* =========================================================
-   2.4h – Geschenk wirklich sichtbar + Lernwald zurückholen
-   ========================================================= */
-
-/* Geschenkfenster: Baum noch etwas kleiner, damit die Animation Luft hat. */
-.gift-growth-canvas{
-  transform:translateY(-1%) scale(.74) !important;
-  transform-origin:center top !important;
+if ($("#openMamaFromClosingBtn")) {
+  $("#openMamaFromClosingBtn").onclick = openMamaDialog;
 }
 
-/* Der fliegende Schmetterling darf nicht hinter dem Baum verschwinden. */
-.flying-gift-butterfly{
-  z-index:30 !important;
-  width:30px !important;
-  height:22px !important;
-  opacity:1 !important;
-}
+$("#mamaDialog")?.addEventListener("close", () => {
+  if (state.dayClosed) syncLearningDayUi();
+});
 
-.flying-gift-butterfly .wing{
-  width:14px !important;
-  height:17px !important;
-  background:var(--bf-color) !important;
-  border:1px solid rgba(104,76,61,.25) !important;
-  box-shadow:0 0 8px rgba(255,238,184,.55);
-}
+$("#dayClosingDialog")?.addEventListener("cancel", event => {
+  event.preventDefault();
+});
 
-.flying-gift-butterfly .bf-body{
-  left:14px !important;
-  top:5px !important;
-  height:12px !important;
-}
+$("#treeGrowthDialog")?.addEventListener("cancel", event => {
+  event.preventDefault();
+});
 
-/* Permanenter Geschenk-Schmetterling: fein, aber tatsächlich erkennbar. */
-.tree-gift-butterfly-layer .gift-butterfly{
-  z-index:15 !important;
-  opacity:.72 !important;
-}
+$("#treeGrowthDialog")?.addEventListener("click", event => {
+  if (event.target !== $("#treeGrowthDialog")) return;
 
-/* Sichtbarer, warmer Glitzer – ohne Bilddatei. */
-.gift-sparkle-layer{
-  position:absolute;
-  inset:0;
-  z-index:40;
-  pointer-events:none;
-  overflow:visible;
-}
-
-.gift-sparkle{
-  position:absolute;
-  display:block;
-  width:var(--size);
-  height:var(--size);
-  border-radius:50%;
-  background:rgba(255,245,184,.98);
-  box-shadow:
-    0 0 5px rgba(255,236,147,.95),
-    0 0 11px rgba(241,184,87,.72),
-    0 0 17px rgba(230,137,156,.40);
-  opacity:0;
-  animation:giftSparkleBurst24h 1.35s ease-out var(--delay) forwards;
-}
-
-.gift-sparkle::before,
-.gift-sparkle::after{
-  content:"";
-  position:absolute;
-  left:50%;
-  top:50%;
-  background:rgba(255,250,218,.95);
-  transform:translate(-50%,-50%);
-  border-radius:99px;
-}
-
-.gift-sparkle::before{
-  width:1px;
-  height:220%;
-}
-
-.gift-sparkle::after{
-  width:220%;
-  height:1px;
-}
-
-@keyframes giftSparkleBurst24h{
-  0%{
-    opacity:0;
-    transform:translate(-50%,-50%) scale(.15);
-  }
-  18%{
-    opacity:1;
-  }
-  100%{
-    opacity:0;
-    transform:
-      translate(
-        calc(-50% + var(--sx)),
-        calc(-50% + var(--sy))
-      )
-      scale(.25)
-      rotate(100deg);
-  }
-}
-
-/* Lernwald: Zurückholen klar, aber nicht dominant. */
-.forest-tree{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:6px;
-}
-
-.forest-restore-btn{
-  margin-top:8px;
-  border:1px solid rgba(111,145,100,.34);
-  border-radius:12px;
-  background:rgba(111,145,100,.11);
-  color:#4f6948;
-  padding:8px 11px;
-  font:inherit;
-  font-size:.84rem;
-  font-weight:800;
-  cursor:pointer;
-}
-
-.forest-restore-btn:hover{
-  background:rgba(111,145,100,.18);
-}
-
-.forest-paused-note,
-.forest-old-note{
-  display:inline-block;
-  margin-top:4px;
-  font-size:.75rem;
-  color:#8d7769;
-}
-
-.forest-paused-note{
-  color:#6b865f;
-  font-weight:700;
-}
-
-/* =========================================================
-   2.4i – Aufgabenarchiv kompakt + Suche
-   ========================================================= */
-
-.archive-search-row{
-  display:grid;
-  grid-template-columns:minmax(0,1fr) auto;
-  gap:8px;
-  align-items:center;
-  margin:10px 0 4px;
-}
-
-#archiveSearch{
-  min-height:42px;
-  padding:10px 12px;
-}
-
-.archive-search-clear{
-  min-height:42px;
-  padding:8px 12px;
-}
-
-.archive-search-info{
-  margin:2px 0 10px;
-  font-size:.80rem;
-}
-
-#taskArchiveList{
-  display:grid !important;
-  gap:8px !important;
-  margin-top:8px !important;
-  margin-bottom:16px !important;
-}
-
-.archive-task-compact{
-  padding:10px 12px !important;
-  border-radius:13px !important;
-  background:#fffaf5 !important;
-}
-
-.archive-task-topline,
-.archive-task-bottomline{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-.archive-task-meta{
-  margin:0 !important;
-  font-size:.76rem !important;
-  font-weight:800 !important;
-  color:#a26154 !important;
-}
-
-.archive-task-time{
-  margin:0 !important;
-  font-size:.76rem !important;
-  font-weight:800 !important;
-  color:#8b7049 !important;
-}
-
-.archive-task-title{
-  display:block;
-  margin:4px 0 2px !important;
-  font-size:.93rem !important;
-  line-height:1.2;
-}
-
-.archive-task-note{
-  font-size:.84rem;
-  line-height:1.3;
-  color:#5f4a3e;
-  margin-top:2px;
-}
-
-.archive-task-link-line{
-  display:flex;
-  gap:5px;
-  align-items:flex-start;
-  margin-top:5px;
-  font-size:.78rem;
-  line-height:1.2;
-  min-width:0;
-}
-
-.archive-task-link-line a{
-  color:var(--clay-dark);
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-  max-width:100%;
-}
-
-.archive-task-bottomline{
-  margin-top:7px;
-  padding-top:7px;
-  border-top:1px solid rgba(232,214,201,.72);
-}
-
-.archive-task-difficulty{
-  color:#907667;
-  font-size:.74rem;
-  font-style:italic;
-}
-
-.reuse-archive-task{
-  margin:0 !important;
-  padding:6px 9px !important;
-  border-radius:9px !important;
-  font-size:.78rem !important;
-}
-
-/* Gespeicherte Wurzeln nur im Baum-begleiten-Bereich */
-#adminRootsPanel{
-  margin-top:22px !important;
-  padding-top:16px !important;
-}
-
-/* Auf kleinen Geräten Suche untereinander */
-@media(max-width:620px){
-  .archive-search-row{
-    grid-template-columns:1fr;
+  if (treeGrowthTimer) {
+    clearTimeout(treeGrowthTimer);
+    treeGrowthTimer = null;
   }
 
-  .archive-search-clear{
-    width:100%;
+  $("#treeGrowthDialog")?.close();
+});
+
+if ($("#unlockMamaBtn")) {
+  $("#unlockMamaBtn").onclick = async () => {
+    const password = $("#mamaPassword")?.value || "";
+    const email = $("#mamaEmail")?.value.trim() || auth.currentUser?.email || "";
+
+    if (!email || !password) {
+      $("#mamaUnlockMessage").textContent =
+        "Bitte E-Mail-Adresse und Passwort eingeben.";
+      return;
+    }
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      $("#mamaUnlock")?.classList.add("hidden");
+      $("#mamaPanel")?.classList.remove("hidden");
+
+      ensureAdminRootsPanel();
+      prepareAdmin();
+      renderAdminRoots();
+    } catch {
+      $("#mamaUnlockMessage").textContent = "E-Mail-Adresse oder Passwort stimmt nicht.";
+    }
+  };
+}
+
+function prepareAdmin() {
+  adminDraft = {
+    fina: ensureMinimumTaskSlots(state.tasks || [], "fina"),
+    lou: ensureMinimumTaskSlots(state.tasks || [], "lou")
+  };
+
+  if ($("#treeNameInput")) $("#treeNameInput").value = state.tree?.name || "";
+  if ($("#treeTargetInput")) {
+    const target = Math.max(1, Math.min(50, Number(state.tree?.targetLeaves || 24)));
+    const presetValues = ["12","16","20","24","30","35","40","45","50"];
+    const asString = String(target);
+
+    if (presetValues.includes(asString)) {
+      $("#treeTargetInput").value = asString;
+      $("#treeTargetCustomWrap")?.classList.add("hidden");
+    } else {
+      $("#treeTargetInput").value = "custom";
+      if ($("#treeTargetCustom")) $("#treeTargetCustom").value = String(target);
+      $("#treeTargetCustomWrap")?.classList.remove("hidden");
+    }
   }
+
+  const leafColors = state.tree?.leafColors || DEFAULT_LEAF_COLORS;
+
+  if ($("#finaEasyColor")) $("#finaEasyColor").value = leafColors.fina?.easy || DEFAULT_LEAF_COLORS.fina.easy;
+  if ($("#finaMediumColor")) $("#finaMediumColor").value = leafColors.fina?.medium || DEFAULT_LEAF_COLORS.fina.medium;
+  if ($("#finaTrickyColor")) $("#finaTrickyColor").value = leafColors.fina?.tricky || DEFAULT_LEAF_COLORS.fina.tricky;
+
+  if ($("#louEasyColor")) $("#louEasyColor").value = leafColors.lou?.easy || DEFAULT_LEAF_COLORS.lou.easy;
+  if ($("#louMediumColor")) $("#louMediumColor").value = leafColors.lou?.medium || DEFAULT_LEAF_COLORS.lou.medium;
+  if ($("#louTrickyColor")) $("#louTrickyColor").value = leafColors.lou?.tricky || DEFAULT_LEAF_COLORS.lou.tricky;
+
+  renderAdminTasks("fina");
+  renderAdminTasks("lou");
+  renderAdminRoots();
+  renderTaskArchive();
+}
+
+function renderAdminTasks(child) {
+
+  const box = $("#admin" + (child === "fina" ? "Fina" : "Lou") + "Tasks");
+  if (!box) return;
+
+  box.innerHTML = "";
+
+  adminDraft[child].forEach((task, index) => {
+    const row = document.createElement("div");
+    row.className = "admin-task";
+
+    const totalMinutes = Math.max(
+      0,
+      Math.floor(currentAttentionSeconds(task) / 60)
+    );
+
+    row.innerHTML = `
+      <input data-field="title" value="${escapeHtml(task.title)}" placeholder="Aufgabe">
+
+      <select data-field="type">
+        <option value="paper" ${task.type === "paper" ? "selected" : ""}>Papier</option>
+        <option value="online" ${task.type === "online" ? "selected" : ""}>Lernhomepage</option>
+        <option value="free" ${task.type === "free" ? "selected" : ""}>Freie Aufgabe</option>
+      </select>
+
+      <div class="task-order-buttons">
+  <button type="button" class="move-task-up" title="Nach oben">↑</button>
+  <button type="button" class="move-task-down" title="Nach unten">↓</button>
+  <button type="button" class="remove-task" title="Aufgabe entfernen">✕</button>
+</div>
+
+      <input class="full" data-field="note" value="${escapeHtml(task.note || "")}"
+        placeholder="Kurze Anweisung">
+
+      <input class="full" data-field="url" value="${escapeHtml(task.url || "")}"
+        placeholder="Link – nur bei Lernhomepage">
+
+      <div class="attention-admin full">
+        <label>
+          💛 Aufmerksamkeit in Minuten
+          <input
+            type="number"
+            min="0"
+            max="9999"
+            step="1"
+            data-attention-minutes
+            value="${totalMinutes}"
+          >
+        </label>
+
+        ${task.activeSince
+          ? '<span class="attention-running-note">⏸ Läuft gerade</span>'
+          : ""
+        }
+      </div>
+    `;
+
+    row.querySelectorAll("[data-field]").forEach(el => {
+      el.oninput = () => {
+        adminDraft[child][index][el.dataset.field] = el.value;
+      };
+    });
+
+    const minutesInput = row.querySelector("[data-attention-minutes]");
+    minutesInput.oninput = () => {
+      const minutes = Math.max(0, Math.floor(Number(minutesInput.value || 0)));
+      adminDraft[child][index].attentionSeconds = minutes * 60;
+      adminDraft[child][index].activeSince = null;
+    };
+row.querySelector(".move-task-up").onclick = () => {
+  if (index === 0) return;
+
+  [adminDraft[child][index - 1], adminDraft[child][index]] =
+    [adminDraft[child][index], adminDraft[child][index - 1]];
+
+renderAdminTasks(child);
+alert("✓ Aufgabe wurde zu „Heute planen“ hinzugefügt.");
+};
+
+row.querySelector(".move-task-down").onclick = () => {
+  if (index === adminDraft[child].length - 1) return;
+
+  [adminDraft[child][index + 1], adminDraft[child][index]] =
+    [adminDraft[child][index], adminDraft[child][index + 1]];
+
+  renderAdminTasks(child);
+};
+    row.querySelector(".remove-task").onclick = () => {
+      adminDraft[child].splice(index, 1);
+      adminDraft[child] = ensureMinimumTaskSlots(adminDraft[child], child);
+      renderAdminTasks(child);
+    };
+
+  box.appendChild(row);
+});
+}
+
+function normalizeArchiveSearch(value = "") {
+  return String(value)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
+function renderTaskArchive() {
+  const box = $("#taskArchiveList");
+  if (!box) return;
+
+  const query = normalizeArchiveSearch($("#archiveSearch")?.value || "");
+  const archive = [...(state.taskArchive || [])].sort((a,b) =>
+    new Date(b.completedAt || 0) - new Date(a.completedAt || 0)
+  );
+
+  const filtered = query
+    ? archive.filter(item => {
+        const haystack = normalizeArchiveSearch([
+          item.title,
+          item.note,
+          item.url,
+          item.child,
+          item.type
+        ].filter(Boolean).join(" "));
+        return haystack.includes(query);
+      })
+    : archive;
+
+  box.innerHTML = "";
+
+  const info = $("#archiveSearchInfo");
+  if (info) {
+    info.textContent = query
+      ? `${filtered.length} von ${archive.length} Einträgen gefunden`
+      : `${archive.length} gespeicherte Aufgaben`;
+  }
+
+  if (!filtered.length) {
+    box.innerHTML = query
+      ? '<div class="empty">Keine passende frühere Aufgabe gefunden.</div>'
+      : '<div class="empty">Noch keine erledigten Aufgaben im Archiv.</div>';
+    return;
+  }
+
+  filtered.forEach(item => {
+    const date = item.completedAt
+      ? new Date(item.completedAt).toLocaleDateString("de-AT")
+      : "";
+
+    box.insertAdjacentHTML("beforeend", `
+      <article class="archive-task archive-task-compact">
+        <div class="archive-task-topline">
+          <span class="archive-task-meta">
+            ${item.child === "fina" ? "🌸 Fina" : "🌺 Lou"}${date ? ` · ${date}` : ""}
+          </span>
+          <span class="archive-task-time">
+            ${Number(item.attentionSeconds || 0) > 0
+              ? `💛 ${formatAttentionMinutes(item.attentionSeconds)}`
+              : "💛 0 Min."}
+          </span>
+        </div>
+
+        <strong class="archive-task-title">${escapeHtml(item.title || "Ohne Titel")}</strong>
+
+        ${item.note ? `<div class="archive-task-note">${escapeHtml(item.note)}</div>` : ""}
+
+        ${item.url ? `
+          <div class="archive-task-link-line">
+            <span>🔗</span>
+            <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener">
+              ${escapeHtml(item.url)}
+            </a>
+          </div>
+        ` : ""}
+
+        <div class="archive-task-bottomline">
+          <span class="archive-task-difficulty">
+            ${item.difficulty
+              ? `Schwierigkeit: ${escapeHtml(item.difficulty)}`
+              : "Schwierigkeit nicht erfasst"}
+          </span>
+
+          <button
+            type="button"
+            class="reuse-archive-task"
+            data-reuse-archive="${escapeHtml(item.id)}"
+          >
+            ↻ Wiederverwenden
+          </button>
+        </div>
+      </article>
+    `);
+  });
+
+  $$("[data-reuse-archive]").forEach(btn => {
+    btn.onclick = () => reuseArchivedTask(btn.dataset.reuseArchive);
+  });
 }
