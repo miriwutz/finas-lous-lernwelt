@@ -6474,3 +6474,34 @@ label:has(textarea){
 .forest-stage.forest-world-view .forest-companion{
   display:none !important;
 }
+
+
+/* =========================================================
+   2.5aa – entscheidender Renderkoordinaten-Fix
+   ========================================================= */
+
+/*
+  Ab 50 Bäumen liefert die Landschaftslogik Y-Koordinaten als Prozent
+  der sichtbaren Waldfläche. Diese werden jetzt tatsächlich als top:% gerendert.
+
+  translateY(-100%) setzt die UNTERKANTE des Baumes genau auf diesen
+  Tiefenpunkt. So bedeutet:
+    top:20% = weit hinten/oben
+    top:85% = weit vorne/unten
+*/
+.forest-tree-spot.forest-tree-depth-position{
+  transform:
+    translate(-50%, -100%)
+    scale(var(--tree-scale, 1))
+    rotate(var(--tree-tilt, 0deg)) !important;
+  transform-origin:center bottom !important;
+}
+
+/* Kleine Wälder bleiben exakt bei ihrer bisherigen Darstellung. */
+.forest-tree-spot:not(.forest-tree-depth-position){
+  transform:
+    translateX(-50%)
+    scale(var(--tree-scale, 1))
+    rotate(var(--tree-tilt, 0deg)) !important;
+  transform-origin:center bottom !important;
+}
