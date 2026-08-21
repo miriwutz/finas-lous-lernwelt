@@ -5446,3 +5446,323 @@ label:has(textarea){
     width:100%;
   }
 }
+
+/* =========================================================
+   2.5j – Lernwald als echte kleine Waldszene
+   ========================================================= */
+
+#forestSection{
+  position:relative;
+  overflow:hidden;
+}
+
+#forestSection .section-heading{
+  position:relative;
+  z-index:5;
+  margin-bottom:10px;
+}
+
+.forest-stage{
+  position:relative;
+  min-height:390px;
+  overflow:hidden;
+  border:1px solid rgba(207,187,169,.72);
+  border-radius:22px;
+  background:
+    radial-gradient(circle at 50% 12%, rgba(255,255,255,.92), rgba(255,255,255,0) 33%),
+    linear-gradient(to bottom, #fffdfa 0 48%, #edf0dc 67%, #dce4c8 100%);
+  box-shadow:inset 0 -22px 40px rgba(128,146,100,.07);
+}
+
+.forest-stage::before{
+  content:"";
+  position:absolute;
+  left:-3%;
+  right:-3%;
+  bottom:-34px;
+  height:145px;
+  border-radius:50% 50% 0 0;
+  background:
+    radial-gradient(ellipse at 30% 35%, rgba(143,164,109,.22), transparent 38%),
+    radial-gradient(ellipse at 70% 30%, rgba(165,177,117,.20), transparent 42%),
+    #e6ead2;
+}
+
+.forest-haze{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(18px);
+  opacity:.42;
+  pointer-events:none;
+}
+
+.forest-haze-one{
+  width:210px;
+  height:70px;
+  left:8%;
+  bottom:58px;
+  background:#d7e1bd;
+}
+
+.forest-haze-two{
+  width:250px;
+  height:78px;
+  right:5%;
+  bottom:44px;
+  background:#e3dfb6;
+}
+
+.forest-decor{
+  position:absolute;
+  z-index:2;
+  opacity:.68;
+  filter:saturate(.72);
+  user-select:none;
+  pointer-events:none;
+}
+
+.forest-decor-flower{
+  left:9%;
+  bottom:38px;
+  font-size:23px;
+  transform:rotate(-7deg);
+}
+
+.forest-decor-mushroom{
+  right:13%;
+  bottom:31px;
+  font-size:25px;
+  transform:rotate(6deg);
+}
+
+.forest-decor-grass{
+  left:49%;
+  bottom:22px;
+  font-size:29px;
+  opacity:.52;
+}
+
+.forest-grid{
+  position:relative;
+  z-index:3;
+  min-height:390px;
+  display:block !important;
+}
+
+.forest-empty-hint{
+  position:absolute;
+  left:50%;
+  bottom:44px;
+  z-index:4;
+  transform:translateX(-50%);
+  color:#8d7b6d;
+  font-size:.86rem;
+  font-style:italic;
+  white-space:nowrap;
+}
+
+/* Ein Baum ist kein Kärtchen mehr, sondern steht wirklich im Wald. */
+.forest-tree-spot{
+  position:absolute;
+  width:170px;
+  min-height:236px;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  text-align:center;
+  outline:none;
+}
+
+.forest-tree-spot-1{ left:7%;  bottom:30px; }
+.forest-tree-spot-2{ left:28%; bottom:20px; transform:scale(.90); }
+.forest-tree-spot-3{ left:49%; bottom:34px; transform:scale(1.03); }
+.forest-tree-spot-4{ left:69%; bottom:22px; transform:scale(.92); }
+.forest-tree-spot-5{ left:82%; bottom:39px; transform:scale(.78); }
+
+.forest-tree-visual{
+  position:relative;
+  width:150px;
+  height:195px;
+  margin:0 auto;
+}
+
+.forest-tree-image{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:center bottom;
+  filter:drop-shadow(0 5px 7px rgba(76,62,45,.10));
+}
+
+.forest-mini-leaves{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+
+.forest-mini-leaf{
+  position:absolute;
+  width:8px;
+  height:13px;
+  border-radius:70% 35% 70% 35%;
+  background:var(--mini-leaf-color);
+  opacity:.76;
+  transform:translate(-50%,-50%) rotate(var(--mini-leaf-rot));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.20);
+}
+
+.forest-mini-butterfly{
+  position:absolute;
+  right:17px;
+  top:82px;
+  font-size:14px;
+  opacity:.68;
+}
+
+.forest-tree-name{
+  display:inline-block;
+  margin-top:2px;
+  padding:4px 8px;
+  border-radius:999px;
+  background:rgba(255,253,248,.76);
+  color:#584335;
+  font-size:.90rem;
+  line-height:1.15;
+  backdrop-filter:blur(3px);
+}
+
+/* Alle Zusatzinfos nur bei Hover oder Tastaturfokus. */
+.forest-tree-tooltip{
+  position:absolute;
+  left:50%;
+  bottom:42px;
+  z-index:10;
+  width:max-content;
+  max-width:210px;
+  padding:9px 11px;
+  border:1px solid rgba(207,187,169,.82);
+  border-radius:12px;
+  background:rgba(255,253,249,.96);
+  box-shadow:0 10px 28px rgba(72,54,42,.14);
+  color:#705a4c;
+  font-size:.78rem;
+  line-height:1.45;
+  text-align:left;
+  opacity:0;
+  visibility:hidden;
+  transform:translate(-50%,8px);
+  transition:opacity .16s ease, transform .16s ease, visibility .16s ease;
+  pointer-events:none;
+}
+
+.forest-tree-spot:hover .forest-tree-tooltip,
+.forest-tree-spot:focus-visible .forest-tree-tooltip{
+  opacity:1;
+  visibility:visible;
+  transform:translate(-50%,0);
+}
+
+.forest-tree-spot:focus-visible .forest-tree-name{
+  outline:3px solid rgba(121,151,105,.18);
+}
+
+/* alter hässlicher Startseiten-Zurückholbutton verschwindet endgültig */
+#forestSection .forest-restore-btn{
+  display:none !important;
+}
+
+/* ---------------------------------------------------------
+   Baum fliegt in den Wald
+   --------------------------------------------------------- */
+.tree-flight-clone{
+  transform-origin:center center;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+
+/* ---------------------------------------------------------
+   Lernwaldverwaltung im Baumpfleger-Bereich
+   --------------------------------------------------------- */
+.admin-forest-panel{
+  margin-top:24px;
+  padding-top:20px;
+  border-top:1px solid var(--line);
+}
+
+.admin-forest-heading h3{
+  margin:0 0 4px;
+}
+
+.admin-forest-heading p{
+  margin:0 0 11px;
+}
+
+.admin-forest-list{
+  display:grid;
+  gap:8px;
+}
+
+.admin-forest-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:10px 11px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:#fffaf5;
+}
+
+.admin-forest-row-main{
+  min-width:0;
+}
+
+.admin-forest-row-main strong{
+  display:block;
+  margin-bottom:2px;
+}
+
+.admin-forest-row-main small{
+  display:block;
+  color:#8c7466;
+}
+
+.admin-forest-restore{
+  flex:0 0 auto;
+  min-height:36px;
+  padding:7px 10px;
+}
+
+@media(max-width:760px){
+  .forest-stage{
+    min-height:330px;
+  }
+
+  .forest-grid{
+    min-height:330px;
+  }
+
+  .forest-tree-spot{
+    width:135px;
+    min-height:205px;
+  }
+
+  .forest-tree-visual{
+    width:122px;
+    height:168px;
+  }
+
+  .forest-tree-spot-1{ left:2%; }
+  .forest-tree-spot-2{ left:23%; }
+  .forest-tree-spot-3{ left:45%; }
+  .forest-tree-spot-4{ left:66%; }
+  .forest-tree-spot-5{ left:81%; }
+
+  .admin-forest-row{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+}
