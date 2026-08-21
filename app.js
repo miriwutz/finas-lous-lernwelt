@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5f Wurzeln & Aufmerksamkeit Echt-Fix";
+const APP_VERSION = "2.5g Wurzeln & Aufmerksamkeit sicher";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -241,9 +241,6 @@ function updateAttentionDisplays() {
       needsRender = true;
     }
   });
-
-  // Auch die Gesamt-Aufmerksamkeit am Wochenbaum live aktuell halten.
-  renderTreeAttention();
 
   if (needsRender) {
     stopExpiredAttentionSessions();
@@ -924,42 +921,30 @@ function renderTreeAttention() {
   const line = $("#treeAttention");
   if (!line) return;
 
-  const numberValue = value => {
+  const safeSeconds = value => {
     const n = Number(value || 0);
     return Number.isFinite(n) && n > 0 ? n : 0;
   };
 
-  const leafSeconds = (state.learningLeaves || []).reduce(
-    (sum, leaf) =>
-      sum +
-      numberValue(leaf.attentionSeconds) +
-      numberValue(leaf.attention),
-    0
-  );
+  const leafSeconds = (state.learningLeaves || [])
+    .filter(Boolean)
+    .reduce((sum, leaf) => sum + safeSeconds(leaf.attentionSeconds), 0);
 
-  const archiveSeconds = (state.taskArchive || []).reduce(
-    (sum, item) =>
-      sum +
-      numberValue(item.attentionSeconds) +
-      numberValue(item.attention),
-    0
-  );
+  const archiveSeconds = (state.taskArchive || [])
+    .filter(Boolean)
+    .reduce((sum, item) => sum + safeSeconds(item.attentionSeconds), 0);
 
-  const currentSeconds = (state.tasks || []).reduce(
-    (sum, task) => sum + currentAttentionSeconds(task),
-    0
-  );
+  const currentSeconds = (state.tasks || [])
+    .filter(Boolean)
+    .reduce((sum, task) => sum + safeSeconds(task.attentionSeconds), 0);
 
-  // Ältere Versionen haben die Zeit teilweise nur in einer dieser
-  // Datenquellen abgelegt. Archiv und aktuelle Aufgaben gehören
-  // zusammen; Lernblätter können dieselben erledigten Aufgaben
-  // nochmals enthalten. Daher nicht alles blind addieren.
-  const taskBasedSeconds = archiveSeconds + currentSeconds;
-  const seconds = Math.max(leafSeconds, taskBasedSeconds);
+  const seconds = leafSeconds > 0 ? leafSeconds : Math.max(archiveSeconds, currentSeconds);
 
   line.textContent = seconds > 0
     ? `💛 Ihr habt diesem Baum schon ${formatAttentionMinutes(seconds)} Aufmerksamkeit geschenkt.`
     : "💛 Noch keine Aufmerksamkeit eingetragen.";
+
+  line.dataset.attentionSeconds = String(seconds);
 }
 
 if ($("#archiveSearch")) {
@@ -989,6 +974,8 @@ onAuthStateChanged(auth, async user => {
     unsubscribe = onSnapshot(spaceRef, snap => {
       if (snap.exists()) {
         state = { ...structuredClone(defaultState), ...snap.data() };
+        renderRootPngs();
+        renderTreeAttention();
         renderAll();
       }
     }, err => alert("Daten konnten nicht geladen werden: " + err.message));
@@ -1436,51 +1423,69 @@ const ROOT_GROWTH_LAYOUT = [
   { type:"left",   file:"wurzel-links.png",  anchor:42.0, y:6, rot:-89, scale:.74, opacity:.62, height:12.8 }
 ];
 
+
+function rootFallbackSvg(type = "middle") {
+  const isLeft = type === "left";
+  const isRight = type === "right";
+  const main = isLeft
+    ? "M92 4 C76 14 66 25 52 34 C38 43 24 45 8 50"
+    : isRight
+      ? "M8 4 C24 14 34 25 48 34 C62 43 76 45 92 50"
+      : "M50 2 C50 14 48 25 50 36 C51 43 49 49 50 58";
+  const branch1 = isLeft
+    ? "M60 28 C50 31 42 36 34 43"
+    : isRight
+      ? "M40 28 C50 31 58 36 66 43"
+      : "M49 28 C39 34 34 41 28 48";
+  const branch2 = isLeft
+    ? "M39 40 C31 39 23 41 16 46"
+    : isRight
+      ? "M61 40 C69 39 77 41 84 46"
+      : "M50 36 C59 42 64 48 69 54";
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 62"><g fill="none" stroke-linecap="round"><path d="${main}" stroke="#9b6a48" stroke-width="3.2" opacity=".78"/><path d="${branch1}" stroke="#aa7956" stroke-width="2.0" opacity=".66"/><path d="${branch2}" stroke="#b68763" stroke-width="1.35" opacity=".58"/><path d="${main}" stroke="#d6a985" stroke-width=".8" opacity=".45"/></g></svg>`;
+  return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
+}
+
 function renderRootPngs() {
   const layer = $("#rootPngLayer");
   if (!layer) return;
 
-  const normalRoots = (state.roots || []).filter(root => !root.isGift);
+  const normalRoots = (state.roots || []).filter(root => root && !root.isGift);
   const rootCount = Math.min(normalRoots.length, ROOT_GROWTH_LAYOUT.length);
 
   layer.innerHTML = "";
-
-  // Layer selbst garantiert sichtbar halten.
+  layer.dataset.rootCount = String(rootCount);
   layer.style.setProperty("display", "block", "important");
   layer.style.setProperty("visibility", "visible", "important");
   layer.style.setProperty("opacity", "1", "important");
   layer.style.setProperty("overflow", "visible", "important");
+  layer.style.setProperty("z-index", "4", "important");
 
   ROOT_GROWTH_LAYOUT.slice(0, rootCount).forEach((cfg, index) => {
     const img = document.createElement("img");
-
     img.className = `root-png root-growth-piece root-${cfg.type} visible`;
     img.alt = "";
     img.draggable = false;
     img.dataset.rootOrder = String(index + 1);
 
-    // Die drei gelieferten PNGs hatten im Repository zeitweise eine
-    // doppelte .png-Endung. Zuerst den sauberen Namen probieren,
-    // bei 404 automatisch auf *.png.png wechseln.
-    img.src = `${cfg.file}?v=25f`;
+    let sourceStep = 0;
+    img.src = `${cfg.file}?v=25g`;
     img.onerror = () => {
-      if (img.dataset.fallbackTried === "1") return;
-      img.dataset.fallbackTried = "1";
-      img.src = `${cfg.file}.png?v=25f`;
+      sourceStep += 1;
+      if (sourceStep === 1) {
+        img.src = `${cfg.file}.png?v=25g`;
+        return;
+      }
+      if (sourceStep === 2) {
+        img.src = rootFallbackSvg(cfg.type);
+        return;
+      }
+      img.onerror = null;
     };
 
-    const assetShift =
-      cfg.type === "middle" ? "-51.2%" :
-      cfg.type === "left"   ? "-85%" :
-                              "-10.1%";
+    const assetShift = cfg.type === "middle" ? "-51.2%" : cfg.type === "left" ? "-85%" : "-10.1%";
+    const assetOrigin = cfg.type === "middle" ? "51.2%" : cfg.type === "left" ? "85%" : "10.1%";
 
-    const assetOrigin =
-      cfg.type === "middle" ? "51.2%" :
-      cfg.type === "left"   ? "85%" :
-                              "10.1%";
-
-    // Positionierung direkt setzen, damit alte CSS-Schichten
-    // die Wurzeln nicht erneut unsichtbar/positionslos machen.
     img.style.setProperty("position", "absolute", "important");
     img.style.setProperty("left", `${cfg.anchor}%`, "important");
     img.style.setProperty("top", "84%", "important");
@@ -1490,21 +1495,11 @@ function renderRootPngs() {
     img.style.setProperty("visibility", "visible", "important");
     img.style.setProperty("opacity", String(cfg.opacity), "important");
     img.style.setProperty("object-fit", "contain", "important");
-    img.style.setProperty("object-position", "center bottom", "important");
+    img.style.setProperty("object-position", "center top", "important");
     img.style.setProperty("transform-origin", `${assetOrigin} 0%`, "important");
-    img.style.setProperty(
-      "transform",
-      `translateX(${assetShift}) translateY(${cfg.y}px) rotate(${cfg.rot}deg) scale(${cfg.scale})`,
-      "important"
-    );
-    img.style.setProperty(
-      "z-index",
-      cfg.type === "middle" ? "3" : "2",
-      "important"
-    );
+    img.style.setProperty("transform", `translateX(${assetShift}) translateY(${cfg.y}px) rotate(${cfg.rot}deg) scale(${cfg.scale})`, "important");
+    img.style.setProperty("z-index", cfg.type === "middle" ? "3" : "2", "important");
 
-    // Variablen für die Wachstumsanimation weiterhin bereitstellen.
-    img.style.setProperty("--root-x", "0px");
     img.style.setProperty("--root-y", `${cfg.y}px`);
     img.style.setProperty("--root-rot", `${cfg.rot}deg`);
     img.style.setProperty("--root-scale", cfg.scale);
@@ -1637,10 +1632,6 @@ function renderTree() {
   $("#finishTreeBtn")?.classList.toggle("hidden", !complete);
 
   renderTreeFlowers();
-
-  // Wichtig: Die Aufmerksamkeitsanzeige gehört unmittelbar zum Baum.
-  // So wird sie aktualisiert, bevor andere Bereiche des Renderings
-  // einen möglichen Fehler verursachen können.
   renderTreeAttention();
 }
 
