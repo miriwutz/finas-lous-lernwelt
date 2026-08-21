@@ -5072,3 +5072,101 @@ label:has(textarea){
 .tree-growth-canvas #flowerLayer{
   opacity:.85;
 }
+
+/* =========================================================
+   2.5b – rechter Wochenbaum-Infobereich kindgerechter
+   Aufmerksamkeit + Lernwald-Status bleiben unverändert
+   ========================================================= */
+
+.tree-kid-info{
+  display:grid;
+  gap:12px;
+  margin:2px 0 14px;
+}
+
+.tree-kid-info-item{
+  display:grid;
+  grid-template-columns:34px minmax(0,1fr);
+  gap:10px;
+  align-items:start;
+  padding:10px 12px;
+  border-radius:14px;
+  background:rgba(255,252,247,.60);
+  border:1px solid rgba(229,207,191,.62);
+}
+
+.tree-kid-info-icon{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:30px;
+  height:30px;
+  font-size:1.25rem;
+  line-height:1;
+}
+
+.tree-kid-info-item strong{
+  display:block;
+  margin:0 0 2px;
+  font-size:1rem;
+  line-height:1.18;
+}
+
+.tree-kid-info-item span:not(.tree-kid-info-icon){
+  display:block;
+  color:#6f584b;
+  font-size:.90rem;
+  line-height:1.38;
+}
+
+.tree-kid-info-learning strong{
+  color:#6d875f;
+}
+
+.tree-kid-info-heart strong{
+  color:#c56e78;
+}
+
+.tree-kid-info-finish{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:9px 11px;
+  border-radius:13px;
+  background:rgba(255,243,204,.58);
+  border:1px solid rgba(234,205,126,.38);
+  color:#6d5848;
+  font-size:.90rem;
+  line-height:1.32;
+}
+
+.tree-kid-info-finish span{
+  font-size:1.05rem;
+}
+
+/* vorhandene Aufmerksamkeit-Box direkt darunter bewusst kompakt halten */
+.tree-attention-box,
+.tree-attention-summary,
+.attention-summary{
+  margin-top:10px !important;
+}
+
+/* Auf kleineren Bildschirmen noch kompakter */
+@media(max-width:760px){
+  .tree-kid-info{
+    gap:9px;
+  }
+
+  .tree-kid-info-item{
+    grid-template-columns:30px minmax(0,1fr);
+    padding:9px 10px;
+  }
+
+  .tree-kid-info-item strong{
+    font-size:.95rem;
+  }
+
+  .tree-kid-info-item span:not(.tree-kid-info-icon){
+    font-size:.86rem;
+  }
+}
