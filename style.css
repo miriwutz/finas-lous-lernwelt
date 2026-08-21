@@ -5300,3 +5300,9 @@ label:has(textarea){
   visibility:visible !important;
   opacity:1 !important;
 }
+
+
+/* 2.5g – Kernfix Wurzeln + Gesamt-Aufmerksamkeit */
+#rootPngLayer{display:block!important;visibility:visible!important;opacity:1!important;overflow:visible!important;z-index:4!important;}
+#rootPngLayer>img.root-png{display:block!important;visibility:visible!important;}
+#treeAttention{display:block!important;visibility:visible!important;opacity:1!important;}
