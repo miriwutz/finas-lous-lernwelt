@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5e Cache-Fix Wurzeln & Aufmerksamkeit";
+const APP_VERSION = "2.5f Wurzeln & Aufmerksamkeit Echt-Fix";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -241,6 +241,9 @@ function updateAttentionDisplays() {
       needsRender = true;
     }
   });
+
+  // Auch die Gesamt-Aufmerksamkeit am Wochenbaum live aktuell halten.
+  renderTreeAttention();
 
   if (needsRender) {
     stopExpiredAttentionSessions();
@@ -918,38 +921,41 @@ function showGiftGrowthCelebration() {
 }
 
 function renderTreeAttention() {
-  const story = $(".tree-story");
-  if (!story) return;
+  const line = $("#treeAttention");
+  if (!line) return;
 
-  let line = $("#treeAttention");
-  if (!line) {
-    line = document.createElement("p");
-    line.id = "treeAttention";
-    line.className = "tree-attention";
-    story.insertBefore(line, $("#treeStatus"));
-  }
+  const numberValue = value => {
+    const n = Number(value || 0);
+    return Number.isFinite(n) && n > 0 ? n : 0;
+  };
 
-  const leafSeconds = (state.learningLeaves || [])
-    .reduce((sum, leaf) => sum + Number(leaf.attentionSeconds || 0), 0);
-
-  const archive = state.taskArchive || [];
-
-  const archivedTaskIds = new Set(
-    archive.map(item => item.taskId).filter(Boolean)
+  const leafSeconds = (state.learningLeaves || []).reduce(
+    (sum, leaf) =>
+      sum +
+      numberValue(leaf.attentionSeconds) +
+      numberValue(leaf.attention),
+    0
   );
 
-  const archiveSeconds = archive
-    .reduce((sum, item) => sum + Number(item.attentionSeconds || 0), 0);
+  const archiveSeconds = (state.taskArchive || []).reduce(
+    (sum, item) =>
+      sum +
+      numberValue(item.attentionSeconds) +
+      numberValue(item.attention),
+    0
+  );
 
-  const currentTaskSeconds = (state.tasks || [])
-    .filter(task => !archivedTaskIds.has(task.id))
-    .reduce((sum, task) => sum + currentAttentionSeconds(task), 0);
+  const currentSeconds = (state.tasks || []).reduce(
+    (sum, task) => sum + currentAttentionSeconds(task),
+    0
+  );
 
-  const reconstructedSeconds = archiveSeconds + currentTaskSeconds;
-
-  // Manche ältere Einträge speicherten Zeit nur in Blättern,
-  // andere im Aufgabenarchiv. Deshalb den plausibel höheren Stand nehmen.
-  const seconds = Math.max(leafSeconds, reconstructedSeconds);
+  // Ältere Versionen haben die Zeit teilweise nur in einer dieser
+  // Datenquellen abgelegt. Archiv und aktuelle Aufgaben gehören
+  // zusammen; Lernblätter können dieselben erledigten Aufgaben
+  // nochmals enthalten. Daher nicht alles blind addieren.
+  const taskBasedSeconds = archiveSeconds + currentSeconds;
+  const seconds = Math.max(leafSeconds, taskBasedSeconds);
 
   line.textContent = seconds > 0
     ? `💛 Ihr habt diesem Baum schon ${formatAttentionMinutes(seconds)} Aufmerksamkeit geschenkt.`
@@ -1434,40 +1440,79 @@ function renderRootPngs() {
   const layer = $("#rootPngLayer");
   if (!layer) return;
 
-  const rootCount = Math.min(
-    (state.roots || []).filter(root => !root.isGift).length,
-    ROOT_GROWTH_LAYOUT.length
-  );
+  const normalRoots = (state.roots || []).filter(root => !root.isGift);
+  const rootCount = Math.min(normalRoots.length, ROOT_GROWTH_LAYOUT.length);
 
   layer.innerHTML = "";
+
+  // Layer selbst garantiert sichtbar halten.
+  layer.style.setProperty("display", "block", "important");
+  layer.style.setProperty("visibility", "visible", "important");
+  layer.style.setProperty("opacity", "1", "important");
+  layer.style.setProperty("overflow", "visible", "important");
 
   ROOT_GROWTH_LAYOUT.slice(0, rootCount).forEach((cfg, index) => {
     const img = document.createElement("img");
 
     img.className = `root-png root-growth-piece root-${cfg.type} visible`;
-    img.src = cfg.file;
     img.alt = "";
     img.draggable = false;
+    img.dataset.rootOrder = String(index + 1);
 
-    img.style.left = `${cfg.anchor}%`;
+    // Die drei gelieferten PNGs hatten im Repository zeitweise eine
+    // doppelte .png-Endung. Zuerst den sauberen Namen probieren,
+    // bei 404 automatisch auf *.png.png wechseln.
+    img.src = `${cfg.file}?v=25f`;
+    img.onerror = () => {
+      if (img.dataset.fallbackTried === "1") return;
+      img.dataset.fallbackTried = "1";
+      img.src = `${cfg.file}.png?v=25f`;
+    };
+
+    const assetShift =
+      cfg.type === "middle" ? "-51.2%" :
+      cfg.type === "left"   ? "-85%" :
+                              "-10.1%";
+
+    const assetOrigin =
+      cfg.type === "middle" ? "51.2%" :
+      cfg.type === "left"   ? "85%" :
+                              "10.1%";
+
+    // Positionierung direkt setzen, damit alte CSS-Schichten
+    // die Wurzeln nicht erneut unsichtbar/positionslos machen.
+    img.style.setProperty("position", "absolute", "important");
+    img.style.setProperty("left", `${cfg.anchor}%`, "important");
+    img.style.setProperty("top", "84%", "important");
+    img.style.setProperty("height", `${cfg.height}%`, "important");
+    img.style.setProperty("width", "auto", "important");
+    img.style.setProperty("display", "block", "important");
+    img.style.setProperty("visibility", "visible", "important");
+    img.style.setProperty("opacity", String(cfg.opacity), "important");
+    img.style.setProperty("object-fit", "contain", "important");
+    img.style.setProperty("object-position", "center bottom", "important");
+    img.style.setProperty("transform-origin", `${assetOrigin} 0%`, "important");
+    img.style.setProperty(
+      "transform",
+      `translateX(${assetShift}) translateY(${cfg.y}px) rotate(${cfg.rot}deg) scale(${cfg.scale})`,
+      "important"
+    );
+    img.style.setProperty(
+      "z-index",
+      cfg.type === "middle" ? "3" : "2",
+      "important"
+    );
+
+    // Variablen für die Wachstumsanimation weiterhin bereitstellen.
     img.style.setProperty("--root-x", "0px");
     img.style.setProperty("--root-y", `${cfg.y}px`);
     img.style.setProperty("--root-rot", `${cfg.rot}deg`);
     img.style.setProperty("--root-scale", cfg.scale);
     img.style.setProperty("--root-opacity", cfg.opacity);
-    img.style.opacity = String(cfg.opacity);
     img.style.setProperty("--root-height", `${cfg.height}%`);
-    img.dataset.rootOrder = String(index + 1);
-    img.style.setProperty(
-      "--root-delay",
-      `${Math.min(index * 30, 160)}ms`
-    );
-
-    img.onload = () => {
-      img.style.display = "block";
-      img.style.visibility = "visible";
-      img.style.opacity = String(cfg.opacity);
-    };
+    img.style.setProperty("--asset-shift", assetShift);
+    img.style.setProperty("--asset-origin", assetOrigin);
+    img.style.setProperty("--root-delay", `${Math.min(index * 30, 160)}ms`);
 
     layer.appendChild(img);
   });
@@ -1592,6 +1637,11 @@ function renderTree() {
   $("#finishTreeBtn")?.classList.toggle("hidden", !complete);
 
   renderTreeFlowers();
+
+  // Wichtig: Die Aufmerksamkeitsanzeige gehört unmittelbar zum Baum.
+  // So wird sie aktualisiert, bevor andere Bereiche des Renderings
+  // einen möglichen Fehler verursachen können.
+  renderTreeAttention();
 }
 
 function renderHearts() {
