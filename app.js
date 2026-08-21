@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5am Archiv nach Bäumen + Waldbewohner";
+const APP_VERSION = "2.5an Mehr Waldbewohner";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -3241,7 +3241,7 @@ function renderForest() {
     // Etwas weniger Details als zuvor.
     const decorCount = Math.max(
       5,
-      Math.min(42, Math.round(forest.length / 10))
+      Math.min(110, Math.max(18, Math.round(forest.length / 3.2)))
     );
 
     const frac = n => n - Math.floor(n);
@@ -3293,12 +3293,12 @@ function renderForest() {
       if (kind === "tree") scale *= 1.05;
       if (kind === "ground") scale *= 1.10;
 
-      scale *= 1.18;
+      scale *= 1.30;
 
       const opacity =
-        topPct < 45 ? .62 :
-        topPct < 65 ? .76 :
-        .90;
+        topPct < 45 ? .70 :
+        topPct < 65 ? .84 :
+        .96;
 
       box.insertAdjacentHTML("beforeend", `
         <span
