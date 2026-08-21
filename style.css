@@ -5573,8 +5573,6 @@ label:has(textarea){
   outline:none;
 }
 
-
-
 .forest-tree-visual{
   position:relative;
   width:150px;
@@ -6179,7 +6177,6 @@ label:has(textarea){
   opacity:1 !important;
 }
 
-
 /* =========================================================
    2.5s – Lernwald: echte individuelle Baumpositionen
    ========================================================= */
@@ -6203,3 +6200,50 @@ label:has(textarea){
   transition:opacity .2s ease;
 }
 
+/* =========================================================
+   2.5t – Lernwald organisch statt Raster
+   ========================================================= */
+
+/* Jeder Baum bekommt seine individuelle Perspektive + winzige Neigung. */
+.forest-tree-spot{
+  transform:
+    translateX(-50%)
+    scale(var(--tree-scale, 1))
+    rotate(var(--tree-tilt, 0deg)) !important;
+  transform-origin:center bottom !important;
+  transition:
+    transform .75s ease,
+    opacity .45s ease !important;
+}
+
+/* Namen drehen nicht mit: optisch ruhig unter dem Baum. */
+.forest-tree-name{
+  transform:rotate(calc(var(--tree-tilt, 0deg) * -1)) !important;
+  transform-origin:center !important;
+}
+
+/* Dichte Wälder: Namen stark zurücknehmen,
+   erst beim Hover wirklich sichtbar. */
+.forest-stage .forest-tree-spot[style*="--tree-scale:0.4"] .forest-tree-name,
+.forest-stage .forest-tree-spot[style*="--tree-scale:0.5"] .forest-tree-name{
+  opacity:.18 !important;
+}
+
+.forest-tree-spot:hover .forest-tree-name,
+.forest-tree-spot:focus-visible .forest-tree-name{
+  opacity:1 !important;
+}
+
+/* Bewohner / Pflanzen ebenfalls ohne Rastergefühl. */
+.forest-companion{
+  transform:
+    translate(-50%, -50%)
+    scale(calc(.86 + var(--forest-zoom, 1) * .20)) !important;
+  opacity:.78 !important;
+}
+
+/* Die Szene bleibt innerhalb des Rahmens. */
+.forest-stage,
+.forest-grid{
+  overflow:hidden !important;
+}
