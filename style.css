@@ -5245,3 +5245,35 @@ label:has(textarea){
   font-size:.90rem !important;
   line-height:1.4 !important;
 }
+
+/* =========================================================
+   2.5e – Cache-Fix + robuste Sichtbarkeit
+   ========================================================= */
+
+#rootPngLayer{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  z-index:4 !important;
+  overflow:visible !important;
+}
+
+#rootPngLayer > img.root-png{
+  display:block !important;
+  visibility:visible !important;
+  opacity:var(--root-opacity, .72) !important;
+}
+
+.tree-base-image{
+  z-index:5 !important;
+}
+
+.tree-meadow-layer{
+  z-index:1 !important;
+}
+
+#treeAttention{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+}
