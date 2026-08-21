@@ -204,59 +204,61 @@
           class="heart-grid"
         ></div>
 
-<div class="heart-form">
+<div class="heart-form heart-form-clean">
 
-  <label>
-    Von wem?
+  <div class="heart-meta-row">
+    <label class="heart-author-field">
+      Von wem?
+      <select id="heartAuthor">
+        <option>Fina</option>
+        <option>Lou</option>
+        <option>Gemeinsam</option>
+        <option>Baumpfleger</option>
+      </select>
+    </label>
 
-    <select id="heartAuthor">
-      <option>Fina</option>
-      <option>Lou</option>
-      <option>Gemeinsam</option>
-      <option>Baumpfleger</option>
-    </select>
-  </label>
+    <label class="heart-date-field">
+      Datum
+      <input id="heartDate" type="date">
+    </label>
 
-  <label>
-    Datum des Herzmoments
-    <input id="heartDate" type="date">
-  </label>
+    <label class="heart-gift-toggle">
+      <input id="heartGiftToggle" type="checkbox">
+      🎁 Herzmoment verschenken
+    </label>
 
-  <label id="heartOtherField" class="hidden">
+    <label id="heartGiftRecipientField" class="hidden heart-recipient-field">
+      Für wen?
+      <select id="heartGiftRecipient">
+        <option value="Mama">Mama</option>
+        <option value="Papa">Papa</option>
+      </select>
+    </label>
+  </div>
+
+  <label id="heartOtherField" class="hidden heart-other-field">
     ✨ Sonstiges – was war der Herzmoment?
     <input id="heartOtherText" type="text" maxlength="90" placeholder="z. B. Jemanden überrascht">
   </label>
 
-  <label class="heart-gift-toggle">
-    <input id="heartGiftToggle" type="checkbox">
-    🎁 Diesen Herzmoment verschenken
-  </label>
+  <div class="heart-note-row">
+    <label id="heartNoteField" class="heart-note-field">
+      🌱 Was möchtest du dir merken?
+      <textarea
+        id="heartReason"
+        rows="4"
+        placeholder="Deine Gedanken (freiwillig)"
+      ></textarea>
+    </label>
 
-  <label id="heartGiftRecipientField" class="hidden">
-    Für wen?
-    <select id="heartGiftRecipient">
-      <option value="Mama">Mama</option>
-      <option value="Papa">Papa</option>
-    </select>
-  </label>
-
-  <label id="heartNoteField">
-  🌱 Was möchtest du dir merken?
-
-  <textarea
-    id="heartReason"
-    rows="3"
-    placeholder="Deine Gedanken (freiwillig)"
-  ></textarea>
-</label>
-
-  <button
-    id="addRootBtn"
-    class="primary"
-    type="button"
-  >
-    🌱 Eine Wurzel wachsen lassen
-  </button>
+    <button
+      id="addRootBtn"
+      type="button"
+      class="primary heart-save-btn"
+    >
+      🌱 Eine Wurzel wachsen lassen
+    </button>
+  </div>
 
 </div>
       
