@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.4i Archiv kompakt & Suche";
+const APP_VERSION = "2.4j Magischer Baum & echter Schmetterling";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -322,6 +322,50 @@ async function toggleAttention(taskId) {
   }
 }
 
+function createTreeMagic(preview, treeClone, { amount = 34, duration = 2500 } = {}) {
+  if (!preview || !treeClone) return;
+
+  treeClone.classList.remove("tree-magic-glow");
+  void treeClone.offsetWidth;
+  treeClone.classList.add("tree-magic-glow");
+
+  const old = preview.querySelector(".tree-magic-sparkles");
+  old?.remove();
+
+  const layer = document.createElement("div");
+  layer.className = "tree-magic-sparkles";
+  preview.appendChild(layer);
+
+  const previewRect = preview.getBoundingClientRect();
+  const treeRect = treeClone.getBoundingClientRect();
+
+  for (let i = 0; i < amount; i++) {
+    const sparkle = document.createElement("i");
+    sparkle.className = "tree-magic-sparkle";
+
+    const x =
+      treeRect.left - previewRect.left +
+      treeRect.width * (0.12 + Math.random() * 0.76);
+
+    const y =
+      treeRect.top - previewRect.top +
+      treeRect.height * (0.10 + Math.random() * 0.78);
+
+    sparkle.style.left = `${x}px`;
+    sparkle.style.top = `${y}px`;
+    sparkle.style.setProperty("--magic-delay", `${Math.random() * .85}s`);
+    sparkle.style.setProperty("--magic-size", `${3 + Math.random() * 6}px`);
+    sparkle.style.setProperty("--magic-drift", `${-9 + Math.random() * 18}px`);
+
+    layer.appendChild(sparkle);
+  }
+
+  setTimeout(() => {
+    layer.remove();
+    treeClone.classList.remove("tree-magic-glow");
+  }, duration);
+}
+
 function showTreeGrowthCelebration() {
   const dialog = $("#treeGrowthDialog");
   const preview = $("#treeGrowthPreview");
@@ -348,6 +392,8 @@ function showTreeGrowthCelebration() {
   preview.appendChild(treeClone);
 
   if (!dialog.open) dialog.showModal();
+  requestAnimationFrame(() => createTreeMagic(preview, treeClone, { amount:42, duration:3000 }));
+  requestAnimationFrame(() => createTreeMagic(preview, treeClone, { amount:38, duration:3000 }));
 
   requestAnimationFrame(() => {
     dialog.classList.remove("rainbow-bloom");
@@ -578,16 +624,30 @@ function decorateTree24a(){
  o.innerHTML=TREE_FLOWERS.slice(0,n).map((p,i)=>`<span class="tree-tiny-flower" style="left:${p[0]}%;top:${p[1]}%">✿</span>`).join("");
 }
 
-function createGiftButterflyElement(color = "rgba(177,151,211,.60)") {
-  const el = document.createElement("span");
-  el.className = "gift-butterfly";
-  el.style.setProperty("--bf-color", color);
-  el.style.setProperty("--bf-rot", "0deg");
-  el.innerHTML =
-    '<i class="wing left"></i>' +
-    '<i class="wing right"></i>' +
-    '<i class="bf-body"></i>';
-  return el;
+function createGiftButterflyElement(color = "rgba(177,151,211,.62)") {
+  const wrap = document.createElement("span");
+  wrap.className = "gift-butterfly";
+  wrap.style.setProperty("--bf-color", color);
+  wrap.style.setProperty("--bf-rot", "0deg");
+
+  wrap.innerHTML = `
+    <svg class="gift-butterfly-svg" viewBox="0 0 64 46" aria-hidden="true">
+      <g class="gift-butterfly-wings">
+        <path class="gift-wing gift-wing-left"
+          d="M31 23 C18 1 2 4 5 18 C7 29 18 31 31 25 Z"/>
+        <path class="gift-wing gift-wing-right"
+          d="M33 23 C46 1 62 4 59 18 C57 29 46 31 33 25 Z"/>
+        <path class="gift-wing-lower gift-wing-left-lower"
+          d="M30 25 C20 25 11 31 16 40 C23 45 29 35 32 28 Z"/>
+        <path class="gift-wing-lower gift-wing-right-lower"
+          d="M34 25 C44 25 53 31 48 40 C41 45 35 35 32 28 Z"/>
+      </g>
+      <path class="gift-butterfly-body" d="M32 14 C29 19 29 30 32 37 C35 30 35 19 32 14 Z"/>
+      <path class="gift-butterfly-antenna" d="M31 15 C26 8 22 7 19 7"/>
+      <path class="gift-butterfly-antenna" d="M33 15 C38 8 42 7 45 7"/>
+    </svg>
+  `;
+  return wrap;
 }
 
 function createGiftSparkles(preview, x, y, amount = 18) {
@@ -668,6 +728,7 @@ function showGiftGrowthCelebration() {
   preview.appendChild(treeClone);
 
   if (!dialog.open) dialog.showModal();
+  requestAnimationFrame(() => createTreeMagic(preview, treeClone, { amount:48, duration:4300 }));
 
   requestAnimationFrame(() => {
     dialog.classList.remove("rainbow-bloom");
@@ -747,14 +808,12 @@ function showGiftGrowthCelebration() {
       const butterflyX = targetRect.left + targetRect.width / 2 - previewRect.left;
       const butterflyY = targetRect.top + targetRect.height / 2 - previewRect.top;
 
-      const flyer = document.createElement("span");
-      flyer.className = "gift-butterfly flying-gift-butterfly";
-      flyer.style.setProperty("--bf-color", getComputedStyle(newestButterfly).getPropertyValue("--bf-color") || "rgba(177,151,211,.55)");
+      const flyer = createGiftButterflyElement(
+        getComputedStyle(newestButterfly).getPropertyValue("--bf-color") ||
+        "rgba(177,151,211,.68)"
+      );
+      flyer.classList.add("flying-gift-butterfly");
       flyer.style.setProperty("--bf-rot", "0deg");
-      flyer.innerHTML =
-        '<i class="wing left"></i>' +
-        '<i class="wing right"></i>' +
-        '<i class="bf-body"></i>';
       preview.appendChild(flyer);
 
       const frames = [];
@@ -1356,18 +1415,12 @@ function renderGiftButterflies() {
     const [x,y,rot] = GIFT_BUTTERFLY_POSITIONS[i];
     const [r,g,b] = GIFT_BUTTERFLY_COLORS[i % GIFT_BUTTERFLY_COLORS.length];
 
-    const el = document.createElement("span");
-    el.className = "gift-butterfly";
+    const el = createGiftButterflyElement(`rgba(${r},${g},${b},.62)`);
     el.dataset.giftIndex = String(i);
     el.style.left = `${x}%`;
     el.style.top = `${y}%`;
     el.style.setProperty("--bf-rot", `${rot}deg`);
-    el.style.setProperty("--bf-color", `rgba(${r},${g},${b},.48)`);
     el.title = `${gift.author || "Jemand"} → ${gift.recipient || "jemand"}`;
-    el.innerHTML =
-      '<i class="wing left"></i>' +
-      '<i class="wing right"></i>' +
-      '<i class="bf-body"></i>';
 
     layer.appendChild(el);
   });
