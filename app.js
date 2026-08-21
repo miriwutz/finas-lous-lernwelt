@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5o Mehr Blattpositionen";
+const APP_VERSION = "2.5p Blümchen zwischen den Blättern";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -674,7 +674,7 @@ function showRootGrowthCelebration() {
 
 
 
-const FLOWER_STEPS = [4,8,13,17,22,26,31,36,41,46];
+const FLOWER_STEPS = [4,8,13,17,22,26,31,36,41,46,51,55,60,64,69,73,78,82,87,91,96];
 
 const FLOWER_POSITIONS = [
   [248,116,-8,"#e8a9b8"],
@@ -686,7 +686,18 @@ const FLOWER_POSITIONS = [
   [110,154,-7,"#e8c27d"],
   [356,262,13,"#d7a9c9"],
   [468,174,-12,"#efb1a8"],
-  [274,278,6,"#d4b4de"]
+  [274,278,6,"#d4b4de"],
+  [118,184,-9,"#e6b4c1"],
+  [454,188,10,"#d9b7df"],
+  [184,116,7,"#edc58d"],
+  [390,118,-8,"#e6afa8"],
+  [230,300,-11,"#ceb9e4"],
+  [344,302,12,"#e7b7c2"],
+  [96,248,8,"#e8c17e"],
+  [474,246,-10,"#d5acd1"],
+  [254,82,6,"#e9b1a6"],
+  [318,82,-7,"#d9bae3"],
+  [286,328,5,"#e8c18b"]
 ];
 
 function renderTreeFlowers() {
