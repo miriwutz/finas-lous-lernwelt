@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.4m Schmetterlingsflug & Formular fein";
+const APP_VERSION = "2.4n Schmetterling erst bei Ankunft & Geschenk-Toggle";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -722,6 +722,8 @@ function showGiftGrowthCelebration() {
   }
 
   newestButterfly.classList.add("new-gift-butterfly", "gift-butterfly-waiting");
+  newestButterfly.style.visibility = "hidden";
+  newestButterfly.style.opacity = "0";
 
   preview.querySelector(".tree-growth-canvas")?.remove();
   preview.querySelector(".flying-gift-butterfly-wrap")?.remove();
@@ -854,6 +856,7 @@ function showGiftGrowthCelebration() {
       butterflyAnimation.finished.then(() => {
         createGiftSparkles(preview, butterflyX, butterflyY, 14);
         newestButterfly.classList.remove("gift-butterfly-waiting");
+        newestButterfly.style.visibility = "visible";
         newestButterfly.classList.add("gift-butterfly-arrived");
         flyerWrap.remove();
         if (text) text.textContent = "Dieser Schmetterling bleibt als kleines Geschenk bei eurem Baum.";
