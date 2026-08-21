@@ -6533,3 +6533,23 @@ label:has(textarea){
 .forest-plant{
   filter: saturate(.92);
 }
+
+
+/* =========================================================
+   2.5ad – sichtbare Waldbewohner & Pflanzen
+   Der Wald / die Perspektive selbst bleibt unverändert.
+   ========================================================= */
+
+.forest-world-detail{
+  position:absolute;
+  transform:translate(-50%, -50%) scale(var(--detail-scale, 1));
+  transform-origin:center center;
+  pointer-events:none;
+  user-select:none;
+  line-height:1;
+  font-size:clamp(13px, 1.55vw, 22px);
+  filter:saturate(.96);
+}
+
+/* Die Details liegen bewusst über der Waldfläche,
+   bleiben aber klein genug, um kein Wimmelbild zu erzeugen. */
