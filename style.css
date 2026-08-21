@@ -4999,3 +4999,76 @@ label:has(textarea){
     margin-left:0 !important;
   }
 }
+
+/* =========================================================
+   2.5a – 50 natürlich verteilte Blätter + kleine Blümchen
+   ========================================================= */
+
+/* Blätter etwas feiner, leichter und natürlicher */
+#leafLayer .dynamic-leaf{
+  filter:drop-shadow(0 1px 1.5px rgba(63,45,35,.10)) !important;
+}
+
+#leafLayer .leaf-body{
+  opacity:.88 !important;
+  stroke:rgba(91,70,56,.18) !important;
+  stroke-width:.65 !important;
+}
+
+/* Adern sichtbar, aber nicht dominant */
+#leafLayer .leaf-vein{
+  stroke:rgba(255,255,248,.62) !important;
+  stroke-width:.82 !important;
+  fill:none !important;
+  stroke-linecap:round !important;
+}
+
+#leafLayer .leaf-vein-small{
+  opacity:.56 !important;
+  stroke-width:.70 !important;
+}
+
+#leafLayer .leaf-soft-light{
+  stroke:rgba(255,255,248,.36) !important;
+  stroke-width:.75 !important;
+}
+
+/* Blümchen klein, halbtransparent und erst nach und nach sichtbar */
+#flowerLayer{
+  pointer-events:none;
+}
+
+.tree-flower{
+  pointer-events:none;
+}
+
+.tree-flower-shape{
+  transform-box:fill-box;
+  transform-origin:center;
+  animation:treeFlowerGrow25a .72s ease-out var(--flower-delay) both;
+  filter:drop-shadow(0 1px 1px rgba(75,55,40,.08));
+}
+
+@keyframes treeFlowerGrow25a{
+  0%{
+    opacity:0;
+    transform:scale(.20) rotate(-10deg);
+  }
+  68%{
+    opacity:.72;
+    transform:scale(1.08) rotate(2deg);
+  }
+  100%{
+    opacity:.66;
+    transform:scale(1);
+  }
+}
+
+/* Im Wachstumsfenster bleiben Blätter/Blumen fein statt zu schwer */
+.tree-growth-canvas #leafLayer .leaf-body{
+  opacity:.90 !important;
+}
+
+.tree-growth-canvas #flowerLayer{
+  opacity:.85;
+}
