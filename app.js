@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5c Wurzeln & Aufmerksamkeit Fix";
+const APP_VERSION = "2.5d Wurzeln & Aufmerksamkeit robust";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -929,12 +929,42 @@ function renderTreeAttention() {
     story.insertBefore(line, $("#treeStatus"));
   }
 
-  const seconds = (state.learningLeaves || [])
+  const treeStartedAt = state.tree?.startedAt
+    ? new Date(state.tree.startedAt).getTime()
+    : 0;
+
+  const leafSeconds = (state.learningLeaves || [])
     .reduce((sum, leaf) => sum + Number(leaf.attentionSeconds || 0), 0);
+
+  // Archiv ist die zuverlässigste Quelle für bereits erledigte Aufgaben.
+  // Bei einem neuen Baum werden nur Einträge seit dessen Start berücksichtigt.
+  const currentArchive = (state.taskArchive || []).filter(item => {
+    if (!treeStartedAt || !item.completedAt) return true;
+    return new Date(item.completedAt).getTime() >= treeStartedAt;
+  });
+
+  const archivedTaskIds = new Set(
+    currentArchive.map(item => item.taskId).filter(Boolean)
+  );
+
+  const archiveSeconds = currentArchive
+    .reduce((sum, item) => sum + Number(item.attentionSeconds || 0), 0);
+
+  // Noch nicht archivierte aktuelle Aufgaben ebenfalls mitzählen,
+  // ohne bereits archivierte Aufgaben doppelt zu zählen.
+  const openTaskSeconds = (state.tasks || [])
+    .filter(task => !archivedTaskIds.has(task.id))
+    .reduce((sum, task) => sum + currentAttentionSeconds(task), 0);
+
+  const reconstructedSeconds = archiveSeconds + openTaskSeconds;
+
+  // Ältere Datenstände haben die Minuten teilweise nur in den Blättern,
+  // andere nur im Archiv. Daher den höheren plausiblen Wert verwenden.
+  const seconds = Math.max(leafSeconds, reconstructedSeconds);
 
   line.textContent = seconds > 0
     ? `💛 Ihr habt diesem Baum schon ${formatAttentionMinutes(seconds)} Aufmerksamkeit geschenkt.`
-    : "💛 Dieser Baum wartet auf seine erste geschenkte Aufmerksamkeit.";
+    : "💛 Noch keine Aufmerksamkeit eingetragen.";
 }
 
 
@@ -1425,7 +1455,7 @@ function renderRootPngs() {
   ROOT_GROWTH_LAYOUT.slice(0, rootCount).forEach((cfg, index) => {
     const img = document.createElement("img");
 
-    img.className = `root-png root-growth-piece root-${cfg.type}`;
+    img.className = `root-png root-growth-piece root-${cfg.type} visible`;
     img.src = cfg.file;
     img.alt = "";
     img.draggable = false;
@@ -1436,6 +1466,7 @@ function renderRootPngs() {
     img.style.setProperty("--root-rot", `${cfg.rot}deg`);
     img.style.setProperty("--root-scale", cfg.scale);
     img.style.setProperty("--root-opacity", cfg.opacity);
+    img.style.opacity = String(cfg.opacity);
     img.style.setProperty("--root-height", `${cfg.height}%`);
     img.dataset.rootOrder = String(index + 1);
     img.style.setProperty(
