@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5ae Lernwald final";
+const APP_VERSION = "2.5af Lichtung natürlich durchbrochen";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -2933,13 +2933,13 @@ function buildLargeForestLayout(count) {
     */
     candidates.sort((a,b) => {
       const scoreA =
-        a.clusterField * .54 -
-        Math.max(0, a.clearingField - .84) * .34 +
+        a.clusterField * .46 -
+        Math.max(0, a.clearingField - .92) * .16 +
         a.random * .34;
 
       const scoreB =
-        b.clusterField * .54 -
-        Math.max(0, b.clearingField - .84) * .34 +
+        b.clusterField * .46 -
+        Math.max(0, b.clearingField - .92) * .16 +
         b.random * .34;
 
       return scoreB - scoreA;
@@ -2947,9 +2947,9 @@ function buildLargeForestLayout(count) {
 
     const chosen = [];
     const minX =
-      safeCount <= 100 ? 4.8 :
-      safeCount <= 250 ? 3.0 :
-      safeCount <= 500 ? 2.0 : 1.35;
+      safeCount <= 100 ? 4.5 :
+      safeCount <= 250 ? 2.65 :
+      safeCount <= 500 ? 1.85 : 1.28;
 
     for (const candidate of candidates) {
       if (chosen.length >= countInRow) break;
