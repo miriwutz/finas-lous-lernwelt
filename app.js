@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5ab Organischer Wald-Feinschliff";
+const APP_VERSION = "2.5ac Lichtungen & Waldbewohner";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -2380,9 +2380,9 @@ function forestMiniLeaves(tree) {
 /* ---------- 2.5l: wachsender Lernwald ---------- */
 
 const FOREST_COMPANIONS = [
-  "🌿","🌿","🌱","🌱","🍄","🍄","🌼","🌸","🌾","☘️","🌷",
-  "🐿️","🐿️","🐇","🦔","🐌","🐞","🦋","🐝","🐦",
-  "🦊","🦌","🦉"
+  "🌿", "🌱", "🌱", "🌾", "🌼", "🌸", "🍄", "🍄",
+  "🐞", "🐌", "🐿️", "🐇", "🦔", "🦊", "🦋", "🐦",
+  "🪲", "🐛", "🐝", "🦉"
 ];
 
 function forestZoomForCount(count) {
@@ -2875,9 +2875,9 @@ function buildLargeForestLayout(count) {
 
       // Viel stärkere vertikale Unruhe als zuvor.
       const ySpread =
-        safeCount <= 100 ? 10 :
-        safeCount <= 250 ? 12 :
-        safeCount <= 500 ? 13 : 14;
+        safeCount <= 100 ? 11 :
+        safeCount <= 250 ? 14 :
+        safeCount <= 500 ? 15 : 16;
 
       let y =
         zone.rowBaseY +
@@ -2934,12 +2934,12 @@ function buildLargeForestLayout(count) {
     candidates.sort((a,b) => {
       const scoreA =
         a.clusterField * .72 -
-        Math.max(0, a.clearingField - .55) * 1.10 +
+        Math.max(0, a.clearingField - .72) * .62 +
         a.random * .34;
 
       const scoreB =
         b.clusterField * .72 -
-        Math.max(0, b.clearingField - .55) * 1.10 +
+        Math.max(0, b.clearingField - .72) * .62 +
         b.random * .34;
 
       return scoreB - scoreA;
