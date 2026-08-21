@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5ad Waldbewohner sichtbar";
+const APP_VERSION = "2.5ae Lernwald final";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -2933,13 +2933,13 @@ function buildLargeForestLayout(count) {
     */
     candidates.sort((a,b) => {
       const scoreA =
-        a.clusterField * .72 -
-        Math.max(0, a.clearingField - .72) * .62 +
+        a.clusterField * .54 -
+        Math.max(0, a.clearingField - .84) * .34 +
         a.random * .34;
 
       const scoreB =
-        b.clusterField * .72 -
-        Math.max(0, b.clearingField - .72) * .62 +
+        b.clusterField * .54 -
+        Math.max(0, b.clearingField - .84) * .34 +
         b.random * .34;
 
       return scoreB - scoreA;
@@ -3096,18 +3096,23 @@ function renderForest() {
 
   decorateForestScene(forest.length);
 
-  // 2.5ad: Bei großen Wäldern entsteht eine eigene, sparsame
-  // Bewohner-/Pflanzenebene. Sie ist unabhängig von den Bäumen,
-  // damit Tiere nicht unter Baumgrafiken verschwinden.
+  // 2.5ae: Bewohner und Pflanzen als kleine Entdeckungen im Wald.
+  // Pflanzen überwiegen deutlich; Tiere sind seltener und kleiner.
   if (forest.length >= 50) {
-    const decorPool = [
-      "🌿","🌱","🌼","🌸","🍄",
-      "🐞","🐌","🐿️","🐇","🦔","🦊","🦋","🐦","🪲","🐛","🐝","🦉"
+    const plantPool = [
+      "🌿","🌿","🌱","🌱","🌱","🌾","🌼","🌸","🍄","🍄"
+    ];
+    const groundAnimalPool = [
+      "🐞","🐌","🐇","🦔","🪲","🐛"
+    ];
+    const treeAnimalPool = [
+      "🐿️","🐦","🦉","🦋"
     ];
 
+    // Etwas weniger Details als zuvor.
     const decorCount = Math.max(
-      6,
-      Math.min(42, Math.round(forest.length / 10))
+      5,
+      Math.min(34, Math.round(forest.length / 12))
     );
 
     const frac = n => n - Math.floor(n);
@@ -3116,33 +3121,56 @@ function renderForest() {
 
     for (let d = 0; d < decorCount; d++) {
       const seed = forest.length * 911 + d * 137;
+      const kindRoll = decorHash(seed, 8);
 
-      // Mehr Details vorne/mittig, wenige weit hinten.
+      // Rund 68 % Pflanzen, 20 % Bodenbewohner, 12 % Baum-/Flugtiere.
+      let icon;
+      let kind;
+      if (kindRoll < .68) {
+        icon = plantPool[Math.floor(decorHash(seed, 4) * plantPool.length)];
+        kind = "plant";
+      } else if (kindRoll < .88) {
+        icon = groundAnimalPool[Math.floor(decorHash(seed, 4) * groundAnimalPool.length)];
+        kind = "ground";
+      } else {
+        icon = treeAnimalPool[Math.floor(decorHash(seed, 4) * treeAnimalPool.length)];
+        kind = "tree";
+      }
+
       const depthRand = decorHash(seed, 1);
-      const topPct =
-        depthRand < .12
-          ? 28 + decorHash(seed, 2) * 20
-          : depthRand < .55
-            ? 50 + decorHash(seed, 2) * 22
-            : 72 + decorHash(seed, 2) * 15;
+      let topPct =
+        depthRand < .14
+          ? 31 + decorHash(seed, 2) * 18
+          : depthRand < .58
+            ? 51 + decorHash(seed, 2) * 20
+            : 72 + decorHash(seed, 2) * 14;
+
+      // Bodenbewohner/Pflanzen eher am Boden,
+      // Baum-/Flugtiere dürfen etwas höher zwischen den Kronen sitzen.
+      if (kind === "tree") topPct -= 4 + decorHash(seed, 9) * 7;
+      if (kind === "ground") topPct += 2 + decorHash(seed, 9) * 4;
+
+      topPct = Math.max(28, Math.min(87, topPct));
 
       const leftPct = 5 + decorHash(seed, 3) * 90;
-      const icon = decorPool[Math.floor(decorHash(seed, 4) * decorPool.length)];
 
-      // Ferne Details kleiner, vordere klar erkennbar.
-      const scale =
-        topPct < 48 ? .55 :
-        topPct < 70 ? .72 :
-        .88 + decorHash(seed, 5) * .18;
+      // Tiefe bestimmt die Größe wesentlich stärker als zuvor.
+      let scale =
+        topPct < 45 ? .30 + decorHash(seed, 5) * .08 :
+        topPct < 65 ? .42 + decorHash(seed, 5) * .10 :
+        .56 + decorHash(seed, 5) * .12;
+
+      if (kind === "plant") scale *= .90;
+      if (kind === "tree") scale *= .88;
 
       const opacity =
-        topPct < 48 ? .62 :
-        topPct < 70 ? .78 :
-        .92;
+        topPct < 45 ? .50 :
+        topPct < 65 ? .67 :
+        .82;
 
       box.insertAdjacentHTML("beforeend", `
         <span
-          class="forest-world-detail"
+          class="forest-world-detail forest-world-detail-${kind}"
           aria-hidden="true"
           style="
             left:${leftPct}%;
