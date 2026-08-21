@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.4c Datum, Einklappen, Wald & Zielwahl";
+const APP_VERSION = "2.4d Herzmomente & Schmetterlinge";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -73,7 +73,8 @@ const heartOptions = [
   { key: "beauty", icon: "☀️", title: "Schöner Moment", text: "Etwas Schönes entdeckt" },
   { key: "curious", icon: "🦋", title: "Neugier", text: "Etwas wissen wollen" },
   { key: "kindness", icon: "🤝", title: "Freundlichkeit", text: "Freundlichkeit erlebt" },
-  { key: "respect", icon: "🤍", title: "Rücksicht", text: "Auf jemanden Rücksicht genommen" }
+  { key: "respect", icon: "🤍", title: "Rücksicht", text: "Auf jemanden Rücksicht genommen" },
+  { key: "other", icon: "✨", title: "Sonstiges", text: "Ein eigener Herzmoment" }
 ];
 
 const leafPositions = [
@@ -1056,7 +1057,7 @@ function renderRootPngs() {
   if (!layer) return;
 
   const rootCount = Math.min(
-    (state.roots || []).length,
+    (state.roots || []).filter(root => !root.isGift).length,
     ROOT_GROWTH_LAYOUT.length
   );
 
@@ -1083,6 +1084,34 @@ function renderRootPngs() {
     );
 
     layer.appendChild(img);
+  });
+}
+
+const GIFT_BUTTERFLY_POSITIONS = [
+  [27,66,-14],[73,65,16],[21,61,-7],[79,60,9],[31,70,12],[69,71,-11],
+  [24,73,8],[76,73,-8],[34,64,-18],[66,63,18],[19,68,-12],[81,67,12]
+];
+const GIFT_BUTTERFLY_COLORS = [
+  [219,145,166],[177,151,211],[123,178,199],[224,176,91],[141,181,137],[203,154,116]
+];
+
+function renderGiftButterflies() {
+  const layer = $("#giftButterflyLayer");
+  if (!layer) return;
+  layer.innerHTML = "";
+
+  const gifts = (state.roots || []).filter(root => root.isGift);
+  gifts.slice(0, GIFT_BUTTERFLY_POSITIONS.length).forEach((gift, i) => {
+    const [x,y,rot] = GIFT_BUTTERFLY_POSITIONS[i];
+    const [r,g,b] = GIFT_BUTTERFLY_COLORS[i % GIFT_BUTTERFLY_COLORS.length];
+    const el = document.createElement("span");
+    el.className = "gift-butterfly";
+    el.style.left = `${x}%`; el.style.top = `${y}%`;
+    el.style.setProperty("--bf-rot", `${rot}deg`);
+    el.style.setProperty("--bf-color", `rgba(${r},${g},${b},.48)`);
+    el.title = `${gift.author || "Jemand"} → ${gift.recipient || "jemand"}`;
+    el.innerHTML = '<i class="wing left"></i><i class="wing right"></i><i class="bf-body"></i>';
+    layer.appendChild(el);
   });
 }
 
@@ -1148,6 +1177,7 @@ function renderTree() {
   });
 
   renderRootPngs();
+  renderGiftButterflies();
 
   const target = Number(state.tree?.targetLeaves || 20);
   const complete = leaves.length >= target;
@@ -1188,6 +1218,9 @@ function renderHearts() {
 
     box.appendChild(btn);
   });
+
+  const otherSelected = selectedHearts.includes("other");
+  $("#heartOtherField")?.classList.toggle("hidden", !otherSelected);
 }
 
 function updateHeartNoteVisibility() {
@@ -1203,16 +1236,37 @@ if ($("#heartAuthor")) {
   updateHeartNoteVisibility();
 }
 
+function updateHeartGiftVisibility() {
+  const isGift = !!$("#heartGiftToggle")?.checked;
+  $("#heartGiftRecipientField")?.classList.toggle("hidden", !isGift);
+}
+
+if ($("#heartGiftToggle")) {
+  $("#heartGiftToggle").addEventListener("change", updateHeartGiftVisibility);
+  updateHeartGiftVisibility();
+}
+
 if ($("#addRootBtn")) {
   $("#addRootBtn").onclick = async () => {
     const reason = $("#heartReason")?.value.trim() || "";
+    const otherText = $("#heartOtherText")?.value.trim() || "";
+    const isGift = !!$("#heartGiftToggle")?.checked;
+    const recipient = isGift ? ($("#heartGiftRecipient")?.value || "Mama") : "";
 
     if (!selectedHearts.length) {
       alert("Wählt mindestens einen Herzmoment aus.");
       return;
     }
 
-    pendingRootGrowth = true;
+    if (selectedHearts.includes("other") && !otherText) {
+      alert("Schreibt bei Sonstiges kurz dazu, welcher Herzmoment gemeint ist.");
+      $("#heartOtherText")?.focus();
+      return;
+    }
+
+    // Ein eigener Herzmoment stärkt den Baum als Wurzel.
+    // Ein verschenkter Herzmoment bekommt bewusst ein anderes Symbol: einen Schmetterling.
+    pendingRootGrowth = !isGift;
 
     try {
       await runTransaction(db, async tx => {
@@ -1224,7 +1278,13 @@ if ($("#addRootBtn")) {
           kinds: [...selectedHearts],
           author: $("#heartAuthor")?.value || "Gemeinsam",
           reason,
-          createdAt: new Date().toISOString()
+          otherText,
+          isGift,
+          recipient,
+          createdAt: (() => {
+            const chosen = $("#heartDate")?.value;
+            return chosen ? new Date(`${chosen}T12:00:00`).toISOString() : new Date().toISOString();
+          })()
         });
 
         tx.update(spaceRef, {
@@ -1235,6 +1295,9 @@ if ($("#addRootBtn")) {
 
       selectedHearts = [];
       if ($("#heartReason")) $("#heartReason").value = "";
+      if ($("#heartOtherText")) $("#heartOtherText").value = "";
+      if ($("#heartGiftToggle")) $("#heartGiftToggle").checked = false;
+      updateHeartGiftVisibility();
       renderHearts();
     } catch (err) {
       pendingRootGrowth = false;
@@ -1254,12 +1317,12 @@ function renderRootMemories() {
 
   roots.forEach(root => {
     const labels = (root.kinds || [])
-      .map(k => heartOptions.find(x => x.key === k)?.title || k)
+      .map(k => k === "other" && root.otherText ? root.otherText : (heartOptions.find(x => x.key === k)?.title || k))
       .join(", ");
 
     box.insertAdjacentHTML("beforeend", `
       <div class="memory-card">
-        <strong>🌱 ${escapeHtml(root.author || "Gemeinsam")}: ${escapeHtml(labels)}</strong>
+        <strong>${root.isGift ? "🦋" : "🌱"} ${escapeHtml(root.author || "Gemeinsam")}${root.isGift ? ` → ${escapeHtml(root.recipient || "")}` : ""}: ${escapeHtml(labels)}</strong>
         ${root.reason ? `<div>${escapeHtml(root.reason)}</div>` : ""}
         <small>${new Date(root.createdAt).toLocaleDateString("de-AT")}</small>
       </div>
@@ -1297,7 +1360,7 @@ function renderAdminRoots() {
 
   roots.forEach(root => {
     const labels = (root.kinds || [])
-      .map(k => heartOptions.find(x => x.key === k)?.title || k)
+      .map(k => k === "other" && root.otherText ? root.otherText : (heartOptions.find(x => x.key === k)?.title || k))
       .join(", ");
 
     const row = document.createElement("div");
@@ -1309,7 +1372,7 @@ function renderAdminRoots() {
 
     row.innerHTML = `
       <div>
-        <strong>🌱 ${escapeHtml(root.author || "Gemeinsam")}: ${escapeHtml(labels)}</strong>
+        <strong>${root.isGift ? "🦋" : "🌱"} ${escapeHtml(root.author || "Gemeinsam")}${root.isGift ? ` → ${escapeHtml(root.recipient || "")}` : ""}: ${escapeHtml(labels)}</strong>
         ${root.reason ? `<div>${escapeHtml(root.reason)}</div>` : ""}
         <small>${new Date(root.createdAt).toLocaleDateString("de-AT")}</small>
       </div>
