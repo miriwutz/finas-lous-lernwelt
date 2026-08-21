@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5b Kindgerechter Baum-Infobereich";
+const APP_VERSION = "2.5c Wurzeln & Aufmerksamkeit Fix";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -933,7 +933,7 @@ function renderTreeAttention() {
     .reduce((sum, leaf) => sum + Number(leaf.attentionSeconds || 0), 0);
 
   line.textContent = seconds > 0
-    ? `💛 Dieser Baum hat schon ${formatAttentionMinutes(seconds)} Aufmerksamkeit bekommen.`
+    ? `💛 Ihr habt diesem Baum schon ${formatAttentionMinutes(seconds)} Aufmerksamkeit geschenkt.`
     : "💛 Dieser Baum wartet auf seine erste geschenkte Aufmerksamkeit.";
 }
 
@@ -1431,6 +1431,7 @@ function renderRootPngs() {
     img.draggable = false;
 
     img.style.left = `${cfg.anchor}%`;
+    img.style.setProperty("--root-x", "0px");
     img.style.setProperty("--root-y", `${cfg.y}px`);
     img.style.setProperty("--root-rot", `${cfg.rot}deg`);
     img.style.setProperty("--root-scale", cfg.scale);
