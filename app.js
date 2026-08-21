@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5l Wachsender Lernwald";
+const APP_VERSION = "2.5m Lernwald Positionen & kleiner Aktionsbaum";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -2336,15 +2336,27 @@ function forestCompanionForIndex(index) {
 }
 
 function deterministicForestPoint(index) {
-  // Positionen verteilen sich über die Landschaft und bleiben stabil.
+  /*
+    Sichere Waldfläche:
+    x = 13–87 %, y = 43–82 %.
+    Damit bleibt auch ein größerer Baum vollständig innerhalb des Rahmens.
+    Bei mehr Bäumen entstehen versetzte Reihen und später durch forestZoomForCount
+    automatisch kleinere Bäume / mehr Vogelperspektive.
+  */
   const cols = 6;
-  const row = Math.floor(index / cols);
   const col = index % cols;
-  const jitterX = ((index * 37) % 17) - 8;
-  const jitterY = ((index * 53) % 13) - 6;
+  const row = Math.floor(index / cols);
+
+  const xBase = 13 + col * 14.7;
+  const rowBand = row % 4;
+  const yBase = 48 + rowBand * 10.5;
+
+  const jitterX = (((index * 37) % 9) - 4) * 0.55;
+  const jitterY = (((index * 53) % 7) - 3) * 0.45;
+
   return {
-    x: 10 + col * 15.5 + jitterX * 0.22,
-    y: 78 - (row % 3) * 14 + jitterY * 0.25
+    x: Math.max(11, Math.min(89, xBase + jitterX)),
+    y: Math.max(44, Math.min(84, yBase + jitterY))
   };
 }
 
@@ -2365,7 +2377,7 @@ function decorateForestScene(treeCount) {
     el.title = item.label;
     el.setAttribute("aria-label", item.label);
     el.style.left = `${p.x}%`;
-    el.style.top = `${Math.min(91, p.y + 9)}%`;
+    el.style.top = `${Math.min(92, Math.max(72, p.y + 11))}%`;
     scene.appendChild(el);
   }
 }
