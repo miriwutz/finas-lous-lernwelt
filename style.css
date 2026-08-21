@@ -6022,3 +6022,39 @@ label:has(textarea){
     max-width:360px !important;
   }
 }
+
+/* =========================================================
+   2.5p – kleine Blümchen zwischen den Blättern
+   ========================================================= */
+
+/*
+  Die Blümchen erscheinen nicht zufällig, sondern an festgelegten,
+  über die Krone verteilten Positionen.
+
+  Rhythmus bewusst unregelmäßig:
+  etwa alle 3–5 neuen Lernblätter.
+*/
+
+#flowerLayer .tree-flower{
+  pointer-events:none;
+}
+
+#flowerLayer .tree-flower-shape{
+  opacity:.64;
+  transform-origin:center;
+  filter:drop-shadow(0 1px 1px rgba(82,60,44,.06));
+}
+
+/* Blümchen bewusst klein und transparent halten. */
+#flowerLayer .tree-flower ellipse{
+  opacity:.44 !important;
+}
+
+#flowerLayer .tree-flower circle{
+  opacity:.64 !important;
+}
+
+/* Bei sehr vielen Blättern dürfen die Blumen nicht stärker dominieren. */
+#flowerLayer{
+  opacity:.82;
+}
