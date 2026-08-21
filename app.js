@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.4h Geschenk sichtbar & Lernwald zurückholen";
+const APP_VERSION = "2.4i Archiv kompakt & Suche";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -2078,289 +2078,103 @@ row.querySelector(".move-task-down").onclick = () => {
 });
 }
 
+function normalizeArchiveSearch(value = "") {
+  return String(value)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
 function renderTaskArchive() {
   const box = $("#taskArchiveList");
   if (!box) return;
 
-  const archive = [...(state.taskArchive || [])]
-    .sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt));
+  const query = normalizeArchiveSearch($("#archiveSearch")?.value || "");
+  const archive = [...(state.taskArchive || [])].sort((a,b) =>
+    new Date(b.completedAt || 0) - new Date(a.completedAt || 0)
+  );
 
-  if (!archive.length) {
-    box.innerHTML = `
-      <p class="muted">
-        Noch keine archivierten Aufgaben.
-      </p>
-    `;
+  const filtered = query
+    ? archive.filter(item => {
+        const haystack = normalizeArchiveSearch([
+          item.title,
+          item.note,
+          item.url,
+          item.child,
+          item.type
+        ].filter(Boolean).join(" "));
+        return haystack.includes(query);
+      })
+    : archive;
+
+  box.innerHTML = "";
+
+  const info = $("#archiveSearchInfo");
+  if (info) {
+    info.textContent = query
+      ? `${filtered.length} von ${archive.length} Einträgen gefunden`
+      : `${archive.length} gespeicherte Aufgaben`;
+  }
+
+  if (!filtered.length) {
+    box.innerHTML = query
+      ? '<div class="empty">Keine passende frühere Aufgabe gefunden.</div>'
+      : '<div class="empty">Noch keine erledigten Aufgaben im Archiv.</div>';
     return;
   }
 
-  box.innerHTML = archive.map(entry => {
-    const childName =
-      entry.child === "fina" ? "🌸 Fina" :
-      entry.child === "lou" ? "🌺 Lou" :
-      entry.child || "";
-
-    const minutes = Math.floor(Number(entry.attentionSeconds || 0) / 60);
-
-    const date = entry.completedAt
-      ? new Date(entry.completedAt).toLocaleDateString("de-AT")
+  filtered.forEach(item => {
+    const date = item.completedAt
+      ? new Date(item.completedAt).toLocaleDateString("de-AT")
       : "";
 
-    const difficultyInfo =
-      entry.difficulty === "easy"
-        ? { icon: "🍃", label: "Leicht" }
-        : entry.difficulty === "medium"
-          ? { icon: "🌿", label: "Mittel" }
-          : entry.difficulty === "tricky"
-            ? { icon: "⭐", label: "Knifflig" }
-            : null;
-
-    const difficultyColor = entry.difficulty
-      ? getLeafColor(entry.child === "lou" ? "lou" : "fina", entry.difficulty)
-      : "";
-
-    return `
-      <div class="archive-task">
-        <div class="archive-task-meta">
-          ${escapeHtml(childName)}
-          ${date ? ` · ${escapeHtml(date)}` : ""}
+    box.insertAdjacentHTML("beforeend", `
+      <article class="archive-task archive-task-compact">
+        <div class="archive-task-topline">
+          <span class="archive-task-meta">
+            ${item.child === "fina" ? "🌸 Fina" : "🌺 Lou"}${date ? ` · ${date}` : ""}
+          </span>
+          <span class="archive-task-time">
+            ${Number(item.attentionSeconds || 0) > 0
+              ? `💛 ${formatAttentionMinutes(item.attentionSeconds)}`
+              : "💛 0 Min."}
+          </span>
         </div>
 
-        <strong>${escapeHtml(entry.title || "Aufgabe")}</strong>
+        <strong class="archive-task-title">${escapeHtml(item.title || "Ohne Titel")}</strong>
 
-        ${entry.note
-          ? `<div>${escapeHtml(entry.note)}</div>`
-          : ""
-        }
+        ${item.note ? `<div class="archive-task-note">${escapeHtml(item.note)}</div>` : ""}
 
-       <div class="archive-task-details">
-         <div class="archive-task-time">
-           💛 ${minutes} Min.
-         </div>
+        ${item.url ? `
+          <div class="archive-task-link-line">
+            <span>🔗</span>
+            <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener">
+              ${escapeHtml(item.url)}
+            </a>
+          </div>
+        ` : ""}
 
-         ${difficultyInfo
-           ? `<div class="archive-difficulty">
-                <span
-                  class="archive-difficulty-dot"
-                  style="background:${escapeHtml(difficultyColor)}"
-                ></span>
-                ${difficultyInfo.icon} ${difficultyInfo.label}
-              </div>`
-           : `<div class="archive-difficulty archive-difficulty-old">
-                Schwierigkeit nicht erfasst
-              </div>`
-         }
-       </div>
+        <div class="archive-task-bottomline">
+          <span class="archive-task-difficulty">
+            ${item.difficulty
+              ? `Schwierigkeit: ${escapeHtml(item.difficulty)}`
+              : "Schwierigkeit nicht erfasst"}
+          </span>
 
-<button
-  type="button"
-  class="reuse-archive-task"
-  data-archive-id="${escapeHtml(entry.id)}"
->
-  ↻ Wiederverwenden
-</button>
-      </div>
-    `;
-  }).join("");
+          <button
+            type="button"
+            class="reuse-archive-task"
+            data-reuse-archive="${escapeHtml(item.id)}"
+          >
+            ↻ Wiederverwenden
+          </button>
+        </div>
+      </article>
+    `);
+  });
 
-  box.querySelectorAll(".reuse-archive-task").forEach(btn => {
-    btn.onclick = () => {
-      const entry = (state.taskArchive || []).find(
-        item => item.id === btn.dataset.archiveId
-      );
-
-      if (!entry) return;
-
-      const child = entry.child === "lou" ? "lou" : "fina";
-
-     adminDraft[child].unshift({
-  id: crypto.randomUUID(),
-  child,
-  title: entry.title || "",
-  note: entry.note || "",
-  type: entry.type || "paper",
-  url: entry.url || "",
-  done: false,
-  attentionSeconds: 0,
-  activeSince: null
-});
-     renderAdminTasks(child);
-alert("✓ Aufgabe wurde zu „Heute planen“ hinzugefügt.");
-    };
+  $$("[data-reuse-archive]").forEach(btn => {
+    btn.onclick = () => reuseArchivedTask(btn.dataset.reuseArchive);
   });
 }
-
-$$("[data-add-task]").forEach(btn => {
-  btn.onclick = () => {
-    const child = btn.dataset.addTask;
-
-    adminDraft[child].push({
-      id: crypto.randomUUID(),
-      child,
-      title: "",
-      note: "",
-      type: "paper",
-      url: "",
-      done: false,
-      attentionSeconds: 0,
-      activeSince: null
-    });
-
-    renderAdminTasks(child);
-  };
-});
-
-if ($("#saveTasksBtn")) {
-  $("#saveTasksBtn").onclick = async () => {
-    const finaTasks = ensureMinimumTaskSlots(adminDraft.fina, "fina")
-      .map(task => ({ ...task, activeSince: null }));
-
-    const louTasks = ensureMinimumTaskSlots(adminDraft.lou, "lou")
-      .map(task => ({ ...task, activeSince: null }));
-
-    const tasks = [...finaTasks, ...louTasks];
-
-    try {
-      await updateDoc(spaceRef, {
-        tasks,
-        updatedAt: serverTimestamp()
-      });
-      alert("Die Aufgaben sind jetzt auf allen Geräten veröffentlicht.");
-      $("#mamaDialog")?.close();
-    } catch (err) {
-      alert("Speichern nicht möglich: " + err.message);
-    }
-  };
-}
-
-if ($("#startNextDayBtn")) {
-  $("#startNextDayBtn").onclick = async () => {
-    const ok = confirm(
-      "Möchtest du den Lerntag wirklich abschließen?\n\n" +
-      "Erledigte Aufgaben werden aus dem heutigen Plan entfernt.\n" +
-      "Unerledigte Aufgaben bleiben erhalten.\n" +
-      "Laufende Aufmerksamkeit wird gestoppt.\n" +
-      "Der Baum, seine Blätter und Wurzeln bleiben bestehen."
-    );
-
-    if (!ok) return;
-
-    try {
-      await closeLearningDay();
-      $("#mamaDialog")?.close();
-      if (!$("#dayClosingDialog")?.open) {
-        $("#dayClosingDialog")?.showModal();
-      }
-    } catch (err) {
-      alert("Der Lerntag konnte nicht abgeschlossen werden: " + err.message);
-    }
-  };
-}
-
-if ($("#reopenLearningDayBtn")) {
-  $("#reopenLearningDayBtn").onclick = async () => {
-    const ok = confirm(
-      "Möchtest du den abgeschlossenen Lerntag wieder öffnen?\n\n" +
-      "Die Aufgaben werden auf den Stand vor dem Abschluss zurückgesetzt."
-    );
-
-    if (!ok) return;
-
-    try {
-      await reopenLearningDay();
-      $("#mamaDialog")?.close();
-    } catch (err) {
-      alert("Der Lerntag konnte nicht wieder geöffnet werden: " + err.message);
-    }
-  };
-}
-
-if ($("#beginNewLearningDayBtn")) {
-  $("#beginNewLearningDayBtn").onclick = async () => {
-    const ok = confirm(
-      "Möchtest du jetzt wirklich einen neuen Lerntag starten?\n\n" +
-      "Unerledigte Aufgaben bleiben erhalten und ein neuer Tagesimpuls wird gewählt."
-    );
-
-    if (!ok) return;
-
-    try {
-      await beginNewLearningDay();
-      $("#mamaDialog")?.close();
-    } catch (err) {
-      alert("Der neue Lerntag konnte nicht gestartet werden: " + err.message);
-    }
-  };
-}
-
-
-if ($("#treeTargetInput")) {
-  $("#treeTargetInput").addEventListener("change", () => {
-    const custom = $("#treeTargetInput").value === "custom";
-    $("#treeTargetCustomWrap")?.classList.toggle("hidden", !custom);
-    if (custom) {
-      const input = $("#treeTargetCustom");
-      if (input) {
-        const current = Number(state.tree?.targetLeaves || 24);
-        input.value = String(Math.max(1, Math.min(50, current)));
-        input.focus();
-        input.select();
-      }
-    }
-  });
-}
-
-if ($("#treeTargetCustom")) {
-  $("#treeTargetCustom").addEventListener("input", () => {
-    const input = $("#treeTargetCustom");
-    if (!input) return;
-    const n = Number(input.value);
-    if (n > 50) input.value = "50";
-    if (n < 1 && input.value !== "") input.value = "1";
-  });
-}
-
-if ($("#saveTreeSettings")) {
-  $("#saveTreeSettings").onclick = async () => {
-    try {
-      await updateDoc(spaceRef, {
-        tree: {
-          ...state.tree,
-          name: $("#treeNameInput").value.trim() || "Unser Wochenbaum",
-          targetLeaves: (() => {
-            const selected = $("#treeTargetInput")?.value;
-            const raw = selected === "custom"
-              ? Number($("#treeTargetCustom")?.value || 24)
-              : Number(selected || 24);
-            return Math.max(1, Math.min(50, Math.round(raw)));
-          })(),
-          leafColors: {
-            fina: {
-              easy: $("#finaEasyColor")?.value || DEFAULT_LEAF_COLORS.fina.easy,
-              medium: $("#finaMediumColor")?.value || DEFAULT_LEAF_COLORS.fina.medium,
-              tricky: $("#finaTrickyColor")?.value || DEFAULT_LEAF_COLORS.fina.tricky
-            },
-            lou: {
-              easy: $("#louEasyColor")?.value || DEFAULT_LEAF_COLORS.lou.easy,
-              medium: $("#louMediumColor")?.value || DEFAULT_LEAF_COLORS.lou.medium,
-              tricky: $("#louTrickyColor")?.value || DEFAULT_LEAF_COLORS.lou.tricky
-            }
-          }
-        },
-        updatedAt: serverTimestamp()
-      });
-
-      alert("Die Baum-Einstellungen wurden gespeichert.");
-    } catch (err) {
-      alert("Speichern nicht möglich: " + err.message);
-    }
-  };
-}
-
-$$(".tab").forEach(tab => {
-  tab.onclick = () => {
-    $$(".tab").forEach(x => x.classList.toggle("active", x === tab));
-    $$(".tab-panel").forEach(p => p.classList.add("hidden"));
-    $("#" + tab.dataset.tab)?.classList.remove("hidden");
-  };
-});
