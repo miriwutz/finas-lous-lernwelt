@@ -4959,3 +4959,43 @@ label:has(textarea){
     grid-column:2 !important;
   }
 }
+
+/* =========================================================
+   2.4q – Verschenken weiter rechts + Empfänger wirklich weg
+   ========================================================= */
+
+/* Mehr Luft zwischen Datum und Verschenken */
+.heart-meta-primary{
+  display:grid !important;
+  grid-template-columns:105px 160px 190px 130px !important;
+  column-gap:14px !important;
+  align-items:end !important;
+  width:max-content !important;
+  max-width:100% !important;
+}
+
+/* Nur vor Verschenken zusätzlichen Abstand erzeugen */
+.heart-gift-toggle{
+  margin-left:18px !important;
+}
+
+/* WICHTIG: hidden muss alle älteren display:flex-Regeln schlagen */
+#heartGiftRecipientField.hidden{
+  display:none !important;
+}
+
+/* Nur im aktiven Zustand sichtbar */
+#heartGiftRecipientField:not(.hidden){
+  display:flex !important;
+  flex-direction:column !important;
+  width:130px !important;
+}
+
+/* Bei ausgeschaltetem Toggle wird kein Empfänger-Platz reserviert.
+   Grid selbst bleibt stabil; rechts bleibt einfach freie Fläche. */
+
+@media(max-width:760px){
+  .heart-gift-toggle{
+    margin-left:0 !important;
+  }
+}
