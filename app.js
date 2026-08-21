@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5q Lernwald wächst mit";
+const APP_VERSION = "2.5r Abschluss-Testmodus";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -2069,6 +2069,7 @@ function animateTreeIntoForest() {
 }
 
 async function archiveCurrentTreeToForest() {
+  forestTestCount = null;
   const dialog = $("#finishTreeDialog");
   const input = $("#finishTreeName");
 
@@ -2212,6 +2213,19 @@ if ($("#finishTreeName")) {
     }
   });
 }
+
+$$("[data-forest-test]").forEach(btn => {
+  btn.onclick = () => setForestTestCount(Number(btn.dataset.forestTest));
+});
+
+if ($("#clearForestTest")) {
+  $("#clearForestTest").onclick = clearForestTestMode;
+}
+
+$$("[data-growth-test]").forEach(btn => {
+  btn.onclick = () => runGrowthPreview(btn.dataset.growthTest);
+});
+
 
 function openForestView() {
   const forest = $("#forestSection");
@@ -2458,12 +2472,129 @@ function decorateForestScene(treeCount) {
   }
 }
 
+
+let forestTestCount = null;
+
+function makeForestTestTrees(count) {
+  return Array.from({ length: count }, (_, i) => ({
+    id: `preview-${i + 1}`,
+    name: `Baum ${i + 1}`,
+    completedAt: new Date(2026, 0, Math.min(28, i + 1)).toISOString(),
+    leaves: 20 + (i % 11),
+    roots: Array.from({ length: 3 + (i % 4) }, (_, r) => ({
+      id: `preview-root-${i}-${r}`,
+      isGift: r === 0 && i % 3 === 0
+    })),
+    snapshot: {
+      learningLeaves: Array.from({ length: 20 + (i % 11) }, (_, l) => ({
+        color: ["#d9b56f","#b8a6c9","#c99586","#98ad88"][l % 4],
+        attentionSeconds: 300 + (l % 4) * 120
+      })),
+      roots: Array.from({ length: 3 + (i % 4) }, (_, r) => ({
+        id: `preview-snapshot-root-${i}-${r}`,
+        isGift: r === 0 && i % 3 === 0
+      }))
+    }
+  }));
+}
+
+function setForestTestCount(count) {
+  forestTestCount = count;
+  renderForest();
+  $("#forestSection")?.classList.remove("hidden");
+  requestAnimationFrame(() => {
+    $("#forestSection")?.scrollIntoView({ behavior:"smooth", block:"start" });
+  });
+}
+
+function clearForestTestMode() {
+  forestTestCount = null;
+  renderForest();
+}
+
+function runGrowthPreview(kind) {
+  if (kind === "leaf") {
+    const leaf = {
+      id: `preview-leaf-${Date.now()}`,
+      text: "Testblatt",
+      color: "#d9b56f",
+      attentionSeconds: 0
+    };
+    const before = state.learningLeaves;
+    state.learningLeaves = [...before, leaf];
+    renderTree();
+    const newest = $$(".leaf").at(-1);
+    newest?.classList.add("leaf-new");
+    treeSparkleBurst(24);
+    treeGlowPulse();
+    setTimeout(() => {
+      state.learningLeaves = before;
+      renderTree();
+    }, 2600);
+    return;
+  }
+
+  if (kind === "root") {
+    const before = state.roots;
+    state.roots = [...before, {
+      id:`preview-root-${Date.now()}`,
+      text:"Test-Herzmoment",
+      isGift:false
+    }];
+    renderTree();
+    treeSparkleBurst(28);
+    treeGlowPulse();
+    setTimeout(() => {
+      state.roots = before;
+      renderTree();
+    }, 3000);
+    return;
+  }
+
+  if (kind === "gift") {
+    const before = state.roots;
+    state.roots = [...before, {
+      id:`preview-gift-${Date.now()}`,
+      text:"Test-Geschenk",
+      isGift:true,
+      recipient:"Test"
+    }];
+    renderTree();
+    const canvas = $("#treeCanvas");
+    const rect = canvas?.getBoundingClientRect();
+    if (rect) {
+      const b = document.createElement("span");
+      b.textContent = "🦋";
+      b.className = "growth-test-butterfly";
+      b.style.left = `${rect.left + 35}px`;
+      b.style.top = `${rect.top + 35}px`;
+      document.body.appendChild(b);
+      const anim = b.animate([
+        { transform:"translate(0,0) scale(.65)", opacity:0 },
+        { offset:.18, opacity:1 },
+        { transform:`translate(${rect.width*.58}px, ${rect.height*.52}px) scale(1)`, opacity:1 }
+      ], { duration:1900, easing:"cubic-bezier(.22,.72,.2,1)", fill:"forwards" });
+      anim.finished.finally(() => b.remove());
+    }
+    treeSparkleBurst(28);
+    treeGlowPulse();
+    setTimeout(() => {
+      state.roots = before;
+      renderTree();
+    }, 3000);
+  }
+}
+
 function renderForest() {
   const box = $("#forestGrid");
   const emptyHint = $("#forestEmptyHint");
   if (!box) return;
 
-  const forest = (state.forest || []).slice().reverse();
+  const forest = (
+    forestTestCount === null
+      ? (state.forest || [])
+      : makeForestTestTrees(forestTestCount)
+  ).slice().reverse();
   box.innerHTML = "";
 
   emptyHint?.classList.toggle("hidden", forest.length > 0);
