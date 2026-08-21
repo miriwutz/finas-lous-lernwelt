@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.4j Magischer Baum & echter Schmetterling";
+const APP_VERSION = "2.4k Tabs, Wurzeln & Geschenkflug repariert";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -814,6 +814,8 @@ function showGiftGrowthCelebration() {
       );
       flyer.classList.add("flying-gift-butterfly");
       flyer.style.setProperty("--bf-rot", "0deg");
+      flyer.style.left = `${heartX}px`;
+      flyer.style.top = `${heartY}px`;
       preview.appendChild(flyer);
 
       const frames = [];
@@ -830,10 +832,8 @@ function showGiftGrowthCelebration() {
         frames.push({
           offset:t,
           opacity:t < .03 ? 0 : (t > .97 ? 0 : 1),
-          transform:
-            `translate(${x}px, ${y}px) translate(-50%,-50%) ` +
-            `rotate(${Math.sin(t * Math.PI * 6) * 10}deg) ` +
-            `scale(${1.15 - .15 * t})`
+          left:`${x}px`,
+          top:`${y}px`
         });
       }
 
@@ -1551,6 +1551,13 @@ if ($("#heartAuthor")) {
 function updateHeartGiftVisibility() {
   const isGift = !!$("#heartGiftToggle")?.checked;
   $("#heartGiftRecipientField")?.classList.toggle("hidden", !isGift);
+
+  const button = $("#addRootBtn");
+  if (button) {
+    button.textContent = isGift
+      ? "🦋 Herzmoment verschenken"
+      : "🌱 Eine Wurzel wachsen lassen";
+  }
 }
 
 if ($("#heartGiftToggle")) {
@@ -1645,19 +1652,32 @@ function renderRootMemories() {
 }
 
 function ensureAdminRootsPanel() {
-  const panel = $("#mamaPanel");
-  if (!panel || $("#adminRootsPanel")) return;
+  const panel = $("#treeTab");
+  if (!panel) return;
 
-  const section = document.createElement("section");
-  section.id = "adminRootsPanel";
-  section.innerHTML = `
-    <hr>
-    <h3>🌱 Gespeicherte Wurzeln</h3>
-    <p class="muted">Hier kannst du versehentlich angelegte Wurzeln löschen.</p>
-    <div id="adminRootsList"></div>
-  `;
+  let section = $("#adminRootsPanel");
 
-  panel.appendChild(section);
+  // Falls eine ältere Version den Bereich außerhalb des Tabs angelegt hat:
+  if (section && section.parentElement !== panel) {
+    section.remove();
+    section = null;
+  }
+
+  if (!section) {
+    section = document.createElement("section");
+    section.id = "adminRootsPanel";
+    section.className = "admin-roots-panel";
+    section.innerHTML = `
+      <div class="admin-roots-heading">
+        <div>
+          <h3>🌱 Gespeicherte Herzmomente & Wurzeln</h3>
+          <p class="muted">Hier kannst du versehentlich angelegte Einträge löschen.</p>
+        </div>
+      </div>
+      <div id="adminRootsList"></div>
+    `;
+    panel.appendChild(section);
+  }
 }
 
 function renderAdminRoots() {
@@ -1938,6 +1958,11 @@ function openMamaDialog() {
   if ($("#mamaUnlockMessage")) $("#mamaUnlockMessage").textContent = "";
 
   $("#mamaDialog")?.showModal();
+
+  requestAnimationFrame(() => {
+    bindMamaTabs();
+    activateMamaTab("tasksTab");
+  });
 }
 
 if ($("#openMama")) {
@@ -1987,13 +2012,45 @@ if ($("#unlockMamaBtn")) {
       $("#mamaUnlock")?.classList.add("hidden");
       $("#mamaPanel")?.classList.remove("hidden");
 
-      ensureAdminRootsPanel();
+      bindMamaTabs();
+      activateMamaTab("tasksTab");
       prepareAdmin();
-      renderAdminRoots();
     } catch {
       $("#mamaUnlockMessage").textContent = "E-Mail-Adresse oder Passwort stimmt nicht.";
     }
   };
+}
+
+
+function activateMamaTab(tabId) {
+  const valid = ["tasksTab", "treeTab", "archiveTab"];
+  const wanted = valid.includes(tabId) ? tabId : "tasksTab";
+
+  $$("#mamaPanel .tab").forEach(btn => {
+    const active = btn.dataset.tab === wanted;
+    btn.classList.toggle("active", active);
+    btn.setAttribute("aria-selected", active ? "true" : "false");
+  });
+
+  $$("#mamaPanel .tab-panel").forEach(panel => {
+    panel.classList.toggle("hidden", panel.id !== wanted);
+  });
+
+  if (wanted === "treeTab") {
+    ensureAdminRootsPanel();
+    renderAdminRoots();
+  }
+
+  if (wanted === "archiveTab") {
+    renderTaskArchive();
+    requestAnimationFrame(() => $("#archiveSearch")?.focus());
+  }
+}
+
+function bindMamaTabs() {
+  $$("#mamaPanel .tab[data-tab]").forEach(btn => {
+    btn.onclick = () => activateMamaTab(btn.dataset.tab);
+  });
 }
 
 function prepareAdmin() {
@@ -2030,8 +2087,10 @@ function prepareAdmin() {
 
   renderAdminTasks("fina");
   renderAdminTasks("lou");
+  ensureAdminRootsPanel();
   renderAdminRoots();
   renderTaskArchive();
+  bindMamaTabs();
 }
 
 function renderAdminTasks(child) {
