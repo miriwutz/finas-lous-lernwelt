@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5k Lernwald-Button & dezenter Baumname";
+const APP_VERSION = "2.5l Wachsender Lernwald";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -2155,6 +2155,7 @@ function openForestView() {
   if (!forest) return;
 
   renderForest();
+  decorateForestScene((state.forest || []).length);
   forest.classList.remove("hidden");
 
   requestAnimationFrame(() => {
@@ -2297,6 +2298,76 @@ function forestMiniLeaves(tree) {
       ></span>
     `;
   }).join("");
+}
+
+
+/* ---------- 2.5l: wachsender Lernwald ---------- */
+
+const FOREST_COMPANIONS = [
+  { icon: "🌿", label: "ein kleiner Farn" },
+  { icon: "🍄", label: "ein kleiner Pilz" },
+  { icon: "🌼", label: "eine Waldblume" },
+  { icon: "🐌", label: "eine Schnecke" },
+  { icon: "🐞", label: "ein Marienkäfer" },
+  { icon: "🐦", label: "ein kleiner Vogel" },
+  { icon: "🐿️", label: "ein Eichhörnchen" },
+  { icon: "🦔", label: "ein Igel" },
+  { icon: "🐇", label: "ein Hase" },
+  { icon: "🦉", label: "eine Eule" },
+  { icon: "🦊", label: "ein Fuchs" },
+  { icon: "🦌", label: "ein Reh" }
+];
+
+function forestZoomForCount(count) {
+  if (count <= 4) return 1;
+  if (count <= 8) return 0.88;
+  if (count <= 14) return 0.76;
+  if (count <= 22) return 0.66;
+  if (count <= 32) return 0.58;
+  return 0.52;
+}
+
+function forestCompanionForIndex(index) {
+  // Besondere Tiere kommen erst später; Pflanzen/kleine Tiere früher.
+  const early = FOREST_COMPANIONS.slice(0, 6);
+  const medium = FOREST_COMPANIONS.slice(0, 9);
+  const pool = index < 5 ? early : index < 12 ? medium : FOREST_COMPANIONS;
+  return pool[index % pool.length];
+}
+
+function deterministicForestPoint(index) {
+  // Positionen verteilen sich über die Landschaft und bleiben stabil.
+  const cols = 6;
+  const row = Math.floor(index / cols);
+  const col = index % cols;
+  const jitterX = ((index * 37) % 17) - 8;
+  const jitterY = ((index * 53) % 13) - 6;
+  return {
+    x: 10 + col * 15.5 + jitterX * 0.22,
+    y: 78 - (row % 3) * 14 + jitterY * 0.25
+  };
+}
+
+function decorateForestScene(treeCount) {
+  const scene = $("#forestScene");
+  if (!scene) return;
+
+  scene.style.setProperty("--forest-zoom", forestZoomForCount(treeCount));
+
+  $$(".forest-companion").forEach(el => el.remove());
+
+  for (let i = 0; i < treeCount; i++) {
+    const item = forestCompanionForIndex(i);
+    const p = deterministicForestPoint(i + 2);
+    const el = document.createElement("span");
+    el.className = "forest-companion";
+    el.textContent = item.icon;
+    el.title = item.label;
+    el.setAttribute("aria-label", item.label);
+    el.style.left = `${p.x}%`;
+    el.style.top = `${Math.min(91, p.y + 9)}%`;
+    scene.appendChild(el);
+  }
 }
 
 function renderForest() {
