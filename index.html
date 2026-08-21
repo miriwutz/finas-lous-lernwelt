@@ -7,7 +7,7 @@
 
   <title>Mein Lernwald</title>
 
-  <link rel="stylesheet" href="style.css?v=25h">
+  <link rel="stylesheet" href="style.css?v=25i">
 </head>
 
 <body>
@@ -653,6 +653,63 @@
 
 
   <!-- SCHWIERIGKEIT NACH DER AUFGABE -->
+
+  <!-- BAUM ABSCHLIESSEN / BENENNEN -->
+  <dialog id="finishTreeDialog" aria-labelledby="finishTreeDialogTitle">
+    <div class="finish-tree-dialog-card">
+      <button
+        id="closeFinishTreeDialog"
+        type="button"
+        class="finish-tree-dialog-close"
+        aria-label="Fenster schließen"
+      >×</button>
+
+      <div class="finish-tree-kicker">🌳 EUER BAUM IST FERTIG</div>
+
+      <h2 id="finishTreeDialogTitle">
+        Wie soll euer Baum heißen?
+      </h2>
+
+      <p id="finishTreeDialogText" class="finish-tree-dialog-text">
+        Bevor euer Baum in den Lernwald zieht, dürft ihr ihm noch einen Namen geben.
+      </p>
+
+      <label class="finish-tree-name-field">
+        <span>Baumname</span>
+        <input
+          id="finishTreeName"
+          type="text"
+          maxlength="40"
+          autocomplete="off"
+          placeholder="z. B. Mutbaum, Sommerbaum, Luna …"
+        >
+      </label>
+
+      <p class="finish-tree-name-hint">
+        Ihr könnt den vorgeschlagenen Namen einfach behalten oder euch einen neuen ausdenken.
+      </p>
+
+      <div class="finish-tree-dialog-actions">
+        <button
+          id="cancelFinishTree"
+          type="button"
+          class="soft"
+        >
+          Noch nicht
+        </button>
+
+        <button
+          id="confirmFinishTree"
+          type="button"
+          class="primary"
+        >
+          🌲 In den Lernwald pflanzen
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+
   <dialog id="difficultyDialog">
     <div class="difficulty-card">
       <div class="difficulty-kicker">🍃 Kurz zurückschauen</div>
@@ -732,7 +789,7 @@
 
   <script
     type="module"
-    src="app.js?v=25h"
+    src="app.js?v=25i"
   ></script>
 
 </body>
