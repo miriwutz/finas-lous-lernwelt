@@ -6516,3 +6516,20 @@ label:has(textarea){
 .forest-tree-depth-position{
   will-change:transform;
 }
+
+
+/* =========================================================
+   2.5ac – letzter Lernwald-Feinschliff
+   Perspektive aus 2.5aa bleibt unangetastet.
+   Lichtungen werden sanfter durchbrochen; vordere Baumketten
+   erhalten mehr Tiefenstreuung.
+   ========================================================= */
+
+/* Waldbewohner und Pflanzen sollen erkennbar bleiben,
+   aber den Wald nicht optisch überladen. */
+.forest-companion,
+.forest-decoration,
+.forest-animal,
+.forest-plant{
+  filter: saturate(.92);
+}
