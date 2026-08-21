@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5ac Lichtungen & Waldbewohner";
+const APP_VERSION = "2.5ad Waldbewohner sichtbar";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -3095,6 +3095,67 @@ function renderForest() {
   });
 
   decorateForestScene(forest.length);
+
+  // 2.5ad: Bei großen Wäldern entsteht eine eigene, sparsame
+  // Bewohner-/Pflanzenebene. Sie ist unabhängig von den Bäumen,
+  // damit Tiere nicht unter Baumgrafiken verschwinden.
+  if (forest.length >= 50) {
+    const decorPool = [
+      "🌿","🌱","🌼","🌸","🍄",
+      "🐞","🐌","🐿️","🐇","🦔","🦊","🦋","🐦","🪲","🐛","🐝","🦉"
+    ];
+
+    const decorCount = Math.max(
+      6,
+      Math.min(42, Math.round(forest.length / 10))
+    );
+
+    const frac = n => n - Math.floor(n);
+    const decorHash = (n, salt) =>
+      frac(Math.sin((n + 3) * (21.731 + salt * 9.137)) * 41371.913);
+
+    for (let d = 0; d < decorCount; d++) {
+      const seed = forest.length * 911 + d * 137;
+
+      // Mehr Details vorne/mittig, wenige weit hinten.
+      const depthRand = decorHash(seed, 1);
+      const topPct =
+        depthRand < .12
+          ? 28 + decorHash(seed, 2) * 20
+          : depthRand < .55
+            ? 50 + decorHash(seed, 2) * 22
+            : 72 + decorHash(seed, 2) * 15;
+
+      const leftPct = 5 + decorHash(seed, 3) * 90;
+      const icon = decorPool[Math.floor(decorHash(seed, 4) * decorPool.length)];
+
+      // Ferne Details kleiner, vordere klar erkennbar.
+      const scale =
+        topPct < 48 ? .55 :
+        topPct < 70 ? .72 :
+        .88 + decorHash(seed, 5) * .18;
+
+      const opacity =
+        topPct < 48 ? .62 :
+        topPct < 70 ? .78 :
+        .92;
+
+      box.insertAdjacentHTML("beforeend", `
+        <span
+          class="forest-world-detail"
+          aria-hidden="true"
+          style="
+            left:${leftPct}%;
+            top:${topPct}%;
+            --detail-scale:${scale};
+            opacity:${opacity};
+            z-index:${900 + Math.round(topPct)};
+          "
+        >${icon}</span>
+      `);
+    }
+  }
+
 }
 
 function renderAdminForest() {
