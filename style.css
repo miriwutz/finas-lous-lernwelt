@@ -6648,3 +6648,20 @@ label:has(textarea){
 /* 2.5an – ausschließlich Waldbewohner/Pflanzen:
    deutlich häufiger und etwas besser sichtbar.
    Archiv, Baumgröße (+22 %), Waldverteilung und Perspektive unverändert. */
+
+
+/* 2.5ao – Waldbewohner nach Tiefenzonen.
+   Bodenpflanzen/Pilze auf festen Bodenbändern; Tiere auch in Mittel-/Hintergrund.
+   Archiv, Baumgröße (+22 %), Waldverteilung und Perspektive unverändert. */
+.forest-world-detail-animal,
+.forest-world-detail-ground{
+  position:absolute;
+  pointer-events:none;
+  transform-origin:center bottom;
+}
+.forest-world-detail-animal{
+  transform:translate(-50%,-50%) scale(var(--detail-scale,1));
+}
+.forest-world-detail-ground{
+  transform:translate(-50%,-100%) scale(var(--detail-scale,1));
+}
