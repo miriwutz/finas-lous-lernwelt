@@ -144,6 +144,7 @@
               <div class="tree-meadow-layer" aria-hidden="true"></div>
 
               <div id="rootPngLayer" class="tree-root-png-layer" aria-hidden="true"></div>
+              <div id="giftButterflyLayer" class="tree-gift-butterfly-layer" aria-hidden="true"></div>
 
               <img id="treeBaseImage" class="tree-base-image"
                    src="lernbaum.png" alt="" draggable="false">
@@ -219,6 +220,24 @@
   <label>
     Datum des Herzmoments
     <input id="heartDate" type="date">
+  </label>
+
+  <label id="heartOtherField" class="hidden">
+    ✨ Sonstiges – was war der Herzmoment?
+    <input id="heartOtherText" type="text" maxlength="90" placeholder="z. B. Jemanden überrascht">
+  </label>
+
+  <label class="heart-gift-toggle">
+    <input id="heartGiftToggle" type="checkbox">
+    🎁 Diesen Herzmoment verschenken
+  </label>
+
+  <label id="heartGiftRecipientField" class="hidden">
+    Für wen?
+    <select id="heartGiftRecipient">
+      <option value="Mama">Mama</option>
+      <option value="Papa">Papa</option>
+    </select>
   </label>
 
   <label id="heartNoteField">
@@ -429,8 +448,8 @@
 
             <div class="admin-grid admin-grid-collapsible">
 
-              <details class="admin-child-details" open>
-                <summary>🌸 Fina <span>Aufgaben ein-/ausklappen</span></summary>
+              <details class="admin-child-details">
+                <summary>🌸 Fina</summary>
                 <div class="admin-child-details-body">
                   <div id="adminFinaTasks"></div>
                   <button type="button" class="soft" data-add-task="fina">
@@ -439,8 +458,8 @@
                 </div>
               </details>
 
-              <details class="admin-child-details" open>
-                <summary>🌺 Lou <span>Aufgaben ein-/ausklappen</span></summary>
+              <details class="admin-child-details">
+                <summary>🌺 Lou</summary>
                 <div class="admin-child-details-body">
                   <div id="adminLouTasks"></div>
                   <button type="button" class="soft" data-add-task="lou">
