@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.3z Herz glitzert & Wurzel dunkler";
+const APP_VERSION = "2.4a Herz, Wurzeln, Blätter & Blümchen";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -466,7 +466,7 @@ function showRootGrowthCelebration() {
       Die rote Markierung liegt am geschnitzten Herz:
       ca. 50 % Breite / 62,7 % Höhe des sichtbaren Baum-PNGs.
     */
-    const targetX = imageRect.left + imageRect.width * 0.520 - previewRect.left;
+    const targetX = imageRect.left + imageRect.width * 0.535 - previewRect.left;
     const targetY = imageRect.top + imageRect.height * 0.627 - previewRect.top;
 
     heartTarget.style.left = `${targetX}px`;
@@ -491,13 +491,13 @@ function showRootGrowthCelebration() {
         offset:.10,
         opacity:1,
         filter:"brightness(1.42) drop-shadow(0 0 10px rgba(255,216,124,.95)) drop-shadow(0 0 22px rgba(244,157,176,.72))",
-        transform:`translate(${startX}px, ${startY}px) translate(-50%,-50%) scale(2.35) rotate(-5deg)`
+        transform:`translate(${startX}px, ${startY}px) translate(-50%,-50%) scale(3.20) rotate(-5deg)`
       },
       {
         offset:.20,
         opacity:1,
         filter:"brightness(1.25) drop-shadow(0 0 7px rgba(255,226,151,.86)) drop-shadow(0 0 16px rgba(244,157,176,.55))",
-        transform:`translate(${startX + 5}px, ${startY + 18}px) translate(-50%,-50%) scale(2.05) rotate(4deg)`
+        transform:`translate(${startX + 5}px, ${startY + 18}px) translate(-50%,-50%) scale(2.65) rotate(4deg)`
       },
       {
         offset:.38,
@@ -558,6 +558,22 @@ function showRootGrowthCelebration() {
     if (flyingLeaf) flyingLeaf.style.display = "block";
     treeGrowthTimer = null;
   }, 6100);
+}
+
+const TREE_LEAF_LAYOUT_50=[
+[49,12,-8],[42,15,-24],[57,15,20],[35,19,-38],[64,19,34],[47,21,12],[53,22,-18],[29,24,-54],[70,24,48],[39,26,31],
+[60,27,-32],[23,29,-67],[76,29,62],[33,31,-18],[49,31,45],[66,32,15],[18,34,-78],[81,35,76],[27,37,28],[42,37,-42],
+[57,38,38],[72,39,-16],[14,41,-86],[85,42,84],[34,43,55],[50,44,-12],[64,45,-51],[22,47,12],[77,48,45],[30,50,-35],
+[44,50,26],[58,51,-24],[69,52,61],[17,54,-72],[83,55,70],[26,57,43],[38,57,-58],[52,58,17],[63,59,-39],[74,60,33],
+[21,63,-48],[32,64,68],[46,64,-21],[58,65,52],[69,66,-62],[79,67,44],[28,69,-17],[40,70,36],[55,70,-46],[66,71,18]
+];
+const TREE_FLOWERS=[[45,17],[62,22],[31,28],[72,34],[22,42],[55,43],[35,52],[76,54],[47,61],[64,66]];
+function decorateTree24a(){
+ const leaves=[...document.querySelectorAll("#treeLeafOverlay > *")];
+ leaves.slice(0,50).forEach((el,i)=>{const p=TREE_LEAF_LAYOUT_50[i];if(!p)return;el.style.left=p[0]+"%";el.style.top=p[1]+"%";el.style.transform=`translate(-50%,-50%) rotate(${p[2]}deg)`;});
+ const o=document.querySelector("#treeFlowerOverlay");if(!o)return;
+ const n=Math.min(10,Math.floor(Math.min(50,leaves.length)/5));
+ o.innerHTML=TREE_FLOWERS.slice(0,n).map((p,i)=>`<span class="tree-tiny-flower" style="left:${p[0]}%;top:${p[1]}%">✿</span>`).join("");
 }
 
 function renderTreeAttention() {
@@ -622,6 +638,8 @@ $("#loginForm")?.addEventListener("submit", async e => {
 
 if ($("#logoutBtn")) {
   $("#logoutBtn").onclick = () => signOut(auth);
+
+ setTimeout(decorateTree24a,0);
 }
 
 function stopTaskAttention(task, now = Date.now()) {
