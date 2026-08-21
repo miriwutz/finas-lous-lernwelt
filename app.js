@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5al Bäume 22 Prozent größer";
+const APP_VERSION = "2.5am Archiv nach Bäumen + Waldbewohner";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -2117,10 +2117,13 @@ async function archiveCurrentTreeToForest() {
       const roots = structuredClone(data.roots || []);
       const tasksSnapshot = structuredClone(data.tasks || []);
 
+      const forestTreeId = crypto.randomUUID();
+      const forestCompletedAt = new Date().toISOString();
+
       forest.push({
-        id: crypto.randomUUID(),
+        id: forestTreeId,
         name: finalName,
-        completedAt: new Date().toISOString(),
+        completedAt: forestCompletedAt,
         leaves: learningLeaves.length,
         roots,
 
@@ -2134,6 +2137,22 @@ async function archiveCurrentTreeToForest() {
         }
       });
 
+      // Archiv-Einträge des aktuellen Baum-Zeitraums mit diesem Baum verbinden.
+      const treeStartedAt = new Date(data.tree?.startedAt || 0).getTime();
+      const taskArchive = (data.taskArchive || []).map(entry => {
+        if (entry.treeId) return entry;
+        const completed = new Date(entry.completedAt || 0).getTime();
+        if (Number.isFinite(completed) && completed >= treeStartedAt) {
+          return {
+            ...entry,
+            treeId: forestTreeId,
+            treeName: finalName,
+            treeCompletedAt: forestCompletedAt
+          };
+        }
+        return entry;
+      });
+
       const tasks = (data.tasks || []).map(task => ({
         ...task,
         done: false,
@@ -2142,6 +2161,7 @@ async function archiveCurrentTreeToForest() {
 
       tx.update(spaceRef, {
         forest,
+        taskArchive,
 
         // Neuer Baum beginnt leer.
         learningLeaves: [],
@@ -2441,13 +2461,14 @@ function decorateForestScene(treeCount) {
   $$(".forest-companion").forEach(el => el.remove());
 
   for (let i = 0; i < treeCount; i++) {
+    if (treeCount >= 50) break;
     const item = forestCompanionForIndex(i);
     const p = deterministicForestPoint(i + 2);
     const el = document.createElement("span");
     el.className = "forest-companion";
-    el.textContent = item.icon;
-    el.title = item.label;
-    el.setAttribute("aria-label", item.label);
+    el.textContent = item;
+    el.title = "Kleine Entdeckung im Lernwald";
+    el.setAttribute("aria-label", "Kleine Entdeckung im Lernwald");
     el.style.left = `${p.x}%`;
     el.style.top = `${p.y}%`;
     scene.appendChild(el);
@@ -3170,8 +3191,8 @@ function renderForest() {
       <article
         class="forest-tree-spot ${Number.isFinite(layout.topPct) ? "forest-tree-depth-position" : ""}"
         style="left:${layout.left}%; ${forestPositionStyle} --tree-scale:${layout.scale * 1.22}; --tree-tilt:${layout.tilt}deg; --tree-depth:${layout.depth}; z-index:${layout.z};"
-        tabindex="0"
-        aria-label="${escapeHtml(tree.name || "Baum")} – Details anzeigen"
+        ${forest.length <= 20 ? 'tabindex="0"' : ""}
+        aria-label="${escapeHtml(tree.name || "Baum")}${forest.length <= 20 ? " – Details anzeigen" : ""}"
       >
         <div class="forest-tree-visual">
           <img
@@ -3186,17 +3207,18 @@ function renderForest() {
           ${giftCount > 0 ? '<span class="forest-mini-butterfly" aria-hidden="true">🦋</span>' : ""}
         </div>
 
-        <strong class="forest-tree-name">
-          ${escapeHtml(tree.name || "Unser Baum")}
-        </strong>
-
-        <div class="forest-tree-tooltip" role="tooltip">
-          ${dateText ? `<div>${escapeHtml(dateText)}</div>` : ""}
-          <div>🍃 ${leafCount} Lernblätter</div>
-          <div>💗 ${rootCount} Herzmomente</div>
-          ${attention > 0 ? `<div>💛 ${formatAttentionMinutes(attention)} Aufmerksamkeit</div>` : ""}
-          ${tree.paused ? '<div>↩ Zwischengespeichert</div>' : ""}
-        </div>
+        ${forest.length <= 20 ? `
+          <strong class="forest-tree-name">
+            ${escapeHtml(tree.name || "Unser Baum")}
+          </strong>
+          <div class="forest-tree-tooltip" role="tooltip">
+            ${dateText ? `<div>${escapeHtml(dateText)}</div>` : ""}
+            <div>🍃 ${leafCount} Lernblätter</div>
+            <div>💗 ${rootCount} Herzmomente</div>
+            ${attention > 0 ? `<div>💛 ${formatAttentionMinutes(attention)} Aufmerksamkeit</div>` : ""}
+            ${tree.paused ? '<div>↩ Zwischengespeichert</div>' : ""}
+          </div>
+        ` : ""}
       </article>
     `);
   });
@@ -3219,7 +3241,7 @@ function renderForest() {
     // Etwas weniger Details als zuvor.
     const decorCount = Math.max(
       5,
-      Math.min(34, Math.round(forest.length / 12))
+      Math.min(42, Math.round(forest.length / 10))
     );
 
     const frac = n => n - Math.floor(n);
@@ -3267,13 +3289,16 @@ function renderForest() {
         topPct < 65 ? .42 + decorHash(seed, 5) * .10 :
         .56 + decorHash(seed, 5) * .12;
 
-      if (kind === "plant") scale *= .90;
-      if (kind === "tree") scale *= .88;
+      if (kind === "plant") scale *= 1.08;
+      if (kind === "tree") scale *= 1.05;
+      if (kind === "ground") scale *= 1.10;
+
+      scale *= 1.18;
 
       const opacity =
-        topPct < 45 ? .50 :
-        topPct < 65 ? .67 :
-        .82;
+        topPct < 45 ? .62 :
+        topPct < 65 ? .76 :
+        .90;
 
       box.insertAdjacentHTML("beforeend", `
         <span
@@ -3634,27 +3659,39 @@ function renderTaskArchive() {
   const archive = [...(state.taskArchive || [])].sort((a,b) =>
     new Date(b.completedAt || 0) - new Date(a.completedAt || 0)
   );
+  const forestChronological = [...(state.forest || [])].sort((a,b) =>
+    new Date(a.completedAt || 0) - new Date(b.completedAt || 0)
+  );
 
-  const filtered = query
-    ? archive.filter(item => {
-        const haystack = normalizeArchiveSearch([
-          item.title,
-          item.note,
-          item.url,
-          item.child,
-          item.type
-        ].filter(Boolean).join(" "));
-        return haystack.includes(query);
-      })
-    : archive;
+  const matches = item => {
+    if (!query) return true;
+    const haystack = normalizeArchiveSearch([
+      item.title, item.note, item.url, item.child, item.type, item.treeName
+    ].filter(Boolean).join(" "));
+    return haystack.includes(query);
+  };
 
+  // Alte Archivdaten ohne treeId werden anhand der Baum-Abschlusszeiten
+  // nachträglich dem plausiblen Lernbaum zugeordnet.
+  const inferredTreeId = item => {
+    if (item.treeId) return item.treeId;
+    const t = new Date(item.completedAt || 0).getTime();
+    if (!Number.isFinite(t)) return "current";
+    for (const tree of forestChronological) {
+      const endTime = new Date(tree.completedAt || 0).getTime();
+      if (Number.isFinite(endTime) && t <= endTime) return tree.id;
+    }
+    return "current";
+  };
+
+  const filtered = archive.filter(matches);
   box.innerHTML = "";
 
   const info = $("#archiveSearchInfo");
   if (info) {
     info.textContent = query
       ? `${filtered.length} von ${archive.length} Einträgen gefunden`
-      : `${archive.length} gespeicherte Aufgaben`;
+      : `${archive.length} gespeicherte Aufgaben · nach Bäumen sortiert`;
   }
 
   if (!filtered.length) {
@@ -3664,12 +3701,27 @@ function renderTaskArchive() {
     return;
   }
 
+  const groups = new Map();
   filtered.forEach(item => {
+    const key = inferredTreeId(item);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(item);
+  });
+
+  const forestById = new Map((state.forest || []).map(t => [t.id, t]));
+  const orderedKeys = [...groups.keys()].sort((a,b) => {
+    if (a === "current") return -1;
+    if (b === "current") return 1;
+    return new Date(forestById.get(b)?.completedAt || 0) -
+           new Date(forestById.get(a)?.completedAt || 0);
+  });
+
+  const renderItem = item => {
     const date = item.completedAt
       ? new Date(item.completedAt).toLocaleDateString("de-AT")
       : "";
 
-    box.insertAdjacentHTML("beforeend", `
+    return `
       <article class="archive-task archive-task-compact">
         <div class="archive-task-topline">
           <span class="archive-task-meta">
@@ -3681,36 +3733,45 @@ function renderTaskArchive() {
               : "💛 0 Min."}
           </span>
         </div>
-
         <strong class="archive-task-title">${escapeHtml(item.title || "Ohne Titel")}</strong>
-
         ${item.note ? `<div class="archive-task-note">${escapeHtml(item.note)}</div>` : ""}
-
         ${item.url ? `
           <div class="archive-task-link-line">
             <span>🔗</span>
-            <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener">
-              ${escapeHtml(item.url)}
-            </a>
-          </div>
-        ` : ""}
-
+            <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener">${escapeHtml(item.url)}</a>
+          </div>` : ""}
         <div class="archive-task-bottomline">
           <span class="archive-task-difficulty">
-            ${item.difficulty
-              ? `Schwierigkeit: ${escapeHtml(item.difficulty)}`
-              : "Schwierigkeit nicht erfasst"}
+            ${item.difficulty ? `Schwierigkeit: ${escapeHtml(item.difficulty)}` : "Schwierigkeit nicht erfasst"}
           </span>
-
-          <button
-            type="button"
-            class="reuse-archive-task"
-            data-reuse-archive="${escapeHtml(item.id)}"
-          >
-            ↻ Wiederverwenden
-          </button>
+          <button type="button" class="reuse-archive-task"
+            data-reuse-archive="${escapeHtml(item.id)}">↻ Wiederverwenden</button>
         </div>
-      </article>
+      </article>`;
+  };
+
+  orderedKeys.forEach((key, idx) => {
+    const items = groups.get(key);
+    const tree = key === "current" ? null : forestById.get(key);
+    const treeName = tree?.name || items[0]?.treeName || "Aktueller Baum";
+    const completed = tree?.completedAt
+      ? new Date(tree.completedAt).toLocaleDateString("de-AT")
+      : "";
+    const leafCount = tree?.snapshot?.learningLeaves?.length ?? tree?.leaves ?? items.length;
+    const rootCount = tree?.snapshot?.roots?.length ?? tree?.roots?.length ?? 0;
+
+    box.insertAdjacentHTML("beforeend", `
+      <details class="archive-tree-group" ${idx === 0 ? "open" : ""}>
+        <summary class="archive-tree-summary">
+          <span class="archive-tree-title">🌳 ${escapeHtml(treeName)}</span>
+          <span class="archive-tree-summary-meta">
+            ${completed ? `${escapeHtml(completed)} · ` : ""}
+            ${items.length} ${items.length === 1 ? "Aufgabe" : "Aufgaben"}
+            ${tree ? ` · 🍃 ${leafCount} · 💗 ${rootCount}` : ""}
+          </span>
+        </summary>
+        <div class="archive-tree-content">${items.map(renderItem).join("")}</div>
+      </details>
     `);
   });
 
