@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5p Blümchen zwischen den Blättern";
+const APP_VERSION = "2.5q Lernwald wächst mit";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -713,11 +713,11 @@ function renderTreeFlowers() {
     flowerLayer.insertAdjacentHTML("beforeend", `
       <g class="tree-flower" transform="translate(${x} ${y}) rotate(${rot})">
         <g class="tree-flower-shape" style="--flower-delay:${i * 70}ms">
-          <ellipse cx="-4" cy="0" rx="4.2" ry="6.3" fill="${color}" opacity=".48"/>
-          <ellipse cx="4" cy="0" rx="4.2" ry="6.3" fill="${color}" opacity=".48"/>
-          <ellipse cx="0" cy="-4" rx="4.2" ry="6.3" fill="${color}" opacity=".48"/>
-          <ellipse cx="0" cy="4" rx="4.2" ry="6.3" fill="${color}" opacity=".48"/>
-          <circle cx="0" cy="0" r="2.5" fill="#d9b66a" opacity=".72"/>
+          <ellipse cx="-4" cy="0" rx="4.2" ry="6.3" fill="${color}" opacity=".60"/>
+          <ellipse cx="4" cy="0" rx="4.2" ry="6.3" fill="${color}" opacity=".60"/>
+          <ellipse cx="0" cy="-4" rx="4.2" ry="6.3" fill="${color}" opacity=".60"/>
+          <ellipse cx="0" cy="4" rx="4.2" ry="6.3" fill="${color}" opacity=".60"/>
+          <circle cx="0" cy="0" r="2.5" fill="#d9b66a" opacity=".80"/>
         </g>
       </g>
     `);
@@ -2218,7 +2218,6 @@ function openForestView() {
   if (!forest) return;
 
   renderForest();
-  decorateForestScene((state.forest || []).length);
   forest.classList.remove("hidden");
 
   requestAnimationFrame(() => {
@@ -2368,11 +2367,13 @@ function forestMiniLeaves(tree) {
 
 const FOREST_COMPANIONS = [
   { icon: "🌿", label: "ein kleiner Farn" },
-  { icon: "🍄", label: "ein kleiner Pilz" },
   { icon: "🌼", label: "eine Waldblume" },
-  { icon: "🐌", label: "eine Schnecke" },
+  { icon: "🍄", label: "ein kleiner Pilz" },
   { icon: "🐞", label: "ein Marienkäfer" },
+  { icon: "🐌", label: "eine Schnecke" },
+  { icon: "🌱", label: "eine junge Pflanze" },
   { icon: "🐦", label: "ein kleiner Vogel" },
+  { icon: "🦋", label: "ein Waldschmetterling" },
   { icon: "🐿️", label: "ein Eichhörnchen" },
   { icon: "🦔", label: "ein Igel" },
   { icon: "🐇", label: "ein Hase" },
@@ -2382,19 +2383,31 @@ const FOREST_COMPANIONS = [
 ];
 
 function forestZoomForCount(count) {
-  if (count <= 4) return 1;
-  if (count <= 8) return 0.88;
-  if (count <= 14) return 0.76;
-  if (count <= 22) return 0.66;
-  if (count <= 32) return 0.58;
-  return 0.52;
+  if (count <= 4) return 1.00;
+  if (count <= 8) return 0.90;
+  if (count <= 14) return 0.80;
+  if (count <= 22) return 0.70;
+  if (count <= 32) return 0.62;
+  if (count <= 45) return 0.55;
+  return 0.49;
 }
 
 function forestCompanionForIndex(index) {
-  // Besondere Tiere kommen erst später; Pflanzen/kleine Tiere früher.
+  // Anfang: Pflanzen und winzige Tiere.
+  // Je größer der Lernwald wird, desto mehr Waldbewohner dürfen einziehen.
   const early = FOREST_COMPANIONS.slice(0, 6);
-  const medium = FOREST_COMPANIONS.slice(0, 9);
-  const pool = index < 5 ? early : index < 12 ? medium : FOREST_COMPANIONS;
+  const growing = FOREST_COMPANIONS.slice(0, 10);
+  const full = FOREST_COMPANIONS;
+
+  const pool =
+    index < 5
+      ? early
+      : index < 12
+        ? growing
+        : full;
+
+  // Deterministisch: Ein einmal entstandener Bewohner bleibt
+  // auch beim nächsten Öffnen derselbe.
   return pool[index % pool.length];
 }
 
@@ -2424,7 +2437,7 @@ function deterministicForestPoint(index) {
 }
 
 function decorateForestScene(treeCount) {
-  const scene = $("#forestScene");
+  const scene = $(".forest-stage");
   if (!scene) return;
 
   scene.style.setProperty("--forest-zoom", forestZoomForCount(treeCount));
@@ -2455,7 +2468,10 @@ function renderForest() {
 
   emptyHint?.classList.toggle("hidden", forest.length > 0);
 
-  if (!forest.length) return;
+  if (!forest.length) {
+    decorateForestScene(0);
+    return;
+  }
 
   forest.forEach((tree, i) => {
     const rootCount = tree.roots?.length || tree.snapshot?.roots?.length || 0;
@@ -2511,6 +2527,8 @@ function renderForest() {
       </article>
     `);
   });
+
+  decorateForestScene(forest.length);
 }
 
 function renderAdminForest() {
