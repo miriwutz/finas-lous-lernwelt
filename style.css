@@ -4057,3 +4057,178 @@ label:has(textarea){
     width:100% !important;
   }
 }
+
+/* =========================================================
+   2.4k – Reparatur Tabs / Wurzeln / Geschenkflug / Formular
+   ========================================================= */
+
+/* Tabs wieder eindeutig klickbar */
+#mamaPanel .tabs{
+  position:relative;
+  z-index:3;
+}
+
+#mamaPanel .tab{
+  position:relative;
+  z-index:4;
+  pointer-events:auto !important;
+}
+
+#mamaPanel .tab-panel.hidden{
+  display:none !important;
+}
+
+#mamaPanel .tab-panel:not(.hidden){
+  display:block !important;
+}
+
+/* Wurzelbereich gehört ausschließlich in "Baum begleiten" */
+#adminRootsPanel{
+  margin-top:24px !important;
+  padding-top:18px !important;
+  border-top:2px solid rgba(111,90,76,.65) !important;
+}
+
+#tasksTab > #adminRootsPanel,
+#archiveTab > #adminRootsPanel{
+  display:none !important;
+}
+
+.admin-roots-heading h3{
+  margin:0 0 5px !important;
+}
+
+.admin-roots-heading p{
+  margin:0 0 12px !important;
+}
+
+/* Herzmoment-Eingabe: klare Hierarchie statt einer langen verrutschenden Zeile */
+.heart-form-clean{
+  display:block !important;
+  width:100% !important;
+  margin-top:12px !important;
+}
+
+.heart-meta-primary{
+  display:grid !important;
+  grid-template-columns:140px 155px !important;
+  gap:10px !important;
+  align-items:end !important;
+  width:max-content !important;
+  max-width:100% !important;
+  margin-bottom:9px !important;
+}
+
+.heart-meta-primary label{
+  margin:0 !important;
+}
+
+.heart-gift-row{
+  display:flex !important;
+  align-items:end !important;
+  gap:12px !important;
+  flex-wrap:wrap !important;
+  margin-bottom:11px !important;
+}
+
+.heart-gift-toggle{
+  min-height:42px !important;
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  gap:8px !important;
+  margin:0 !important;
+  padding:8px 11px !important;
+  width:auto !important;
+  border:1px solid var(--line) !important;
+  border-radius:11px !important;
+  background:#fffaf5 !important;
+}
+
+.heart-gift-toggle input{
+  width:17px !important;
+  height:17px !important;
+  margin:0 !important;
+  flex:0 0 17px !important;
+}
+
+.heart-recipient-field{
+  width:150px !important;
+  margin:0 !important;
+}
+
+.heart-recipient-field select{
+  width:150px !important;
+}
+
+.heart-other-field{
+  width:min(520px,100%) !important;
+  margin:8px 0 11px !important;
+}
+
+.heart-note-field{
+  display:block !important;
+  width:100% !important;
+  margin:0 !important;
+}
+
+#heartReason{
+  width:100% !important;
+  min-height:118px !important;
+  height:118px !important;
+  margin-top:7px !important;
+}
+
+.heart-action-row{
+  display:flex !important;
+  justify-content:flex-end !important;
+  margin-top:10px !important;
+}
+
+.heart-save-btn{
+  width:auto !important;
+  min-width:230px !important;
+  min-height:44px !important;
+  padding:10px 16px !important;
+}
+
+/* Der fliegende SVG-Schmetterling wird über left/top bewegt.
+   Deshalb darf er keinen statischen Positions-Transform erzwingen. */
+.flying-gift-butterfly{
+  position:absolute !important;
+  margin:0 !important;
+  transform:translate(-50%,-50%) !important;
+  transition:none !important;
+  will-change:left,top,opacity !important;
+}
+
+/* Seine Form bleibt stabil, nur die Flügel flattern. */
+.flying-gift-butterfly .gift-butterfly-svg{
+  width:100% !important;
+  height:100% !important;
+  overflow:visible !important;
+}
+
+@media(max-width:650px){
+  .heart-meta-primary{
+    width:100% !important;
+    grid-template-columns:1fr 1fr !important;
+  }
+
+  .heart-gift-row{
+    align-items:stretch !important;
+  }
+
+  .heart-recipient-field,
+  .heart-recipient-field select{
+    width:100% !important;
+  }
+
+  .heart-action-row{
+    display:block !important;
+  }
+
+  .heart-save-btn{
+    width:100% !important;
+  }
+}
