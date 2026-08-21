@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.4f Geschenk-Animation & kleinerer Baum";
+const APP_VERSION = "2.4g Herzbereich übersichtlich & Schmetterling sichtbar";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -1267,8 +1267,12 @@ function renderRootPngs() {
 }
 
 const GIFT_BUTTERFLY_POSITIONS = [
-  [27,66,-14],[73,65,16],[21,61,-7],[79,60,9],[31,70,12],[69,71,-11],
-  [24,73,8],[76,73,-8],[34,64,-18],[66,63,18],[19,68,-12],[81,67,12]
+  [24,58,-12],[76,58,13],
+  [19,64,-6],[81,64,8],
+  [28,69,10],[72,69,-10],
+  [22,73,7],[78,73,-7],
+  [33,61,-15],[67,61,15],
+  [17,69,-10],[83,69,10]
 ];
 const GIFT_BUTTERFLY_COLORS = [
   [219,145,166],[177,151,211],[123,178,199],[224,176,91],[141,181,137],[203,154,116]
@@ -1375,6 +1379,7 @@ function renderTree() {
 
   renderRootPngs();
   renderGiftButterflies();
+  requestAnimationFrame(() => renderGiftButterflies());
 
   const target = Number(state.tree?.targetLeaves || 20);
   const complete = leaves.length >= target;
