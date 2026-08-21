@@ -6371,32 +6371,55 @@ label:has(textarea){
 
 
 /* =========================================================
-   2.5x – Lernwelt nutzt die Tiefe + ruhigere Waldbewohner
+   2.5y – neue Landschaftslogik ab 21 Bäumen
    ========================================================= */
 
-/* Bei großer Waldmenge sollen weit entfernte Bäume wirklich wie Ferne wirken. */
-.forest-stage.forest-landscape .forest-tree-spot{
+.forest-stage,
+.forest-grid{
+  overflow:hidden !important;
+}
+
+.forest-tree-spot{
+  transform:
+    translateX(-50%)
+    scale(var(--tree-scale, 1))
+    rotate(var(--tree-tilt, 0deg)) !important;
   transform-origin:center bottom !important;
 }
 
-/* Bewohner optisch unterordnen: Wald zuerst, Details danach. */
-.forest-companion{
-  opacity:.72 !important;
-  font-size:clamp(11px, 1.35vw, 20px) !important;
+/* In der Landschaftsansicht sind Namen nur noch ein Detail auf Nachfrage. */
+.forest-stage.forest-dense .forest-tree-name,
+.forest-stage.forest-landscape .forest-tree-name,
+.forest-stage.forest-very-dense .forest-tree-name{
+  opacity:0 !important;
+  display:block !important;
 }
 
-/* Ab 100: Details kleiner, damit sie nicht zwischen den Baumkronen dominieren. */
+.forest-stage .forest-tree-spot:hover .forest-tree-name,
+.forest-stage .forest-tree-spot:focus-visible .forest-tree-name{
+  opacity:1 !important;
+}
+
+/* Tiere/Pflanzen dürfen die Landschaft nicht wieder zu einem unteren Emoji-Band machen. */
 .forest-stage.forest-dense .forest-companion{
-  opacity:.62 !important;
-  font-size:clamp(9px, 1.05vw, 16px) !important;
+  opacity:.55 !important;
+  transform:translate(-50%, -50%) scale(.72) !important;
 }
 
-/* Ab 250 nur ein Teil sichtbar – gespeichert bleibt weiterhin alles. */
 .forest-stage.forest-landscape .forest-companion{
-  opacity:.54 !important;
+  opacity:.42 !important;
 }
 
-/* Weit hinten sollen Namen/Details nicht die Vogelperspektive zerstören. */
-.forest-stage.forest-landscape .forest-tree-name{
+.forest-stage.forest-landscape .forest-companion:nth-of-type(2n){
   display:none !important;
+}
+
+.forest-stage.forest-very-dense .forest-companion{
+  display:none !important;
+}
+
+.forest-stage.forest-very-dense .forest-companion:nth-of-type(5n){
+  display:block !important;
+  opacity:.34 !important;
+  transform:translate(-50%, -50%) scale(.52) !important;
 }
