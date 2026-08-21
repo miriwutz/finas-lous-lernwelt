@@ -6553,3 +6553,25 @@ label:has(textarea){
 
 /* Die Details liegen bewusst über der Waldfläche,
    bleiben aber klein genug, um kein Wimmelbild zu erzeugen. */
+
+
+/* =========================================================
+   2.5ae – finaler Wald-Feinschliff
+   - zusammenhängender Wald statt großer Waldinseln
+   - kleine Lichtungen bleiben
+   - Bewohner dezenter, Pflanzen häufiger als Tiere
+   - Perspektiv-Renderfix bleibt unangetastet
+   ========================================================= */
+
+.forest-world-detail{
+  font-size:clamp(11px, 1.18vw, 18px);
+}
+
+.forest-world-detail-tree{
+  filter:saturate(.82);
+}
+
+.forest-world-detail-ground,
+.forest-world-detail-plant{
+  filter:saturate(.78);
+}
