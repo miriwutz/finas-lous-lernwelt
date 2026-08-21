@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5v Lernwald Stresstest bis 1000";
+const APP_VERSION = "2.5w Lernwelt Perspektive bis 1000";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -2397,13 +2397,9 @@ const FOREST_COMPANIONS = [
 ];
 
 function forestZoomForCount(count) {
-  if (count <= 4) return 1.00;
-  if (count <= 8) return 0.90;
-  if (count <= 14) return 0.80;
-  if (count <= 22) return 0.70;
-  if (count <= 32) return 0.62;
-  if (count <= 45) return 0.55;
-  return 0.49;
+  // Die Perspektive entsteht ab 2.5w über echte Tiefenverteilung und Baumgröße,
+  // nicht mehr dadurch, die komplette Waldfläche zusammenzustauchen.
+  return 1;
 }
 
 function forestCompanionForIndex(index) {
@@ -2454,7 +2450,9 @@ function decorateForestScene(treeCount) {
   scene.style.setProperty("--forest-zoom", forestZoomForCount(treeCount));
   scene.dataset.forestCount = String(treeCount);
   scene.classList.toggle("forest-dense", treeCount >= 100);
+  scene.classList.toggle("forest-landscape", treeCount >= 250);
   scene.classList.toggle("forest-very-dense", treeCount >= 500);
+  scene.classList.toggle("forest-world-view", treeCount >= 1000);
 
   $$(".forest-companion").forEach(el => el.remove());
 
@@ -2589,26 +2587,35 @@ function runGrowthPreview(kind) {
 
 const FOREST_LAYOUT_CACHE = new Map();
 
+function forestViewProfile(count) {
+  if (count <= 20) {
+    return { top: 38, bottom: 88, minScale: .72, maxScale: 1.00, attempts: 34 };
+  }
+  if (count <= 50) {
+    return { top: 29, bottom: 90, minScale: .52, maxScale: .88, attempts: 30 };
+  }
+  if (count <= 100) {
+    return { top: 20, bottom: 92, minScale: .34, maxScale: .70, attempts: 24 };
+  }
+  if (count <= 250) {
+    return { top: 14, bottom: 93, minScale: .22, maxScale: .52, attempts: 18 };
+  }
+  if (count <= 500) {
+    return { top: 10, bottom: 94, minScale: .15, maxScale: .38, attempts: 12 };
+  }
+  return { top: 7, bottom: 95, minScale: .10, maxScale: .29, attempts: 8 };
+}
+
 function buildForestLayouts(count) {
   const safeCount = Math.max(1, count);
   if (FOREST_LAYOUT_CACHE.has(safeCount)) {
     return FOREST_LAYOUT_CACHE.get(safeCount);
   }
 
+  const profile = forestViewProfile(safeCount);
   const frac = n => n - Math.floor(n);
   const hash = (n, salt) =>
     frac(Math.sin((n + 1) * (12.9898 + salt * 17.123)) * 43758.5453123);
-
-  const densityScale =
-    safeCount <= 5   ? 1.00 :
-    safeCount <= 10  ? 0.91 :
-    safeCount <= 20  ? 0.78 :
-    safeCount <= 35  ? 0.67 :
-    safeCount <= 50  ? 0.57 :
-    safeCount <= 100 ? 0.48 :
-    safeCount <= 250 ? 0.39 :
-    safeCount <= 500 ? 0.32 :
-                       0.26;
 
   const placed = [];
 
@@ -2616,71 +2623,82 @@ function buildForestLayouts(count) {
     let best = null;
     let bestScore = -Infinity;
 
-    // Bei sehr großen Tests reichen weniger Kandidaten:
-    // visuell noch organisch, deutlich schneller.
-    const attempts =
-      safeCount <= 100 ? 34 :
-      safeCount <= 250 ? 24 :
-      safeCount <= 500 ? 16 :
-                         10;
+    for (let attempt = 0; attempt < profile.attempts; attempt++) {
+      const seed = n * 71 + attempt * 29;
 
-    for (let attempt = 0; attempt < attempts; attempt++) {
-      const seed = n * 53 + attempt * 17;
+      // 0 = weit hinten, 1 = vorne.
+      // Leichte Bevorzugung der mittleren/hinteren Landschaft verhindert
+      // den bisherigen dichten "Baumgürtel" am unteren Rand.
+      const r = hash(seed, 1);
+      const depth = Math.pow(r, 1.16);
 
-      const rawDepth = hash(seed, 1);
-      const depth = Math.pow(rawDepth, 0.92);
+      // Landschaft nach hinten etwas schmaler, vorne breiter.
+      const horizontalMargin = 5.5 + (1 - depth) * 4.5;
+      let x = horizontalMargin +
+              hash(seed, 2) * (100 - 2 * horizontalMargin);
 
-      const spread = 76 + depth * 12;
-      let x = 50 + (hash(seed, 2) - 0.5) * spread;
-      x += (hash(seed, 3) - 0.5) * 8;
-      x = Math.max(7, Math.min(91, x));
+      // Organische seitliche Drift.
+      x += Math.sin((depth * 8.4) + n * .73) * (1.2 + depth * 1.4);
+      x = Math.max(horizontalMargin, Math.min(100 - horizontalMargin, x));
 
-      const y = 20 + depth * 66;
+      // WIRKLICHE Tiefenverteilung über fast die ganze sichtbare Landschaft.
+      const y = profile.top + depth * (profile.bottom - profile.top);
 
       let minDist = 999;
       let alignmentPenalty = 0;
 
-      // Für große Mengen nur die letzten Positionen + einige Stichproben prüfen.
-      // So bleibt der 1000er-Test benutzbar.
-      const start = safeCount <= 250 ? 0 : Math.max(0, placed.length - 140);
+      // Für große Wälder lokale Nachbarschaft prüfen; das hält 1000 performant.
+      const lookBack =
+        safeCount <= 100 ? placed.length :
+        safeCount <= 250 ? Math.min(placed.length, 190) :
+        safeCount <= 500 ? Math.min(placed.length, 120) :
+                           Math.min(placed.length, 80);
+
+      const start = Math.max(0, placed.length - lookBack);
 
       for (let pIndex = start; pIndex < placed.length; pIndex++) {
         const p = placed[pIndex];
-        const dx = (x - p.x);
-        const dy = (y - p.y) / 0.72;
+
+        // In der Ferne dürfen Bäume dichter stehen als vorne.
+        const depthMean = (depth + p.depth) / 2;
+        const dx = (x - p.x) / (0.72 + depthMean * .42);
+        const dy = (y - p.y) / (0.78 + depthMean * .30);
         const d = Math.sqrt(dx * dx + dy * dy);
+
         minDist = Math.min(minDist, d);
 
-        if (Math.abs(x - p.x) < 3.8) alignmentPenalty += 3.4;
-        if (Math.abs(y - p.y) < 3.5) alignmentPenalty += 1.6;
-      }
-
-      // Zusätzliche Stichproben aus älteren Bereichen.
-      if (safeCount > 250 && placed.length > 140) {
-        const sampleStep = Math.max(1, Math.floor(placed.length / 40));
-        for (let pIndex = 0; pIndex < placed.length - 140; pIndex += sampleStep) {
-          const p = placed[pIndex];
-          const dx = x - p.x;
-          const dy = (y - p.y) / 0.72;
-          const d = Math.sqrt(dx * dx + dy * dy);
-          minDist = Math.min(minDist, d);
+        if (Math.abs(x - p.x) < 1.8 + depthMean * 1.4 &&
+            Math.abs(y - p.y) < 2.2) {
+          alignmentPenalty += 2.8;
         }
       }
 
-      const clusterWave =
-        Math.sin((x / 100) * Math.PI * 3.1 + 0.8) * 1.8 +
-        Math.cos((y / 100) * Math.PI * 2.4) * 1.2;
+      // Ältere Punkte stichprobenartig einbeziehen.
+      if (start > 0) {
+        const step = Math.max(1, Math.floor(start / 28));
+        for (let pIndex = 0; pIndex < start; pIndex += step) {
+          const p = placed[pIndex];
+          const dx = x - p.x;
+          const dy = y - p.y;
+          minDist = Math.min(minDist, Math.sqrt(dx * dx + dy * dy));
+        }
+      }
 
-      const edgePenalty =
-        x < 11 || x > 87 ? 4 :
-        x < 15 || x > 83 ? 1.5 : 0;
+      // Kleine Lichtungen/Cluster statt gleichmäßiger Punktwolke.
+      const landscapeWave =
+        Math.sin(x * .115 + y * .071) * 1.8 +
+        Math.cos(x * .061 - y * .133) * 1.35;
+
+      // Vordergrund nicht komplett zukleistern.
+      const foregroundPenalty =
+        depth > .82 ? (depth - .82) * safeCount * .022 : 0;
 
       const score =
-        (placed.length ? Math.min(minDist, 22) : 20) +
-        clusterWave -
-        edgePenalty -
-        alignmentPenalty +
-        hash(seed, 4) * 2.8;
+        Math.min(minDist, 17) +
+        landscapeWave -
+        alignmentPenalty -
+        foregroundPenalty +
+        hash(seed, 5) * 2.4;
 
       if (score > bestScore) {
         bestScore = score;
@@ -2688,11 +2706,17 @@ function buildForestLayouts(count) {
       }
     }
 
-    const perspective = 0.55 + best.depth * 0.45;
-    const variation = 0.90 + hash(best.seed, 6) * 0.18;
-    const scale = densityScale * perspective * variation;
-    const bottom = 34 + (1 - best.depth) * 118;
-    const tilt = (hash(best.seed, 7) - 0.5) * 2.4;
+    // Perspektive: weit hinten deutlich kleiner, vorne größer.
+    const perspective = profile.minScale +
+      Math.pow(best.depth, .82) * (profile.maxScale - profile.minScale);
+
+    const variation = .88 + hash(best.seed, 6) * .22;
+    const scale = perspective * variation;
+
+    // y ist Prozent von oben. CSS arbeitet mit bottom.
+    const bottom = 100 - best.y;
+
+    const tilt = (hash(best.seed, 7) - .5) * 2.2;
 
     placed.push({
       x: best.x,
@@ -2702,7 +2726,7 @@ function buildForestLayouts(count) {
       left: best.x,
       bottom,
       scale,
-      z: 20 + Math.round(best.depth * 80),
+      z: 10 + Math.round(best.depth * 900),
       tilt
     });
   }
