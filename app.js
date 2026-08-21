@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5w Lernwelt Perspektive bis 1000";
+const APP_VERSION = "2.5x Lernwelt Tiefe & Waldbewohner";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -2380,20 +2380,12 @@ function forestMiniLeaves(tree) {
 /* ---------- 2.5l: wachsender Lernwald ---------- */
 
 const FOREST_COMPANIONS = [
-  { icon: "🌿", label: "ein kleiner Farn" },
-  { icon: "🌼", label: "eine Waldblume" },
-  { icon: "🍄", label: "ein kleiner Pilz" },
-  { icon: "🐞", label: "ein Marienkäfer" },
-  { icon: "🐌", label: "eine Schnecke" },
-  { icon: "🌱", label: "eine junge Pflanze" },
-  { icon: "🐦", label: "ein kleiner Vogel" },
-  { icon: "🦋", label: "ein Waldschmetterling" },
-  { icon: "🐿️", label: "ein Eichhörnchen" },
-  { icon: "🦔", label: "ein Igel" },
-  { icon: "🐇", label: "ein Hase" },
-  { icon: "🦉", label: "eine Eule" },
-  { icon: "🦊", label: "ein Fuchs" },
-  { icon: "🦌", label: "ein Reh" }
+  // Pflanzen sind am häufigsten – Tiere bleiben dadurch etwas Besonderes.
+  "🌿","🌿","🌿","🌱","🌱","🌱","🍄","🍄","🌼","🌸","🌾","☘️",
+  // Kleine Waldtiere
+  "🐿️","🐇","🦔","🐌","🐞","🦋","🐝","🐦",
+  // Seltenere Waldbewohner
+  "🦊","🦌","🦉"
 ];
 
 function forestZoomForCount(count) {
@@ -2588,22 +2580,28 @@ function runGrowthPreview(kind) {
 const FOREST_LAYOUT_CACHE = new Map();
 
 function forestViewProfile(count) {
+  /*
+    2.5x:
+    Je voller der Lernwald wird, desto weiter zieht sich die Kamera zurück.
+    "top" wandert deshalb deutlich nach oben.
+    Kleine Bäume dürfen weit hinten stehen; vorne bleiben größere Einzelbäume.
+  */
   if (count <= 20) {
     return { top: 38, bottom: 88, minScale: .72, maxScale: 1.00, attempts: 34 };
   }
   if (count <= 50) {
-    return { top: 29, bottom: 90, minScale: .52, maxScale: .88, attempts: 30 };
+    return { top: 25, bottom: 90, minScale: .48, maxScale: .86, attempts: 30 };
   }
   if (count <= 100) {
-    return { top: 20, bottom: 92, minScale: .34, maxScale: .70, attempts: 24 };
+    return { top: 14, bottom: 92, minScale: .29, maxScale: .67, attempts: 24 };
   }
   if (count <= 250) {
-    return { top: 14, bottom: 93, minScale: .22, maxScale: .52, attempts: 18 };
+    return { top: 4, bottom: 93, minScale: .13, maxScale: .48, attempts: 18 };
   }
   if (count <= 500) {
-    return { top: 10, bottom: 94, minScale: .15, maxScale: .38, attempts: 12 };
+    return { top: 2, bottom: 94, minScale: .085, maxScale: .34, attempts: 12 };
   }
-  return { top: 7, bottom: 95, minScale: .10, maxScale: .29, attempts: 8 };
+  return { top: 1, bottom: 95, minScale: .055, maxScale: .25, attempts: 8 };
 }
 
 function buildForestLayouts(count) {
@@ -2630,7 +2628,14 @@ function buildForestLayouts(count) {
       // Leichte Bevorzugung der mittleren/hinteren Landschaft verhindert
       // den bisherigen dichten "Baumgürtel" am unteren Rand.
       const r = hash(seed, 1);
-      const depth = Math.pow(r, 1.16);
+      // Mehr Bäume => mehr echte Ferne. Bei 250+ wird die obere Landschaft
+      // bewusst mit kleinen Baumgruppen erschlossen.
+      const depthExponent =
+        safeCount <= 50 ? 1.05 :
+        safeCount <= 100 ? .88 :
+        safeCount <= 250 ? .68 :
+        safeCount <= 500 ? .58 : .50;
+      const depth = 1 - Math.pow(1 - r, depthExponent);
 
       // Landschaft nach hinten etwas schmaler, vorne breiter.
       const horizontalMargin = 5.5 + (1 - depth) * 4.5;
