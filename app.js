@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5y Lernwald neue Landschaftslogik";
+const APP_VERSION = "2.5z Große Wälder echte Flächenlogik";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -2414,20 +2414,16 @@ function deterministicForestPoint(index) {
   const hash = (n, salt) =>
     frac(Math.sin((n + 5) * (9.731 + salt * 13.117)) * 24634.6345);
 
+  // Mehrere Höhenzonen statt Bodenlinie.
+  const band = index % 6;
+  const bandY = [82, 74, 66, 86, 70, 78][band];
+
   const x = 7 + hash(index, 1) * 86;
-
-  // Verschiedene Tiefenzonen statt einer unteren Emoji-Linie.
-  const depthBand = index % 4;
-  const yBase =
-    depthBand === 0 ? 76 :
-    depthBand === 1 ? 82 :
-    depthBand === 2 ? 69 : 87;
-
-  const y = yBase + (hash(index, 2) - 0.5) * 7;
+  const y = bandY + (hash(index, 2) - .5) * 6;
 
   return {
     x: Math.max(6, Math.min(94, x)),
-    y: Math.max(66, Math.min(92, y))
+    y: Math.max(62, Math.min(90, y))
   };
 }
 
@@ -2751,10 +2747,213 @@ function buildLandscapeForest(count) {
   return result;
 }
 
+
+const FOREST_LARGE_LAYOUT_CACHE = new Map();
+
+function forestLargeProfile(count) {
+  if (count <= 100) {
+    return {
+      top: 30,
+      bottom: 90,
+      rows: 6,
+      farScale: .25,
+      nearScale: .62,
+      marginX: 6
+    };
+  }
+
+  if (count <= 250) {
+    return {
+      top: 20,
+      bottom: 92,
+      rows: 8,
+      farScale: .15,
+      nearScale: .48,
+      marginX: 5
+    };
+  }
+
+  if (count <= 500) {
+    return {
+      top: 12,
+      bottom: 94,
+      rows: 10,
+      farScale: .10,
+      nearScale: .35,
+      marginX: 4
+    };
+  }
+
+  return {
+    top: 7,
+    bottom: 95,
+    rows: 13,
+    farScale: .065,
+    nearScale: .26,
+    marginX: 3.5
+  };
+}
+
+function buildLargeForestLayout(count) {
+  const safeCount = Math.max(50, count);
+
+  if (FOREST_LARGE_LAYOUT_CACHE.has(safeCount)) {
+    return FOREST_LARGE_LAYOUT_CACHE.get(safeCount);
+  }
+
+  const profile = forestLargeProfile(safeCount);
+  const frac = n => n - Math.floor(n);
+  const hash = (n, salt) =>
+    frac(Math.sin((n + 1) * (17.173 + salt * 13.271)) * 42758.3187);
+
+  /*
+    Echte 2D-Fläche:
+    - viele Tiefenzonen von oben nach unten
+    - unregelmäßige Gruppen statt Reihen
+    - jede Zone hat eigene horizontale Phase
+    - Lichtungen entstehen durch ausgelassene Segmente
+  */
+  const zones = [];
+
+  for (let row = 0; row < profile.rows; row++) {
+    const t = profile.rows === 1 ? 0 : row / (profile.rows - 1); // 0 hinten, 1 vorne
+
+    // Perspektivische Y-Lage:
+    // hintere Zonen weit oben, vordere tief unten.
+    const rowBaseY =
+      profile.top +
+      Math.pow(t, 1.04) * (profile.bottom - profile.top);
+
+    // In der Ferne mehr kleine Bäume, vorne weniger große.
+    const rowWeight = 1.34 - t * .62;
+
+    zones.push({
+      row,
+      t,
+      rowBaseY,
+      rowWeight,
+      phase: hash(row * 97 + safeCount, 1),
+      bendA: (hash(row * 41, 2) - .5) * 2.8,
+      bendB: (hash(row * 53, 3) - .5) * 2.1
+    });
+  }
+
+  const weightSum = zones.reduce((s, z) => s + z.rowWeight, 0);
+  let desired = zones.map(z => Math.max(
+    3,
+    Math.round(safeCount * z.rowWeight / weightSum)
+  ));
+
+  // Summe exakt auf count bringen
+  while (desired.reduce((a,b)=>a+b,0) > safeCount) {
+    for (let i = desired.length - 1; i >= 0; i--) {
+      if (desired[i] > 3 && desired.reduce((a,b)=>a+b,0) > safeCount) {
+        desired[i]--;
+      }
+    }
+  }
+  while (desired.reduce((a,b)=>a+b,0) < safeCount) {
+    for (let i = 0; i < desired.length; i++) {
+      if (desired.reduce((a,b)=>a+b,0) < safeCount) desired[i]++;
+    }
+  }
+
+  const result = [];
+
+  zones.forEach((zone, rowIndex) => {
+    const countInRow = desired[rowIndex];
+
+    // Mehr mögliche Slots als Bäume erzeugen -> echte Lichtungen.
+    const slotCount = Math.max(
+      countInRow + 3,
+      Math.round(countInRow * (safeCount <= 100 ? 1.28 : 1.18))
+    );
+
+    const candidates = [];
+
+    for (let slot = 0; slot < slotCount; slot++) {
+      const u = (slot + .5) / slotCount;
+
+      // Versetzte, leicht gekrümmte horizontale Position.
+      let x =
+        profile.marginX +
+        (100 - 2 * profile.marginX) *
+        frac(u + zone.phase * .31);
+
+      const seed = rowIndex * 100003 + slot * 131 + safeCount * 17;
+
+      // Nicht auf geraden Linien:
+      const wave =
+        Math.sin((x * .092) + rowIndex * 1.61) * (2.6 + (1 - zone.t) * 2.6) +
+        Math.sin((x * .037) - rowIndex * .83) * 1.6;
+
+      const jitterY = (hash(seed, 5) - .5) * (6.5 + (1-zone.t) * 5.5);
+      let y = zone.rowBaseY + wave + jitterY;
+
+      y = Math.max(profile.top, Math.min(profile.bottom, y));
+
+      // Leichte horizontale Unruhe
+      x += (hash(seed, 6) - .5) * 4.8;
+      x = Math.max(profile.marginX, Math.min(100-profile.marginX, x));
+
+      // Kleine Lichtungsfelder: manche Kandidaten bewusst unattraktiver
+      const clearing =
+        Math.sin(x * .121 + y * .057) +
+        .72 * Math.cos(x * .049 - y * .103);
+
+      const scaleBase =
+        profile.farScale +
+        Math.pow(zone.t, .86) * (profile.nearScale - profile.farScale);
+
+      const scale = scaleBase * (.86 + hash(seed, 7) * .27);
+
+      candidates.push({
+        left: x,
+        bottom: 100 - y,
+        y,
+        scale,
+        z: 30 + rowIndex * 100 + Math.round(hash(seed, 8) * 18),
+        tilt: (hash(seed, 9) - .5) * 2.1,
+        depth: zone.t,
+        seed,
+        clearing,
+        keepScore: hash(seed, 10) - clearing * .13
+      });
+    }
+
+    // Bewusst nicht gleichmäßig: die "besten" Slots wählen,
+    // wodurch kleine Gruppen und Lichtungen entstehen.
+    candidates.sort((a,b) => b.keepScore - a.keepScore);
+    result.push(...candidates.slice(0, countInRow));
+  });
+
+  // Deterministisch mischen, damit neue Bäume sofort über die GANZE Fläche wachsen
+  // und nicht erst Reihe für Reihe.
+  result.sort((a,b) => {
+    const ha = hash(a.seed, 11);
+    const hb = hash(b.seed, 11);
+    return ha - hb;
+  });
+
+  FOREST_LARGE_LAYOUT_CACHE.set(safeCount, result);
+  return result;
+}
+
+function forestTreeLayoutLarge(index, count) {
+  const layout = buildLargeForestLayout(count);
+  return layout[index] || layout[0];
+}
+
 function forestTreeLayout(index, count) {
-  if (count <= 20) return forestTreeLayoutLegacy(index, count);
-  const layouts = buildLandscapeForest(count);
-  return layouts[index] || layouts[0];
+  // Kleine und mittlere Wälder bleiben unverändert.
+  if (count < 50) {
+    if (count <= 20) return forestTreeLayoutLegacy(index, count);
+    const layouts = buildLandscapeForest(count);
+    return layouts[index] || layouts[0];
+  }
+
+  // Ab 50: komplett separate Flächenlogik.
+  return forestTreeLayoutLarge(index, count);
 }
 
 function renderForest() {
