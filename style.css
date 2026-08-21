@@ -5301,8 +5301,148 @@ label:has(textarea){
   opacity:1 !important;
 }
 
-
 /* 2.5g – Kernfix Wurzeln + Gesamt-Aufmerksamkeit */
 #rootPngLayer{display:block!important;visibility:visible!important;opacity:1!important;overflow:visible!important;z-index:4!important;}
 #rootPngLayer>img.root-png{display:block!important;visibility:visible!important;}
 #treeAttention{display:block!important;visibility:visible!important;opacity:1!important;}
+
+/* =========================================================
+   2.5i – Baum benennen, bevor er in den Lernwald zieht
+   ========================================================= */
+
+#finishTreeDialog{
+  width:min(540px, calc(100vw - 28px));
+  padding:0;
+  border:0;
+  border-radius:22px;
+  background:transparent;
+  color:var(--text);
+  box-shadow:0 24px 70px rgba(63,46,35,.22);
+}
+
+#finishTreeDialog::backdrop{
+  background:rgba(63,51,43,.38);
+  backdrop-filter:blur(2px);
+}
+
+.finish-tree-dialog-card{
+  position:relative;
+  padding:28px 30px 26px;
+  border:1px solid var(--line);
+  border-radius:22px;
+  background:#fffdfa;
+}
+
+.finish-tree-dialog-close{
+  position:absolute;
+  top:13px;
+  right:15px;
+  width:34px;
+  height:34px;
+  padding:0;
+  border:0;
+  border-radius:50%;
+  background:transparent;
+  color:#836b5d;
+  font-size:1.6rem;
+  line-height:1;
+  cursor:pointer;
+}
+
+.finish-tree-dialog-close:hover{
+  background:#f6ece4;
+}
+
+.finish-tree-kicker{
+  margin:0 42px 7px 0;
+  color:var(--clay-dark);
+  font-size:.79rem;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+
+#finishTreeDialogTitle{
+  margin:0 0 8px;
+  font-family:Georgia, "Times New Roman", serif;
+  font-size:1.75rem;
+  line-height:1.15;
+  color:#4f321f;
+}
+
+.finish-tree-dialog-text{
+  margin:0 0 19px;
+  color:#765e50;
+  line-height:1.5;
+}
+
+.finish-tree-name-field{
+  display:block;
+  margin:0;
+}
+
+.finish-tree-name-field > span{
+  display:block;
+  margin:0 0 7px;
+  font-weight:850;
+  color:#4f3728;
+}
+
+#finishTreeName{
+  width:100%;
+  min-height:48px;
+  padding:11px 13px;
+  border:1px solid #dcbfae;
+  border-radius:13px;
+  background:#fff;
+  color:#4b382d;
+  font-size:1.02rem;
+  font-weight:700;
+  box-sizing:border-box;
+}
+
+#finishTreeName:focus{
+  outline:3px solid rgba(121,151,105,.17);
+  border-color:#8ca77d;
+}
+
+.finish-tree-name-hint{
+  margin:7px 2px 0;
+  color:#9a8172;
+  font-size:.82rem;
+  line-height:1.35;
+}
+
+.finish-tree-dialog-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:9px;
+  margin-top:22px;
+}
+
+.finish-tree-dialog-actions button{
+  min-height:42px;
+}
+
+#confirmFinishTree{
+  min-width:205px;
+}
+
+#confirmFinishTree:disabled{
+  opacity:.68;
+  cursor:wait;
+}
+
+@media(max-width:560px){
+  .finish-tree-dialog-card{
+    padding:24px 20px 21px;
+  }
+
+  .finish-tree-dialog-actions{
+    flex-direction:column-reverse;
+  }
+
+  .finish-tree-dialog-actions button,
+  #confirmFinishTree{
+    width:100%;
+  }
+}
