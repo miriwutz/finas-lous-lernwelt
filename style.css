@@ -3239,3 +3239,181 @@ label:has(textarea){
     transform:translateY(-2%) scale(.80) !important;
   }
 }
+
+/* =========================================================
+   2.4g – Herzmomentbereich übersichtlich
+   ========================================================= */
+
+/* 9 Herzmoment-Karten: auf Desktop exakt in zwei Reihen (5 + 4). */
+.heart-grid{
+  grid-template-columns:repeat(5,minmax(0,1fr)) !important;
+  gap:8px !important;
+  margin-bottom:16px !important;
+}
+
+.heart-choice{
+  min-height:68px !important;
+  padding:9px 10px !important;
+  border-radius:14px !important;
+}
+
+.heart-choice .heart-icon{
+  font-size:1.15rem !important;
+}
+
+.heart-choice strong{
+  margin-top:2px !important;
+  font-size:.90rem !important;
+  line-height:1.15 !important;
+}
+
+.heart-choice span:last-child{
+  display:block;
+  margin-top:2px;
+  font-size:.78rem !important;
+  line-height:1.18 !important;
+}
+
+/* Klare Trennung: Meta-Daten oben, Text unten. */
+.heart-form-clean{
+  display:block !important;
+  margin-top:8px !important;
+}
+
+.heart-meta-row{
+  display:grid;
+  grid-template-columns:150px 145px auto 145px;
+  gap:10px;
+  align-items:end;
+  margin-bottom:10px;
+}
+
+.heart-meta-row label{
+  margin:0 !important;
+}
+
+.heart-date-field input{
+  width:145px !important;
+  min-width:0 !important;
+}
+
+.heart-gift-toggle{
+  min-height:43px !important;
+  margin:0 !important;
+  padding:8px 10px !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:7px !important;
+  white-space:nowrap;
+  font-size:.90rem !important;
+}
+
+.heart-gift-toggle input{
+  width:17px !important;
+  height:17px !important;
+  flex:0 0 auto;
+}
+
+.heart-recipient-field{
+  margin:0 !important;
+}
+
+.heart-other-field{
+  display:grid;
+  max-width:520px;
+  margin:10px 0 12px !important;
+}
+
+.heart-note-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 250px;
+  gap:12px;
+  align-items:end;
+}
+
+.heart-note-field{
+  margin:0 !important;
+}
+
+#heartReason{
+  min-height:125px !important;
+  height:125px !important;
+  width:100% !important;
+  resize:vertical;
+}
+
+.heart-save-btn{
+  width:250px !important;
+  min-height:46px !important;
+  margin:0 !important;
+  align-self:end;
+}
+
+/* Schmetterlinge sichtbar, aber weiterhin fein und transparent. */
+.tree-gift-butterfly-layer{
+  position:absolute !important;
+  inset:0 !important;
+  z-index:8 !important;
+  pointer-events:none !important;
+  overflow:visible !important;
+}
+
+.gift-butterfly{
+  width:22px !important;
+  height:16px !important;
+  opacity:.72 !important;
+  filter:
+    drop-shadow(0 1px 1px rgba(91,64,49,.14))
+    drop-shadow(0 0 3px rgba(255,255,255,.48)) !important;
+}
+
+.gift-butterfly .wing{
+  width:10px !important;
+  height:12px !important;
+  border-color:rgba(112,86,70,.20) !important;
+}
+
+.gift-butterfly .bf-body{
+  left:10px !important;
+  top:4px !important;
+  width:2px !important;
+  height:9px !important;
+}
+
+/* Baum im Geschenk-/Herzmomentfenster etwas kleiner. */
+.root-growth-canvas,
+.gift-growth-canvas{
+  transform:translateY(-2%) scale(.78) !important;
+  transform-origin:center top !important;
+}
+
+@media(max-width:980px){
+  .heart-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  }
+
+  .heart-meta-row{
+    grid-template-columns:1fr 150px;
+  }
+
+  .heart-gift-toggle,
+  .heart-recipient-field{
+    grid-column:auto;
+  }
+}
+
+@media(max-width:720px){
+  .heart-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+
+  .heart-meta-row,
+  .heart-note-row{
+    grid-template-columns:1fr !important;
+  }
+
+  .heart-date-field input,
+  .heart-save-btn{
+    width:100% !important;
+  }
+}
