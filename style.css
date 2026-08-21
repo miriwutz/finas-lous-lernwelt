@@ -6248,7 +6248,6 @@ label:has(textarea){
   overflow:hidden !important;
 }
 
-
 /* =========================================================
    2.5u – natürliche Lichtung statt Baumreihe
    ========================================================= */
@@ -6282,4 +6281,37 @@ label:has(textarea){
 .forest-stage,
 .forest-grid{
   overflow:hidden !important;
+}
+
+/* =========================================================
+   2.5v – Lernwald-Stresstest 100 / 250 / 500 / 1000
+   ========================================================= */
+
+.forest-test-stress{
+  border-style:dashed !important;
+}
+
+/* Ab 100 Bäumen wird der Wald zur Landschaft:
+   Namen nur noch beim Darüberfahren sichtbar. */
+.forest-stage.forest-dense .forest-tree-name{
+  opacity:0 !important;
+}
+
+.forest-stage.forest-dense .forest-tree-spot:hover .forest-tree-name,
+.forest-stage.forest-dense .forest-tree-spot:focus-visible .forest-tree-name{
+  opacity:1 !important;
+}
+
+/* Bei 500+ Bäumen Bewohner etwas zurücknehmen,
+   damit die Lernwelt nicht in Emoji-Gewusel kippt. */
+.forest-stage.forest-very-dense .forest-companion{
+  opacity:.48 !important;
+  transform:
+    translate(-50%, -50%)
+    scale(.72) !important;
+}
+
+/* Tooltips weiterhin nur bei Hover/Fokus. */
+.forest-stage.forest-dense .forest-tree-tooltip{
+  font-size:.72rem;
 }
