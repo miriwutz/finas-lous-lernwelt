@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.4b Feinabstimmung Herz & Wurzel";
+const APP_VERSION = "2.4c Datum, Einklappen, Wald & Zielwahl";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -807,6 +807,10 @@ function renderAll() {
   renderTreeAttention();
   syncLearningDayUi();
   startAttentionTicker();
+
+  if ($("#heartDate") && !$("#heartDate").value) {
+    $("#heartDate").value = learningDayKey();
+  }
 }
 
 function renderTasks(child) {
@@ -953,7 +957,12 @@ async function completeTaskWithDifficulty(taskId, difficulty) {
           difficulty,
           color: getLeafColor(task.child, difficulty),
           attentionSeconds: Number(task.attentionSeconds || 0),
-          createdAt: new Date().toISOString()
+          createdAt: (() => {
+            const chosen = $("#heartDate")?.value;
+            return chosen
+              ? new Date(`${chosen}T12:00:00`).toISOString()
+              : new Date().toISOString();
+          })()
         });
 
         completedNow = true;
@@ -1334,47 +1343,61 @@ async function deleteRoot(rootId) {
   }
 }
 
-if ($("#finishTreeBtn")) {
-  $("#finishTreeBtn").onclick = async () => {
-    const target = Number(state.tree?.targetLeaves || 20);
-    if ((state.learningLeaves || []).length < target) return;
+async function sendCurrentTreeToForest({ force = false } = {}) {
+  const target = Math.max(1, Math.min(50, Number(state.tree?.targetLeaves || 24)));
+  const currentLeaves = (state.learningLeaves || []).length;
 
-    const name = state.tree?.name || "Unser Wochenbaum";
-    if (!confirm(`Soll „${name}“ in den Lernwald wandern?`)) return;
+  if (!force && currentLeaves < target) return;
 
-    try {
-      await runTransaction(db, async tx => {
-        const snap = await tx.get(spaceRef);
-        const data = snap.data();
-        const forest = [...(data.forest || [])];
+  const name = state.tree?.name || "Unser Wochenbaum";
+  const message = force && currentLeaves < target
+    ? `„${name}“ hat aktuell ${currentLeaves} von ${target} Lernblättern. Trotzdem jetzt in den Lernwald setzen?`
+    : `Soll „${name}“ in den Lernwald wandern?`;
 
-        forest.push({
-          id: crypto.randomUUID(),
-          name: data.tree?.name || "Wochenbaum",
-          completedAt: new Date().toISOString(),
-          leaves: (data.learningLeaves || []).length,
-          roots: [...(data.roots || [])]
-        });
+  if (!confirm(message)) return;
 
-        const tasks = (data.tasks || []).map(t => ({ ...t, done: false }));
+  try {
+    await runTransaction(db, async tx => {
+      const snap = await tx.get(spaceRef);
+      const data = snap.data();
+      const forest = [...(data.forest || [])];
 
-        tx.update(spaceRef, {
-          forest,
-          learningLeaves: [],
-          roots: [],
-          tasks,
-          tree: {
-            ...data.tree,
-            name: "Neuer Wochenbaum",
-            startedAt: new Date().toISOString()
-          },
-          updatedAt: serverTimestamp()
-        });
+      forest.push({
+        id: crypto.randomUUID(),
+        name: data.tree?.name || "Wochenbaum",
+        completedAt: new Date().toISOString(),
+        leaves: (data.learningLeaves || []).length,
+        roots: [...(data.roots || [])]
       });
-    } catch (err) {
-      alert("Der Baum konnte nicht in den Lernwald gesetzt werden: " + err.message);
-    }
-  };
+
+      const tasks = (data.tasks || []).map(t => ({ ...t, done: false }));
+
+      tx.update(spaceRef, {
+        forest,
+        learningLeaves: [],
+        roots: [],
+        tasks,
+        tree: {
+          ...data.tree,
+          name: "Neuer Wochenbaum",
+          startedAt: new Date().toISOString()
+        },
+        updatedAt: serverTimestamp()
+      });
+    });
+
+    alert("✓ Der Baum ist jetzt im Lernwald.");
+  } catch (err) {
+    alert("Der Baum konnte nicht in den Lernwald gesetzt werden: " + err.message);
+  }
+}
+
+if ($("#finishTreeBtn")) {
+  $("#finishTreeBtn").onclick = () => sendCurrentTreeToForest({ force: false });
+}
+
+if ($("#adminFinishTreeBtn")) {
+  $("#adminFinishTreeBtn").onclick = () => sendCurrentTreeToForest({ force: true });
 }
 
 if ($("#openForest")) {
@@ -1512,7 +1535,18 @@ function prepareAdmin() {
 
   if ($("#treeNameInput")) $("#treeNameInput").value = state.tree?.name || "";
   if ($("#treeTargetInput")) {
-    $("#treeTargetInput").value = String(state.tree?.targetLeaves || 20);
+    const target = Math.max(1, Math.min(50, Number(state.tree?.targetLeaves || 24)));
+    const presetValues = ["12","16","20","24","30","35","40","45","50"];
+    const asString = String(target);
+
+    if (presetValues.includes(asString)) {
+      $("#treeTargetInput").value = asString;
+      $("#treeTargetCustomWrap")?.classList.add("hidden");
+    } else {
+      $("#treeTargetInput").value = "custom";
+      if ($("#treeTargetCustom")) $("#treeTargetCustom").value = String(target);
+      $("#treeTargetCustomWrap")?.classList.remove("hidden");
+    }
   }
 
   const leafColors = state.tree?.leafColors || DEFAULT_LEAF_COLORS;
@@ -1844,6 +1878,32 @@ if ($("#beginNewLearningDayBtn")) {
 }
 
 
+if ($("#treeTargetInput")) {
+  $("#treeTargetInput").addEventListener("change", () => {
+    const custom = $("#treeTargetInput").value === "custom";
+    $("#treeTargetCustomWrap")?.classList.toggle("hidden", !custom);
+    if (custom) {
+      const input = $("#treeTargetCustom");
+      if (input) {
+        const current = Number(state.tree?.targetLeaves || 24);
+        input.value = String(Math.max(1, Math.min(50, current)));
+        input.focus();
+        input.select();
+      }
+    }
+  });
+}
+
+if ($("#treeTargetCustom")) {
+  $("#treeTargetCustom").addEventListener("input", () => {
+    const input = $("#treeTargetCustom");
+    if (!input) return;
+    const n = Number(input.value);
+    if (n > 50) input.value = "50";
+    if (n < 1 && input.value !== "") input.value = "1";
+  });
+}
+
 if ($("#saveTreeSettings")) {
   $("#saveTreeSettings").onclick = async () => {
     try {
@@ -1851,7 +1911,13 @@ if ($("#saveTreeSettings")) {
         tree: {
           ...state.tree,
           name: $("#treeNameInput").value.trim() || "Unser Wochenbaum",
-          targetLeaves: Number($("#treeTargetInput").value),
+          targetLeaves: (() => {
+            const selected = $("#treeTargetInput")?.value;
+            const raw = selected === "custom"
+              ? Number($("#treeTargetCustom")?.value || 24)
+              : Number(selected || 24);
+            return Math.max(1, Math.min(50, Math.round(raw)));
+          })(),
           leafColors: {
             fina: {
               easy: $("#finaEasyColor")?.value || DEFAULT_LEAF_COLORS.fina.easy,
