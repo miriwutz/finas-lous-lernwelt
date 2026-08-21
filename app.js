@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5aa Renderkoordinaten-Fix";
+const APP_VERSION = "2.5ab Organischer Wald-Feinschliff";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -2807,24 +2807,24 @@ function buildLargeForestLayout(count) {
     frac(Math.sin((n + 1) * (17.173 + salt * 13.271)) * 42758.3187);
 
   /*
-    Echte 2D-Fläche:
-    - viele Tiefenzonen von oben nach unten
-    - unregelmäßige Gruppen statt Reihen
-    - jede Zone hat eigene horizontale Phase
-    - Lichtungen entstehen durch ausgelassene Segmente
+    2.5ab:
+    Die funktionierende Perspektive aus 2.5aa bleibt unverändert.
+    Geändert wird nur die ORGANIK:
+    - keine sichtbaren Reihen
+    - lokale Baumgruppen statt gleichmäßiger Verteilung
+    - größere, unregelmäßige Lichtungen
+    - stärkere Y-Streuung innerhalb jeder Tiefenzone
+    - leichte Größenunterschiede auch bei ähnlicher Tiefe
   */
   const zones = [];
 
   for (let row = 0; row < profile.rows; row++) {
-    const t = profile.rows === 1 ? 0 : row / (profile.rows - 1); // 0 hinten, 1 vorne
+    const t = profile.rows === 1 ? 0 : row / (profile.rows - 1);
 
-    // Perspektivische Y-Lage:
-    // hintere Zonen weit oben, vordere tief unten.
     const rowBaseY =
       profile.top +
       Math.pow(t, 1.04) * (profile.bottom - profile.top);
 
-    // In der Ferne mehr kleine Bäume, vorne weniger große.
     const rowWeight = 1.34 - t * .62;
 
     zones.push({
@@ -2832,29 +2832,25 @@ function buildLargeForestLayout(count) {
       t,
       rowBaseY,
       rowWeight,
-      phase: hash(row * 97 + safeCount, 1),
-      bendA: (hash(row * 41, 2) - .5) * 2.8,
-      bendB: (hash(row * 53, 3) - .5) * 2.1
+      phase: hash(row * 97 + safeCount, 1)
     });
   }
 
   const weightSum = zones.reduce((s, z) => s + z.rowWeight, 0);
-  let desired = zones.map(z => Math.max(
-    3,
-    Math.round(safeCount * z.rowWeight / weightSum)
-  ));
+  let desired = zones.map(z =>
+    Math.max(3, Math.round(safeCount * z.rowWeight / weightSum))
+  );
 
-  // Summe exakt auf count bringen
-  while (desired.reduce((a,b)=>a+b,0) > safeCount) {
-    for (let i = desired.length - 1; i >= 0; i--) {
-      if (desired[i] > 3 && desired.reduce((a,b)=>a+b,0) > safeCount) {
-        desired[i]--;
-      }
+  const totalDesired = () => desired.reduce((a,b) => a+b, 0);
+
+  while (totalDesired() > safeCount) {
+    for (let i = desired.length - 1; i >= 0 && totalDesired() > safeCount; i--) {
+      if (desired[i] > 3) desired[i]--;
     }
   }
-  while (desired.reduce((a,b)=>a+b,0) < safeCount) {
-    for (let i = 0; i < desired.length; i++) {
-      if (desired.reduce((a,b)=>a+b,0) < safeCount) desired[i]++;
+  while (totalDesired() < safeCount) {
+    for (let i = 0; i < desired.length && totalDesired() < safeCount; i++) {
+      desired[i]++;
     }
   }
 
@@ -2863,72 +2859,132 @@ function buildLargeForestLayout(count) {
   zones.forEach((zone, rowIndex) => {
     const countInRow = desired[rowIndex];
 
-    // Mehr mögliche Slots als Bäume erzeugen -> echte Lichtungen.
-    const slotCount = Math.max(
-      countInRow + 3,
-      Math.round(countInRow * (safeCount <= 100 ? 1.28 : 1.18))
+    // Viele Kandidaten erlauben echte Lichtungen und Gruppenbildung.
+    const candidateCount = Math.max(
+      countInRow * 4,
+      countInRow + 24
     );
 
     const candidates = [];
 
-    for (let slot = 0; slot < slotCount; slot++) {
-      const u = (slot + .5) / slotCount;
+    for (let c = 0; c < candidateCount; c++) {
+      const seed = rowIndex * 100003 + c * 131 + safeCount * 17;
 
-      // Versetzte, leicht gekrümmte horizontale Position.
-      let x =
-        profile.marginX +
-        (100 - 2 * profile.marginX) *
-        frac(u + zone.phase * .31);
+      let x = profile.marginX +
+        hash(seed, 1) * (100 - 2 * profile.marginX);
 
-      const seed = rowIndex * 100003 + slot * 131 + safeCount * 17;
+      // Viel stärkere vertikale Unruhe als zuvor.
+      const ySpread =
+        safeCount <= 100 ? 10 :
+        safeCount <= 250 ? 12 :
+        safeCount <= 500 ? 13 : 14;
 
-      // Nicht auf geraden Linien:
-      const wave =
-        Math.sin((x * .092) + rowIndex * 1.61) * (2.6 + (1 - zone.t) * 2.6) +
-        Math.sin((x * .037) - rowIndex * .83) * 1.6;
-
-      const jitterY = (hash(seed, 5) - .5) * (6.5 + (1-zone.t) * 5.5);
-      let y = zone.rowBaseY + wave + jitterY;
+      let y =
+        zone.rowBaseY +
+        (hash(seed, 2) - .5) * ySpread +
+        Math.sin(x * .071 + rowIndex * 1.37) * 3.2 +
+        Math.sin(x * .029 - rowIndex * .91) * 2.1;
 
       y = Math.max(profile.top, Math.min(profile.bottom, y));
 
-      // Leichte horizontale Unruhe
-      x += (hash(seed, 6) - .5) * 4.8;
-      x = Math.max(profile.marginX, Math.min(100-profile.marginX, x));
+      /*
+        Zwei überlagerte Felder:
+        clusterField erzeugt organische Waldinseln.
+        clearingField erzeugt größere offene Räume.
+      */
+      const clusterField =
+        Math.sin(x * .115 + y * .043 + rowIndex * .8) +
+        .70 * Math.cos(x * .061 - y * .097) +
+        .42 * Math.sin(x * .027 + y * .131);
 
-      // Kleine Lichtungsfelder: manche Kandidaten bewusst unattraktiver
-      const clearing =
-        Math.sin(x * .121 + y * .057) +
-        .72 * Math.cos(x * .049 - y * .103);
+      const clearingField =
+        Math.sin(x * .052 - y * .037 + 1.8) +
+        .65 * Math.cos(x * .031 + y * .058);
 
       const scaleBase =
         profile.farScale +
-        Math.pow(zone.t, .86) * (profile.nearScale - profile.farScale);
+        Math.pow(zone.t, .86) *
+          (profile.nearScale - profile.farScale);
 
-      const scale = scaleBase * (.86 + hash(seed, 7) * .27);
+      const scale =
+        scaleBase *
+        (.80 + hash(seed, 4) * .36);
 
       candidates.push({
         left: x,
         topPct: y,
         y,
         scale,
-        z: 30 + rowIndex * 100 + Math.round(hash(seed, 8) * 18),
-        tilt: (hash(seed, 9) - .5) * 2.1,
+        z: 30 + rowIndex * 100 + Math.round(hash(seed, 5) * 24),
+        tilt: (hash(seed, 6) - .5) * 3.0,
         depth: zone.t,
         seed,
-        clearing,
-        keepScore: hash(seed, 10) - clearing * .13
+        clusterField,
+        clearingField,
+        random: hash(seed, 7)
       });
     }
 
-    // Bewusst nicht gleichmäßig: die "besten" Slots wählen,
-    // wodurch kleine Gruppen und Lichtungen entstehen.
-    candidates.sort((a,b) => b.keepScore - a.keepScore);
-    result.push(...candidates.slice(0, countInRow));
+    /*
+      Auswahl mit Mindestabstand:
+      - bevorzugt Gruppen
+      - vermeidet aber regelmäßige Raster
+      - große Lichtungen werden bewusst ausgespart
+    */
+    candidates.sort((a,b) => {
+      const scoreA =
+        a.clusterField * .72 -
+        Math.max(0, a.clearingField - .55) * 1.10 +
+        a.random * .34;
+
+      const scoreB =
+        b.clusterField * .72 -
+        Math.max(0, b.clearingField - .55) * 1.10 +
+        b.random * .34;
+
+      return scoreB - scoreA;
+    });
+
+    const chosen = [];
+    const minX =
+      safeCount <= 100 ? 4.8 :
+      safeCount <= 250 ? 3.0 :
+      safeCount <= 500 ? 2.0 : 1.35;
+
+    for (const candidate of candidates) {
+      if (chosen.length >= countInRow) break;
+
+      // Kein starres Mindestabstands-Raster:
+      // in Gruppen darf es enger sein, außerhalb etwas lockerer.
+      const localMin =
+        candidate.clusterField > .75
+          ? minX * .58
+          : minX;
+
+      const tooClose = chosen.some(p => {
+        const dx = Math.abs(candidate.left - p.left);
+        const dy = Math.abs(candidate.topPct - p.topPct);
+        return dx < localMin && dy < 3.0;
+      });
+
+      if (!tooClose) chosen.push(candidate);
+    }
+
+    // Falls wegen Mindestabstand Plätze fehlen, organisch auffüllen.
+    if (chosen.length < countInRow) {
+      for (const candidate of candidates) {
+        if (chosen.length >= countInRow) break;
+        if (!chosen.includes(candidate)) chosen.push(candidate);
+      }
+    }
+
+    result.push(...chosen.slice(0, countInRow));
   });
 
-  // Deterministisch mischen, damit neue Bäume sofort über die GANZE Fläche wachsen
-  // und nicht erst Reihe für Reihe.
+  /*
+    Neue Bäume sollen nicht Tiefenzone für Tiefenzone erscheinen.
+    Deterministisches Mischen verteilt frühe Bäume über die ganze Fläche.
+  */
   result.sort((a,b) => {
     const ha = hash(a.seed, 11);
     const hb = hash(b.seed, 11);
@@ -2938,7 +2994,6 @@ function buildLargeForestLayout(count) {
   FOREST_LARGE_LAYOUT_CACHE.set(safeCount, result);
   return result;
 }
-
 function forestTreeLayoutLarge(index, count) {
   const layout = buildLargeForestLayout(count);
   return layout[index] || layout[0];
