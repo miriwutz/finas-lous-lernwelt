@@ -6665,3 +6665,9 @@ label:has(textarea){
 .forest-world-detail-ground{
   transform:translate(-50%,-100%) scale(var(--detail-scale,1));
 }
+
+/* 2.5ap – natürlichere Waldbewohner:
+   keine pinken/flamingoartigen Vogel-Symbole.
+   Vögel, Eulen und Schmetterlinge in den Baumzonen;
+   Bodenbewohner/Pflanzen bleiben auf Bodenhöhe.
+   Sonst keine Änderungen. */
