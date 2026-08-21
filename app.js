@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.4o Verschenken-Toggle sauber";
+const APP_VERSION = "2.4q Verschenken rechts & Empfänger nur aktiv";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -915,6 +915,8 @@ if ($("#archiveSearchClear")) {
   };
 }
 
+requestAnimationFrame(updateHeartGiftVisibility);
+
 onAuthStateChanged(auth, async user => {
   if (user) {
     $("#loginView")?.classList.add("hidden");
@@ -1576,7 +1578,12 @@ if ($("#heartAuthor")) {
 
 function updateHeartGiftVisibility() {
   const isGift = !!$("#heartGiftToggle")?.checked;
-  $("#heartGiftRecipientField")?.classList.toggle("hidden", !isGift);
+  const recipient = $("#heartGiftRecipientField");
+
+  if (recipient) {
+    recipient.classList.toggle("hidden", !isGift);
+    recipient.style.display = isGift ? "flex" : "none";
+  }
 
   const button = $("#addRootBtn");
   if (button) {
