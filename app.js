@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5u Lernwald natuerliche Lichtung";
+const APP_VERSION = "2.5v Lernwald Stresstest bis 1000";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -2452,6 +2452,9 @@ function decorateForestScene(treeCount) {
   if (!scene) return;
 
   scene.style.setProperty("--forest-zoom", forestZoomForCount(treeCount));
+  scene.dataset.forestCount = String(treeCount);
+  scene.classList.toggle("forest-dense", treeCount >= 100);
+  scene.classList.toggle("forest-very-dense", treeCount >= 500);
 
   $$(".forest-companion").forEach(el => el.remove());
 
@@ -2583,85 +2586,94 @@ function runGrowthPreview(kind) {
 }
 
 
-function forestTreeLayout(index, count) {
-  /*
-    2.5u – natürliche Lernwald-Lichtung
 
-    Ziel:
-    - kein Raster und keine Reihen
-    - keine symmetrischen Abstände
-    - Bäume wirklich über die Fläche verteilen
-    - kleine Lichtungen / Gruppen entstehen lassen
-    - Vordergrund größer, Hintergrund kleiner
-    - rechts und links nichts abschneiden
-    - Positionen bleiben bei jedem Öffnen stabil
-  */
+const FOREST_LAYOUT_CACHE = new Map();
+
+function buildForestLayouts(count) {
+  const safeCount = Math.max(1, count);
+  if (FOREST_LAYOUT_CACHE.has(safeCount)) {
+    return FOREST_LAYOUT_CACHE.get(safeCount);
+  }
 
   const frac = n => n - Math.floor(n);
   const hash = (n, salt) =>
     frac(Math.sin((n + 1) * (12.9898 + salt * 17.123)) * 43758.5453123);
 
-  const safeCount = Math.max(1, count);
-
   const densityScale =
-    safeCount <= 5  ? 1.00 :
-    safeCount <= 10 ? 0.91 :
-    safeCount <= 20 ? 0.78 :
-    safeCount <= 35 ? 0.67 :
-                      0.57;
+    safeCount <= 5   ? 1.00 :
+    safeCount <= 10  ? 0.91 :
+    safeCount <= 20  ? 0.78 :
+    safeCount <= 35  ? 0.67 :
+    safeCount <= 50  ? 0.57 :
+    safeCount <= 100 ? 0.48 :
+    safeCount <= 250 ? 0.39 :
+    safeCount <= 500 ? 0.32 :
+                       0.26;
 
-  // Alle Positionen bis zum gewünschten Index reproduzierbar erzeugen.
   const placed = [];
 
-  for (let n = 0; n <= index; n++) {
+  for (let n = 0; n < safeCount; n++) {
     let best = null;
     let bestScore = -Infinity;
 
-    // Mehrere Kandidaten ausprobieren und den natürlichsten freien Platz wählen.
-    for (let attempt = 0; attempt < 34; attempt++) {
+    // Bei sehr großen Tests reichen weniger Kandidaten:
+    // visuell noch organisch, deutlich schneller.
+    const attempts =
+      safeCount <= 100 ? 34 :
+      safeCount <= 250 ? 24 :
+      safeCount <= 500 ? 16 :
+                         10;
+
+    for (let attempt = 0; attempt < attempts; attempt++) {
       const seed = n * 53 + attempt * 17;
 
-      // Tiefe nicht linear: dadurch entstehen unregelmäßige Vorder-/Hintergruppen.
       const rawDepth = hash(seed, 1);
       const depth = Math.pow(rawDepth, 0.92);
 
-      // Sichere horizontale Fläche. Hinten etwas schmaler als vorne.
       const spread = 76 + depth * 12;
       let x = 50 + (hash(seed, 2) - 0.5) * spread;
-
-      // Sanfte seitliche Verschiebung verhindert vertikale Säulen.
       x += (hash(seed, 3) - 0.5) * 8;
       x = Math.max(7, Math.min(91, x));
 
-      // Visuelle Waldtiefe.
       const y = 20 + depth * 66;
 
-      // Abstand zu vorhandenen Bäumen messen.
       let minDist = 999;
-      for (const p of placed) {
-        const dx = (x - p.x) / 1.00;
+      let alignmentPenalty = 0;
+
+      // Für große Mengen nur die letzten Positionen + einige Stichproben prüfen.
+      // So bleibt der 1000er-Test benutzbar.
+      const start = safeCount <= 250 ? 0 : Math.max(0, placed.length - 140);
+
+      for (let pIndex = start; pIndex < placed.length; pIndex++) {
+        const p = placed[pIndex];
+        const dx = (x - p.x);
         const dy = (y - p.y) / 0.72;
         const d = Math.sqrt(dx * dx + dy * dy);
         minDist = Math.min(minDist, d);
+
+        if (Math.abs(x - p.x) < 3.8) alignmentPenalty += 3.4;
+        if (Math.abs(y - p.y) < 3.5) alignmentPenalty += 1.6;
       }
 
-      // Nicht überall maximal gleichmäßig verteilen:
-      // leichte Gruppierung ist erwünscht, aber Überlagerung nicht.
+      // Zusätzliche Stichproben aus älteren Bereichen.
+      if (safeCount > 250 && placed.length > 140) {
+        const sampleStep = Math.max(1, Math.floor(placed.length / 40));
+        for (let pIndex = 0; pIndex < placed.length - 140; pIndex += sampleStep) {
+          const p = placed[pIndex];
+          const dx = x - p.x;
+          const dy = (y - p.y) / 0.72;
+          const d = Math.sqrt(dx * dx + dy * dy);
+          minDist = Math.min(minDist, d);
+        }
+      }
+
       const clusterWave =
         Math.sin((x / 100) * Math.PI * 3.1 + 0.8) * 1.8 +
         Math.cos((y / 100) * Math.PI * 2.4) * 1.2;
 
-      // Rand leicht unattraktiver machen.
       const edgePenalty =
         x < 11 || x > 87 ? 4 :
         x < 15 || x > 83 ? 1.5 : 0;
-
-      // Sehr gleiche x/y-Lagen zu früheren Bäumen vermeiden.
-      let alignmentPenalty = 0;
-      for (const p of placed) {
-        if (Math.abs(x - p.x) < 3.8) alignmentPenalty += 3.4;
-        if (Math.abs(y - p.y) < 3.5) alignmentPenalty += 1.6;
-      }
 
       const score =
         (placed.length ? Math.min(minDist, 22) : 20) +
@@ -2676,33 +2688,32 @@ function forestTreeLayout(index, count) {
       }
     }
 
-    placed.push(best);
+    const perspective = 0.55 + best.depth * 0.45;
+    const variation = 0.90 + hash(best.seed, 6) * 0.18;
+    const scale = densityScale * perspective * variation;
+    const bottom = 34 + (1 - best.depth) * 118;
+    const tilt = (hash(best.seed, 7) - 0.5) * 2.4;
+
+    placed.push({
+      x: best.x,
+      y: best.y,
+      depth: best.depth,
+      seed: best.seed,
+      left: best.x,
+      bottom,
+      scale,
+      z: 20 + Math.round(best.depth * 80),
+      tilt
+    });
   }
 
-  const p = placed[index];
+  FOREST_LAYOUT_CACHE.set(safeCount, placed);
+  return placed;
+}
 
-  // Tiefe: hinten kleiner, vorne größer.
-  const perspective = 0.55 + p.depth * 0.45;
-
-  // Natürliche Größenstreuung, damit nicht alle Bäume derselben Ebene gleich wirken.
-  const variation = 0.90 + hash(p.seed, 6) * 0.18;
-  const scale = densityScale * perspective * variation;
-
-  // Landschaftskoordinate in CSS-bottom umrechnen.
-  // Hintergrund höher, Vordergrund tiefer.
-  const bottom = 34 + (1 - p.depth) * 118;
-
-  // Minimale Neigung.
-  const tilt = (hash(p.seed, 7) - 0.5) * 2.4;
-
-  return {
-    left: p.x,
-    bottom,
-    scale,
-    z: 20 + Math.round(p.depth * 80),
-    tilt,
-    depth: p.depth
-  };
+function forestTreeLayout(index, count) {
+  const layouts = buildForestLayouts(count);
+  return layouts[index] || layouts[0];
 }
 
 function renderForest() {
