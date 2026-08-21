@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.4d Herzmomente & Schmetterlinge";
+const APP_VERSION = "2.4f Geschenk-Animation & kleinerer Baum";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -16,6 +16,7 @@ let adminDraft = { fina: [], lou: [] };
 let attentionTicker = null;
 let pendingTreeGrowth = false;
 let pendingRootGrowth = false;
+let pendingGiftGrowth = false;
 let treeGrowthTimer = null;
 
 const DEFAULT_LEAF_COLORS = {
@@ -577,6 +578,181 @@ function decorateTree24a(){
  o.innerHTML=TREE_FLOWERS.slice(0,n).map((p,i)=>`<span class="tree-tiny-flower" style="left:${p[0]}%;top:${p[1]}%">✿</span>`).join("");
 }
 
+function showGiftGrowthCelebration() {
+  const dialog = $("#treeGrowthDialog");
+  const preview = $("#treeGrowthPreview");
+  const tree = $("#treeCanvas");
+  const flyingLeaf = $("#flyingLeaf");
+  const flyingHeart = $("#flyingHeart");
+  const kicker = dialog?.querySelector(".tree-growth-kicker");
+  const title = $("#treeGrowthTitle");
+  const text = dialog?.querySelector(".tree-growth-copy p");
+
+  if (!dialog || !preview || !tree) return;
+
+  if (treeGrowthTimer) {
+    clearTimeout(treeGrowthTimer);
+    treeGrowthTimer = null;
+  }
+
+  if (kicker) kicker.textContent = "🦋 EIN HERZMOMENT WIRD VERSCHENKT";
+  if (title) title.textContent = "Ein kleiner Schmetterling entsteht.";
+  if (text) text.textContent = "Das Herz findet zuerst seinen Platz im Baum.";
+
+  if (flyingLeaf) flyingLeaf.style.display = "none";
+  if (flyingHeart) flyingHeart.style.display = "grid";
+
+  const treeClone = tree.cloneNode(true);
+  treeClone.removeAttribute("id");
+  treeClone.classList.add("tree-growth-canvas", "gift-growth-canvas");
+  treeClone.querySelectorAll("[id]").forEach(el => el.removeAttribute("id"));
+
+  const butterflies = [...treeClone.querySelectorAll(".gift-butterfly")];
+  const newestButterfly = butterflies.at(-1);
+  newestButterfly?.classList.add("new-gift-butterfly", "gift-butterfly-waiting");
+
+  preview.querySelector(".tree-growth-canvas")?.remove();
+  preview.querySelector(".flying-gift-butterfly")?.remove();
+  preview.appendChild(treeClone);
+
+  if (!dialog.open) dialog.showModal();
+
+  requestAnimationFrame(() => {
+    dialog.classList.remove("rainbow-bloom");
+    dialog.classList.remove("heart-bloom");
+    void dialog.offsetWidth;
+    dialog.classList.add("heart-bloom");
+
+    const previewRect = preview.getBoundingClientRect();
+    const baseImage = treeClone.querySelector(".tree-base-image");
+    const imageRect = baseImage?.getBoundingClientRect() || treeClone.getBoundingClientRect();
+
+    // Gleicher, inzwischen gut passender Herz-Zielpunkt wie beim normalen Herzmoment.
+    const heartX = imageRect.left + imageRect.width * 0.527 - previewRect.left;
+    const heartY = imageRect.top + imageRect.height * 0.640 - previewRect.top;
+
+    const startX = previewRect.width * 0.50;
+    const startY = Math.max(34, previewRect.height * 0.08);
+
+    if (!flyingHeart) return;
+
+    flyingHeart.getAnimations().forEach(a => a.cancel());
+    flyingHeart.style.opacity = "0";
+
+    const heartAnimation = flyingHeart.animate([
+      {
+        offset:0,
+        opacity:0,
+        filter:"brightness(1.45) drop-shadow(0 0 0 rgba(255,223,146,0))",
+        transform:`translate(${startX}px, ${startY}px) translate(-50%,-50%) scale(.8)`
+      },
+      {
+        offset:.10,
+        opacity:1,
+        filter:"brightness(1.65) drop-shadow(0 0 13px rgba(255,241,164,1)) drop-shadow(0 0 30px rgba(255,199,93,.95)) drop-shadow(0 0 48px rgba(239,125,153,.80))",
+        transform:`translate(${startX}px, ${startY}px) translate(-50%,-50%) scale(3.5) rotate(-5deg)`
+      },
+      {
+        offset:.22,
+        opacity:1,
+        filter:"brightness(1.35) drop-shadow(0 0 9px rgba(255,226,151,.86))",
+        transform:`translate(${startX + 5}px, ${startY + 20}px) translate(-50%,-50%) scale(2.7) rotate(4deg)`
+      },
+      {
+        offset:.58,
+        opacity:1,
+        filter:"brightness(1.12) drop-shadow(0 0 5px rgba(255,220,142,.60))",
+        transform:`translate(${heartX + 20}px, ${startY + (heartY-startY)*.68}px) translate(-50%,-50%) scale(1.05)`
+      },
+      {
+        offset:.90,
+        opacity:1,
+        filter:"brightness(1)",
+        transform:`translate(${heartX}px, ${heartY}px) translate(-50%,-50%) scale(.56)`
+      },
+      {
+        offset:1,
+        opacity:0,
+        filter:"brightness(1)",
+        transform:`translate(${heartX}px, ${heartY}px) translate(-50%,-50%) scale(.16)`
+      }
+    ], {
+      duration:2900,
+      easing:"cubic-bezier(.20,.72,.18,1)",
+      fill:"forwards"
+    });
+
+    heartAnimation.finished.then(() => {
+      if (text) text.textContent = "Und daraus fliegt ein kleiner Gruß weiter.";
+
+      if (!newestButterfly) return;
+
+      const targetRect = newestButterfly.getBoundingClientRect();
+      const butterflyX = targetRect.left + targetRect.width / 2 - previewRect.left;
+      const butterflyY = targetRect.top + targetRect.height / 2 - previewRect.top;
+
+      const flyer = document.createElement("span");
+      flyer.className = "gift-butterfly flying-gift-butterfly";
+      flyer.style.setProperty("--bf-color", getComputedStyle(newestButterfly).getPropertyValue("--bf-color") || "rgba(177,151,211,.55)");
+      flyer.style.setProperty("--bf-rot", "0deg");
+      flyer.innerHTML =
+        '<i class="wing left"></i>' +
+        '<i class="wing right"></i>' +
+        '<i class="bf-body"></i>';
+      preview.appendChild(flyer);
+
+      const frames = [];
+      const steps = 32;
+
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const x = heartX + (butterflyX - heartX) * t;
+        const yBase = heartY + (butterflyY - heartY) * t;
+        const flutter = Math.sin(t * Math.PI * 5) * (1 - t) * 12;
+        const lift = Math.sin(Math.PI * t) * 30;
+        const y = yBase - lift + flutter;
+
+        frames.push({
+          offset:t,
+          opacity:t < .03 ? 0 : (t > .97 ? 0 : 1),
+          transform:
+            `translate(${x}px, ${y}px) translate(-50%,-50%) ` +
+            `rotate(${Math.sin(t * Math.PI * 6) * 10}deg) ` +
+            `scale(${1.15 - .15 * t})`
+        });
+      }
+
+      const butterflyAnimation = flyer.animate(frames, {
+        duration:1900,
+        easing:"linear",
+        fill:"forwards"
+      });
+
+      butterflyAnimation.finished.then(() => {
+        newestButterfly.classList.remove("gift-butterfly-waiting");
+        newestButterfly.classList.add("gift-butterfly-arrived");
+        flyer.remove();
+        if (text) text.textContent = "Dieser Schmetterling bleibt als kleines Geschenk bei eurem Baum.";
+      }).catch(() => flyer.remove());
+    }).catch(() => {});
+  });
+
+  treeGrowthTimer = setTimeout(() => {
+    if (dialog.open) dialog.close();
+    dialog.classList.remove("heart-bloom");
+
+    if (flyingHeart) {
+      flyingHeart.getAnimations().forEach(a => a.cancel());
+      flyingHeart.style.opacity = "0";
+      flyingHeart.style.display = "none";
+    }
+
+    preview.querySelector(".flying-gift-butterfly")?.remove();
+    if (flyingLeaf) flyingLeaf.style.display = "block";
+    treeGrowthTimer = null;
+  }, 6500);
+}
+
 function renderTreeAttention() {
   const story = $(".tree-story");
   if (!story) return;
@@ -799,6 +975,9 @@ function renderAll() {
   } else if (pendingRootGrowth) {
     pendingRootGrowth = false;
     requestAnimationFrame(() => showRootGrowthCelebration());
+  } else if (pendingGiftGrowth) {
+    pendingGiftGrowth = false;
+    requestAnimationFrame(() => showGiftGrowthCelebration());
   }
 
   renderHearts();
@@ -1096,21 +1275,39 @@ const GIFT_BUTTERFLY_COLORS = [
 ];
 
 function renderGiftButterflies() {
-  const layer = $("#giftButterflyLayer");
-  if (!layer) return;
+  const tree = $("#treeCanvas");
+  if (!tree) return;
+
+  let layer = $("#giftButterflyLayer");
+  if (!layer) {
+    layer = document.createElement("div");
+    layer.id = "giftButterflyLayer";
+    layer.className = "tree-gift-butterfly-layer";
+    layer.setAttribute("aria-hidden", "true");
+    tree.appendChild(layer);
+  }
+
   layer.innerHTML = "";
 
   const gifts = (state.roots || []).filter(root => root.isGift);
+
   gifts.slice(0, GIFT_BUTTERFLY_POSITIONS.length).forEach((gift, i) => {
     const [x,y,rot] = GIFT_BUTTERFLY_POSITIONS[i];
     const [r,g,b] = GIFT_BUTTERFLY_COLORS[i % GIFT_BUTTERFLY_COLORS.length];
+
     const el = document.createElement("span");
     el.className = "gift-butterfly";
-    el.style.left = `${x}%`; el.style.top = `${y}%`;
+    el.dataset.giftIndex = String(i);
+    el.style.left = `${x}%`;
+    el.style.top = `${y}%`;
     el.style.setProperty("--bf-rot", `${rot}deg`);
     el.style.setProperty("--bf-color", `rgba(${r},${g},${b},.48)`);
     el.title = `${gift.author || "Jemand"} → ${gift.recipient || "jemand"}`;
-    el.innerHTML = '<i class="wing left"></i><i class="wing right"></i><i class="bf-body"></i>';
+    el.innerHTML =
+      '<i class="wing left"></i>' +
+      '<i class="wing right"></i>' +
+      '<i class="bf-body"></i>';
+
     layer.appendChild(el);
   });
 }
@@ -1267,6 +1464,7 @@ if ($("#addRootBtn")) {
     // Ein eigener Herzmoment stärkt den Baum als Wurzel.
     // Ein verschenkter Herzmoment bekommt bewusst ein anderes Symbol: einen Schmetterling.
     pendingRootGrowth = !isGift;
+    pendingGiftGrowth = isGift;
 
     try {
       await runTransaction(db, async tx => {
@@ -1301,7 +1499,8 @@ if ($("#addRootBtn")) {
       renderHearts();
     } catch (err) {
       pendingRootGrowth = false;
-      alert("Die Wurzel konnte nicht gespeichert werden: " + err.message);
+      pendingGiftGrowth = false;
+      alert("Der Herzmoment konnte nicht gespeichert werden: " + err.message);
     }
   };
 }
