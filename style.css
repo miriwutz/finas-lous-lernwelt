@@ -3000,7 +3000,54 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
     display:none;
   }
 }
-\n\n/* =========================================================\n   2.4d – kompakte Planung + geschenkte Herzmomente\n   ========================================================= */\n.admin-child-details > summary{\n  color:#5a4438;\n  padding:13px 15px;\n}\n.admin-child-details > summary::after{\n  content:"⌄";\n  width:28px;height:28px;border-radius:50%;\n  display:grid;place-items:center;\n  margin-left:auto;\n  font-size:22px;font-weight:900;line-height:1;\n  color:#c76552;\n  background:rgba(199,101,82,.11);\n  border:1px solid rgba(199,101,82,.22);\n  opacity:1;\n}\n.admin-child-details[open] > summary::after{transform:rotate(180deg)}\n.admin-child-details > summary span{display:none!important}\n\n.heart-gift-toggle{\n  min-height:44px;display:flex!important;align-items:center;gap:9px;\n  padding:10px 12px;border:1px solid rgba(214,180,155,.65);\n  border-radius:12px;background:rgba(255,249,241,.72);\n}\n.heart-gift-toggle input{width:18px;height:18px;accent-color:#c76552}\n#heartOtherField,#heartGiftRecipientField{min-width:190px}\n\n.tree-gift-butterfly-layer{\n  position:absolute;inset:0;z-index:7;pointer-events:none;\n}\n.gift-butterfly{\n  position:absolute;width:18px;height:13px;\n  transform:translate(-50%,-50%) rotate(var(--bf-rot));\n  opacity:.78;filter:drop-shadow(0 1px 1px rgba(91,64,49,.10));\n}\n.gift-butterfly .wing{\n  position:absolute;top:1px;width:8px;height:10px;\n  background:var(--bf-color);border:1px solid rgba(112,86,70,.16);\n}\n.gift-butterfly .wing.left{left:0;border-radius:80% 35% 70% 35%;transform:rotate(-18deg)}\n.gift-butterfly .wing.right{right:0;border-radius:35% 80% 35% 70%;transform:rotate(18deg)}\n.gift-butterfly .bf-body{\n  position:absolute;left:8px;top:3px;width:2px;height:8px;border-radius:50%;\n  background:rgba(101,75,60,.42);\n}\n
+
+/* =========================================================
+   2.4d – kompakte Planung + geschenkte Herzmomente
+   ========================================================= */
+.admin-child-details > summary{
+  color:#5a4438;
+  padding:13px 15px;
+}
+.admin-child-details > summary::after{
+  content:"⌄";
+  width:28px;height:28px;border-radius:50%;
+  display:grid;place-items:center;
+  margin-left:auto;
+  font-size:22px;font-weight:900;line-height:1;
+  color:#c76552;
+  background:rgba(199,101,82,.11);
+  border:1px solid rgba(199,101,82,.22);
+  opacity:1;
+}
+.admin-child-details[open] > summary::after{transform:rotate(180deg)}
+.admin-child-details > summary span{display:none!important}
+
+.heart-gift-toggle{
+  min-height:44px;display:flex!important;align-items:center;gap:9px;
+  padding:10px 12px;border:1px solid rgba(214,180,155,.65);
+  border-radius:12px;background:rgba(255,249,241,.72);
+}
+.heart-gift-toggle input{width:18px;height:18px;accent-color:#c76552}
+#heartOtherField,#heartGiftRecipientField{min-width:190px}
+
+.tree-gift-butterfly-layer{
+  position:absolute;inset:0;z-index:7;pointer-events:none;
+}
+.gift-butterfly{
+  position:absolute;width:18px;height:13px;
+  transform:translate(-50%,-50%) rotate(var(--bf-rot));
+  opacity:.78;filter:drop-shadow(0 1px 1px rgba(91,64,49,.10));
+}
+.gift-butterfly .wing{
+  position:absolute;top:1px;width:8px;height:10px;
+  background:var(--bf-color);border:1px solid rgba(112,86,70,.16);
+}
+.gift-butterfly .wing.left{left:0;border-radius:80% 35% 70% 35%;transform:rotate(-18deg)}
+.gift-butterfly .wing.right{right:0;border-radius:35% 80% 35% 70%;transform:rotate(18deg)}
+.gift-butterfly .bf-body{
+  position:absolute;left:8px;top:3px;width:2px;height:8px;border-radius:50%;
+  background:rgba(101,75,60,.42);
+}
 
 /* =========================================================
    2.4e – Herzmoment-Bereich kompakter und aufgeräumter
@@ -3687,5 +3734,326 @@ label:has(textarea){
 
   .archive-search-clear{
     width:100%;
+  }
+}
+
+/* =========================================================
+   2.4j – klare Herzmoment-Eingabe + magischer Baum
+   ========================================================= */
+
+/* Herzmoment-Karten ruhig und kompakt */
+.heart-grid{
+  grid-template-columns:repeat(5,minmax(0,1fr)) !important;
+  gap:8px !important;
+  margin-bottom:14px !important;
+}
+
+.heart-choice{
+  min-height:66px !important;
+  padding:9px 10px !important;
+}
+
+/* Eingabe: nichts darf mehr nach rechts aus dem Bereich rutschen. */
+.heart-form-clean{
+  display:block !important;
+  width:100% !important;
+  max-width:100% !important;
+}
+
+.heart-meta-row{
+  display:grid !important;
+  grid-template-columns:140px 150px minmax(190px,240px) 150px !important;
+  gap:10px !important;
+  align-items:end !important;
+  width:100% !important;
+  max-width:100% !important;
+}
+
+.heart-meta-row > *{
+  min-width:0 !important;
+  max-width:100% !important;
+}
+
+.heart-author-field select,
+.heart-date-field input,
+.heart-recipient-field select{
+  width:100% !important;
+  max-width:100% !important;
+}
+
+.heart-gift-toggle{
+  min-height:43px !important;
+  padding:8px 10px !important;
+  border-radius:11px !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:7px !important;
+  white-space:normal !important;
+  line-height:1.2 !important;
+}
+
+.heart-gift-toggle input{
+  width:17px !important;
+  height:17px !important;
+  flex:0 0 auto !important;
+}
+
+.heart-other-field{
+  width:min(520px,100%) !important;
+  margin:10px 0 !important;
+}
+
+.heart-note-row{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) 235px !important;
+  gap:12px !important;
+  align-items:end !important;
+}
+
+#heartReason{
+  min-height:120px !important;
+  height:120px !important;
+}
+
+.heart-save-btn{
+  width:235px !important;
+  min-height:46px !important;
+  white-space:normal !important;
+}
+
+/* ---------------------------------------------------------
+   UNIVERSALER ZAUBER-EFFEKT BEI JEDEM BAUMWACHSTUM
+   --------------------------------------------------------- */
+.tree-growth-canvas.tree-magic-glow{
+  animation:treeMagicGlow24j 2.7s ease-in-out both !important;
+}
+
+@keyframes treeMagicGlow24j{
+  0%{
+    filter:
+      brightness(1)
+      drop-shadow(0 0 0 rgba(255,223,132,0));
+  }
+  20%{
+    filter:
+      brightness(1.10)
+      drop-shadow(0 0 9px rgba(255,236,157,.68))
+      drop-shadow(0 0 20px rgba(230,178,104,.36));
+  }
+  48%{
+    filter:
+      brightness(1.15)
+      drop-shadow(0 0 14px rgba(255,239,171,.80))
+      drop-shadow(0 0 30px rgba(226,139,157,.30));
+  }
+  76%{
+    filter:
+      brightness(1.08)
+      drop-shadow(0 0 8px rgba(255,236,157,.48));
+  }
+  100%{
+    filter:none;
+  }
+}
+
+.tree-magic-sparkles{
+  position:absolute;
+  inset:0;
+  z-index:45;
+  pointer-events:none;
+  overflow:hidden;
+}
+
+.tree-magic-sparkle{
+  position:absolute;
+  display:block;
+  width:var(--magic-size);
+  height:var(--magic-size);
+  transform:translate(-50%,-50%);
+  opacity:0;
+  border-radius:50%;
+  background:#fff8c9;
+  box-shadow:
+    0 0 5px rgba(255,252,216,.98),
+    0 0 10px rgba(255,223,127,.85),
+    0 0 18px rgba(236,156,164,.45);
+  animation:treeMagicSparkle24j 1.45s ease-in-out var(--magic-delay) both;
+}
+
+.tree-magic-sparkle::before,
+.tree-magic-sparkle::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  background:rgba(255,252,218,.96);
+  transform:translate(-50%,-50%);
+  border-radius:20px;
+}
+
+.tree-magic-sparkle::before{
+  width:1px;
+  height:260%;
+}
+
+.tree-magic-sparkle::after{
+  width:260%;
+  height:1px;
+}
+
+@keyframes treeMagicSparkle24j{
+  0%{
+    opacity:0;
+    transform:translate(-50%,-50%) scale(.15);
+  }
+  30%{
+    opacity:1;
+    transform:
+      translate(calc(-50% + var(--magic-drift)),calc(-50% - 3px))
+      scale(1);
+  }
+  68%{
+    opacity:.85;
+  }
+  100%{
+    opacity:0;
+    transform:
+      translate(calc(-50% + var(--magic-drift)),calc(-50% - 15px))
+      scale(.25)
+      rotate(90deg);
+  }
+}
+
+/* ---------------------------------------------------------
+   ECHTER SVG-SCHMETTERLING – kein Strich mehr
+   --------------------------------------------------------- */
+.tree-gift-butterfly-layer{
+  position:absolute !important;
+  inset:0 !important;
+  z-index:9 !important;
+  pointer-events:none !important;
+  overflow:visible !important;
+}
+
+.gift-butterfly{
+  position:absolute !important;
+  width:25px !important;
+  height:19px !important;
+  transform:
+    translate(-50%,-50%)
+    rotate(var(--bf-rot,0deg)) !important;
+  opacity:.70 !important;
+  pointer-events:none !important;
+  filter:
+    drop-shadow(0 1px 1px rgba(87,62,48,.14))
+    drop-shadow(0 0 3px rgba(255,249,214,.42)) !important;
+}
+
+.gift-butterfly-svg{
+  display:block !important;
+  width:100% !important;
+  height:100% !important;
+  overflow:visible !important;
+}
+
+.gift-wing,
+.gift-wing-lower{
+  fill:var(--bf-color) !important;
+  stroke:rgba(99,74,61,.23) !important;
+  stroke-width:1 !important;
+}
+
+.gift-wing-lower{
+  opacity:.82;
+}
+
+.gift-butterfly-body{
+  fill:rgba(88,67,55,.72) !important;
+}
+
+.gift-butterfly-antenna{
+  fill:none !important;
+  stroke:rgba(88,67,55,.58) !important;
+  stroke-width:1.2 !important;
+  stroke-linecap:round !important;
+}
+
+/* Fliegender Schmetterling deutlich sichtbar */
+.flying-gift-butterfly{
+  position:absolute !important;
+  left:0 !important;
+  top:0 !important;
+  width:38px !important;
+  height:28px !important;
+  opacity:1 !important;
+  z-index:55 !important;
+  filter:
+    drop-shadow(0 0 5px rgba(255,255,235,.95))
+    drop-shadow(0 0 12px rgba(244,195,106,.60)) !important;
+}
+
+.flying-gift-butterfly .gift-butterfly-wings{
+  transform-box:fill-box;
+  transform-origin:center;
+  animation:giftButterflyFlap24j .26s ease-in-out infinite alternate;
+}
+
+@keyframes giftButterflyFlap24j{
+  from{transform:scaleX(.70)}
+  to{transform:scaleX(1.08)}
+}
+
+/* Im Geschenkfenster soll der neue Schmetterling erst nach seinem Flug erscheinen */
+.gift-growth-canvas .new-gift-butterfly.gift-butterfly-waiting{
+  opacity:0 !important;
+}
+
+.gift-growth-canvas .new-gift-butterfly.gift-butterfly-arrived{
+  animation:giftButterflyArrive24j .85s ease-out both !important;
+}
+
+@keyframes giftButterflyArrive24j{
+  0%{opacity:0;filter:drop-shadow(0 0 10px rgba(255,231,141,.85))}
+  55%{opacity:.90;transform:translate(-50%,-50%) rotate(var(--bf-rot)) scale(1.24)}
+  100%{opacity:.70;transform:translate(-50%,-50%) rotate(var(--bf-rot)) scale(1)}
+}
+
+/* Baumfenster ruhig kleiner als die Hauptansicht */
+.root-growth-canvas{
+  transform:translateY(-2%) scale(.80) !important;
+  transform-origin:center top !important;
+}
+
+.gift-growth-canvas{
+  transform:translateY(-1%) scale(.76) !important;
+}
+
+@media(max-width:900px){
+  .heart-meta-row{
+    grid-template-columns:1fr 150px !important;
+  }
+
+  .heart-gift-toggle,
+  .heart-recipient-field{
+    grid-column:auto !important;
+  }
+
+  .heart-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  }
+}
+
+@media(max-width:650px){
+  .heart-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+
+  .heart-meta-row,
+  .heart-note-row{
+    grid-template-columns:1fr !important;
+  }
+
+  .heart-save-btn{
+    width:100% !important;
   }
 }
