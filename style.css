@@ -5170,3 +5170,37 @@ label:has(textarea){
     font-size:.86rem;
   }
 }
+
+
+/* =========================================================
+   2.5c – FIX: Wurzeln + Aufmerksamkeitsanzeige
+   ========================================================= */
+
+#treeAttention.tree-attention{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  margin:12px 0 10px !important;
+  padding:11px 13px !important;
+  border-radius:14px !important;
+  background:#fff5d9 !important;
+  color:#745b2d !important;
+  line-height:1.42 !important;
+}
+
+/* Wurzeln liegen über der Wiese, aber sicher hinter dem Stamm. */
+.tree-root-png-layer{
+  position:absolute !important;
+  inset:0 0 -5% 0 !important;
+  z-index:2 !important;
+  overflow:visible !important;
+  pointer-events:none !important;
+}
+
+.tree-root-png-layer .root-png.root-growth-piece{
+  z-index:2 !important;
+}
+
+.tree-meadow-layer{ z-index:1 !important; }
+.tree-base-image{ z-index:5 !important; }
+.tree-leaf-overlay{ z-index:6 !important; }
