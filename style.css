@@ -5934,3 +5934,91 @@ label:has(textarea){
   margin:0 auto !important;
   display:block !important;
 }
+
+/* =========================================================
+   2.5n – FIX: Lernwald-Baum vollständig im sichtbaren Bereich
+   ========================================================= */
+
+/*
+  In 2.5l wurde der Baum zusätzlich um seine komplette Höhe nach oben
+  verschoben:
+      translate(-50%, -100%)
+  Das war der Grund, warum der Baum oben aus dem Wald herausragte.
+
+  Die bestehenden left-/bottom-Positionen sind bereits ausreichend.
+  Deshalb KEINE vertikale Verschiebung mehr.
+*/
+.forest-tree-spot{
+  transform:scale(var(--forest-zoom, 1)) !important;
+  transform-origin:50% 100% !important;
+}
+
+/* Erster Baum etwas weiter vom linken Rand und sicher auf der Wiese. */
+.forest-tree-spot-1{
+  left:8.5% !important;
+  bottom:34px !important;
+}
+
+/* Auch die weiteren Startpositionen bekommen etwas mehr Innenabstand. */
+.forest-tree-spot-2{
+  left:27% !important;
+  bottom:27px !important;
+}
+
+.forest-tree-spot-3{
+  left:47% !important;
+  bottom:36px !important;
+}
+
+.forest-tree-spot-4{
+  left:67% !important;
+  bottom:28px !important;
+}
+
+.forest-tree-spot-5{
+  left:80% !important;
+  bottom:38px !important;
+}
+
+/* Name direkt unter der Stamm-/Wurzelbasis. */
+.forest-tree-name{
+  margin-top:-5px !important;
+}
+
+/* =========================================================
+   Wachstums-/Schmetterlingsfenster:
+   tatsächlich verwendeter Klon ist .tree-growth-canvas
+   ========================================================= */
+
+#treeGrowthDialog .tree-growth-preview{
+  height:min(52vh,420px) !important;
+  min-height:260px !important;
+}
+
+/* Der zuvor verwendete Wert 620 px war in diesem Fenster zu groß. */
+#treeGrowthDialog .tree-growth-canvas{
+  width:min(72%,430px) !important;
+  max-width:430px !important;
+  margin:auto !important;
+}
+
+/* Geschenk- und Wurzelanimationen bekommen denselben kleineren Baum. */
+#treeGrowthDialog .tree-growth-canvas.gift-growth-canvas,
+#treeGrowthDialog .tree-growth-canvas.root-growth-canvas{
+  width:min(68%,405px) !important;
+  max-width:405px !important;
+}
+
+@media(max-width:760px){
+  .forest-tree-spot-1{
+    left:5% !important;
+    bottom:28px !important;
+  }
+
+  #treeGrowthDialog .tree-growth-canvas,
+  #treeGrowthDialog .tree-growth-canvas.gift-growth-canvas,
+  #treeGrowthDialog .tree-growth-canvas.root-growth-canvas{
+    width:min(82%,360px) !important;
+    max-width:360px !important;
+  }
+}
