@@ -6315,3 +6315,56 @@ label:has(textarea){
 .forest-stage.forest-dense .forest-tree-tooltip{
   font-size:.72rem;
 }
+
+
+/* =========================================================
+   2.5w – Lernwelt: echte Tiefenstaffelung / Vogelperspektive
+   ========================================================= */
+
+/* Die gesamte Waldhöhe darf jetzt genutzt werden. */
+.forest-stage,
+.forest-grid{
+  position:relative !important;
+  overflow:hidden !important;
+}
+
+/* Die Baumposition wird vollständig von der Perspektivlogik gesteuert. */
+.forest-tree-spot{
+  transform:
+    translateX(-50%)
+    scale(var(--tree-scale, 1))
+    rotate(var(--tree-tilt, 0deg)) !important;
+  transform-origin:center bottom !important;
+}
+
+/* Ab 250 Bäumen wird die Ansicht Landschaft statt Sammlung einzelner Bäume. */
+.forest-stage.forest-landscape .forest-tree-name{
+  display:none !important;
+}
+
+/* Bewohner/Pflanzen bleiben in den Daten erhalten, aber die Kamera zeigt
+   bei großer Entfernung nur noch einen sinnvollen Ausschnitt. */
+.forest-stage.forest-landscape .forest-companion:nth-of-type(2n){
+  display:none !important;
+}
+
+.forest-stage.forest-very-dense .forest-companion{
+  display:none !important;
+}
+
+.forest-stage.forest-very-dense .forest-companion:nth-of-type(5n){
+  display:block !important;
+  opacity:.46 !important;
+  transform:translate(-50%, -50%) scale(.58) !important;
+}
+
+/* 1000 = echte Weltansicht: Details stark zurücknehmen. */
+.forest-stage.forest-world-view .forest-companion{
+  display:none !important;
+}
+
+/* Die Landschaft darf bei hoher Dichte optisch weicher werden,
+   ohne die einzelnen gespeicherten Bäume zu verlieren. */
+.forest-stage.forest-world-view .forest-tree-spot{
+  filter:saturate(.92);
+}
