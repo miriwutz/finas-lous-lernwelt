@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5i Baum benennen & Lernwald";
+const APP_VERSION = "2.5j Lernwald-Szene & Rückholen im Baumpfleger";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -1177,6 +1177,7 @@ function renderAll() {
   renderRootMemories();
   renderForest();
   renderAdminRoots();
+  renderAdminForest();
   renderTreeAttention();
   syncLearningDayUi();
   startAttentionTicker();
@@ -1918,6 +1919,92 @@ function openFinishTreeDialog({ force = false } = {}) {
   });
 }
 
+
+function animateTreeIntoForest() {
+  return new Promise(resolve => {
+    const tree = $("#treeCanvas");
+    const forestButton = $("#openForest");
+
+    if (!tree || window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) {
+      resolve();
+      return;
+    }
+
+    const rect = tree.getBoundingClientRect();
+    const targetRect = forestButton?.getBoundingClientRect();
+
+    const clone = tree.cloneNode(true);
+    clone.removeAttribute("id");
+    clone.querySelectorAll("[id]").forEach(el => el.removeAttribute("id"));
+    clone.classList.add("tree-flight-clone");
+
+    Object.assign(clone.style, {
+      position: "fixed",
+      left: `${rect.left}px`,
+      top: `${rect.top}px`,
+      width: `${rect.width}px`,
+      height: `${rect.height}px`,
+      margin: "0",
+      zIndex: "99999",
+      pointerEvents: "none"
+    });
+
+    document.body.appendChild(clone);
+
+    const targetX = targetRect
+      ? targetRect.left + targetRect.width / 2
+      : window.innerWidth * .86;
+
+    const targetY = targetRect
+      ? targetRect.top + targetRect.height / 2
+      : window.innerHeight * .18;
+
+    const startX = rect.left + rect.width / 2;
+    const startY = rect.top + rect.height / 2;
+
+    const dx = targetX - startX;
+    const dy = targetY - startY;
+
+    const animation = clone.animate([
+      {
+        offset: 0,
+        opacity: 1,
+        filter: "drop-shadow(0 6px 18px rgba(85,62,43,.10))",
+        transform: "translate(0,0) scale(1) rotate(0deg)"
+      },
+      {
+        offset: .35,
+        opacity: 1,
+        filter: "drop-shadow(0 9px 22px rgba(85,62,43,.15))",
+        transform: `translate(${dx * .22}px, ${dy * .22 - 20}px) scale(.82) rotate(-1deg)`
+      },
+      {
+        offset: .72,
+        opacity: .92,
+        filter: "drop-shadow(0 7px 16px rgba(85,62,43,.12))",
+        transform: `translate(${dx * .72}px, ${dy * .72 - 10}px) scale(.45) rotate(1deg)`
+      },
+      {
+        offset: 1,
+        opacity: 0,
+        filter: "drop-shadow(0 2px 7px rgba(85,62,43,.06))",
+        transform: `translate(${dx}px, ${dy}px) scale(.16) rotate(0deg)`
+      }
+    ], {
+      duration: 2400,
+      easing: "cubic-bezier(.22,.72,.20,1)",
+      fill: "forwards"
+    });
+
+    animation.finished
+      .catch(() => {})
+      .finally(() => {
+        clone.remove();
+        resolve();
+      });
+  });
+}
+
 async function archiveCurrentTreeToForest() {
   const dialog = $("#finishTreeDialog");
   const input = $("#finishTreeName");
@@ -1946,6 +2033,10 @@ async function archiveCurrentTreeToForest() {
   }
 
   try {
+    // Erst sichtbar Abschied nehmen, dann wirklich archivieren.
+    dialog?.close();
+    await animateTreeIntoForest();
+
     await runTransaction(db, async tx => {
       const snap = await tx.get(spaceRef);
       if (!snap.exists()) return;
@@ -2003,10 +2094,10 @@ async function archiveCurrentTreeToForest() {
       });
     });
 
-    dialog?.close();
     $("#forestSection")?.classList.remove("hidden");
+    renderForest();
 
-    alert(`🌳 „${finalName}“ steht jetzt im Lernwald.`);
+    // Kein technischer Alert mehr – der Baum ist direkt im Wald zu sehen.
   } catch (err) {
     console.error("Baum konnte nicht in den Lernwald gesetzt werden:", err);
     alert("Der Baum konnte nicht in den Lernwald gesetzt werden: " + err.message);
@@ -2134,50 +2225,177 @@ async function restoreTreeFromForest(treeId) {
     });
 
     $("#forestSection")?.classList.add("hidden");
-    alert("✓ Der Baum ist wieder aktiv.");
+    $("#mamaDialog")?.close();
   } catch (err) {
     alert("Der Baum konnte nicht zurückgeholt werden: " + err.message);
   }
 }
 
+function forestAttentionSeconds(tree) {
+  const leaves =
+    tree.snapshot?.learningLeaves ||
+    tree.learningLeaves ||
+    [];
+
+  return leaves.reduce(
+    (sum, leaf) => sum + Number(leaf?.attentionSeconds || 0),
+    0
+  );
+}
+
+function forestMiniLeaves(tree) {
+  const leaves =
+    tree.snapshot?.learningLeaves ||
+    [];
+
+  return leaves.slice(0, 50).map((leaf, i) => {
+    const pos = leafPositions[i % leafPositions.length];
+    if (!pos) return "";
+
+    const [x,y,rot] = pos;
+    const left = Math.max(8, Math.min(92, (x / 560) * 100));
+    const top = Math.max(5, Math.min(76, (y / 430) * 100));
+    const color = leaf.color || "#d6b965";
+
+    return `
+      <span
+        class="forest-mini-leaf"
+        style="
+          left:${left}%;
+          top:${top}%;
+          --mini-leaf-color:${escapeHtml(color)};
+          --mini-leaf-rot:${rot}deg;
+        "
+      ></span>
+    `;
+  }).join("");
+}
+
 function renderForest() {
   const box = $("#forestGrid");
+  const emptyHint = $("#forestEmptyHint");
+  if (!box) return;
+
+  const forest = (state.forest || []).slice().reverse();
+  box.innerHTML = "";
+
+  emptyHint?.classList.toggle("hidden", forest.length > 0);
+
+  if (!forest.length) return;
+
+  forest.forEach((tree, i) => {
+    const rootCount = tree.roots?.length || tree.snapshot?.roots?.length || 0;
+    const giftCount = (tree.roots || tree.snapshot?.roots || [])
+      .filter(root => root?.isGift).length;
+
+    const leafCount =
+      tree.snapshot?.learningLeaves?.length ??
+      tree.leaves ??
+      0;
+
+    const attention = forestAttentionSeconds(tree);
+
+    const dateText = tree.completedAt
+      ? new Date(tree.completedAt).toLocaleDateString("de-AT", {
+          month: "long",
+          year: "numeric"
+        })
+      : "";
+
+    const spotClass = `forest-tree-spot forest-tree-spot-${(i % 5) + 1}`;
+
+    box.insertAdjacentHTML("beforeend", `
+      <article
+        class="${spotClass}"
+        tabindex="0"
+        aria-label="${escapeHtml(tree.name || "Baum")} – Details anzeigen"
+      >
+        <div class="forest-tree-visual">
+          <img
+            src="lernbaum.png"
+            class="forest-tree-image"
+            alt=""
+            draggable="false"
+          >
+          <div class="forest-mini-leaves" aria-hidden="true">
+            ${forestMiniLeaves(tree)}
+          </div>
+          ${giftCount > 0 ? '<span class="forest-mini-butterfly" aria-hidden="true">🦋</span>' : ""}
+        </div>
+
+        <strong class="forest-tree-name">
+          ${escapeHtml(tree.name || "Unser Baum")}
+        </strong>
+
+        <div class="forest-tree-tooltip" role="tooltip">
+          ${dateText ? `<div>${escapeHtml(dateText)}</div>` : ""}
+          <div>🍃 ${leafCount} Lernblätter</div>
+          <div>💗 ${rootCount} Herzmomente</div>
+          ${attention > 0 ? `<div>💛 ${formatAttentionMinutes(attention)} Aufmerksamkeit</div>` : ""}
+          ${tree.paused ? '<div>↩ Zwischengespeichert</div>' : ""}
+        </div>
+      </article>
+    `);
+  });
+}
+
+function renderAdminForest() {
+  const box = $("#adminForestList");
   if (!box) return;
 
   const forest = (state.forest || []).slice().reverse();
   box.innerHTML = "";
 
   if (!forest.length) {
-    box.innerHTML = '<div class="empty">Hier wartet euer erster fertiger Baum.</div>';
+    box.innerHTML = '<div class="empty">Noch kein Baum im Lernwald.</div>';
     return;
   }
 
   forest.forEach(tree => {
     const canRestore = !!tree.snapshot;
-    box.insertAdjacentHTML("beforeend", `
-      <article class="forest-tree">
-        <div class="tree-emoji">🌳</div>
-        <strong>${escapeHtml(tree.name)}</strong>
-        <div class="muted">
-          ${new Date(tree.completedAt).toLocaleDateString("de-AT", {
-            month: "long", year: "numeric"
-          })}
-        </div>
-        <small>${tree.roots?.length || 0} Herzmomente begleiten diesen Baum.</small>
-        ${tree.paused ? '<span class="forest-paused-note">Zwischengespeichert</span>' : ""}
-        ${
-          canRestore
-            ? `<button type="button" class="forest-restore-btn" data-restore-tree="${escapeHtml(tree.id)}">↩ Baum wieder aktivieren</button>`
-            : `<span class="forest-old-note">Älterer Baum – nur Ansicht</span>`
-        }
-      </article>
-    `);
+    const leafCount =
+      tree.snapshot?.learningLeaves?.length ??
+      tree.leaves ??
+      0;
+
+    const rootCount =
+      tree.snapshot?.roots?.length ??
+      tree.roots?.length ??
+      0;
+
+    const row = document.createElement("div");
+    row.className = "admin-forest-row";
+
+    row.innerHTML = `
+      <div class="admin-forest-row-main">
+        <strong>🌳 ${escapeHtml(tree.name || "Unser Baum")}</strong>
+        <small>
+          ${leafCount} Lernblätter · ${rootCount} Herzmomente
+          ${tree.paused ? " · zwischengespeichert" : ""}
+        </small>
+      </div>
+
+      ${
+        canRestore
+          ? `<button
+               type="button"
+               class="soft admin-forest-restore"
+               data-admin-restore-tree="${escapeHtml(tree.id)}"
+             >
+               ↩ Zurückholen
+             </button>`
+          : `<span class="forest-old-note">Nur Ansicht</span>`
+      }
+    `;
+
+    box.appendChild(row);
   });
 
-  $$("[data-restore-tree]").forEach(btn => {
-    btn.onclick = () => restoreTreeFromForest(btn.dataset.restoreTree);
+  $$("[data-admin-restore-tree]").forEach(btn => {
+    btn.onclick = () => restoreTreeFromForest(btn.dataset.adminRestoreTree);
   });
 }
+
 
 $$("[data-difficulty]").forEach(btn => {
   btn.onclick = async () => {
@@ -2293,6 +2511,7 @@ function activateMamaTab(tabId) {
   if (wanted === "treeTab") {
     ensureAdminRootsPanel();
     renderAdminRoots();
+    renderAdminForest();
   }
 
   if (wanted === "archiveTab") {
@@ -2343,6 +2562,7 @@ function prepareAdmin() {
   renderAdminTasks("lou");
   ensureAdminRootsPanel();
   renderAdminRoots();
+  renderAdminForest();
   renderTaskArchive();
   bindMamaTabs();
 }
