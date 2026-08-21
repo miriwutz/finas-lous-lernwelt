@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.4g Herzbereich übersichtlich & Schmetterling sichtbar";
+const APP_VERSION = "2.4h Geschenk sichtbar & Lernwald zurückholen";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -578,6 +578,40 @@ function decorateTree24a(){
  o.innerHTML=TREE_FLOWERS.slice(0,n).map((p,i)=>`<span class="tree-tiny-flower" style="left:${p[0]}%;top:${p[1]}%">✿</span>`).join("");
 }
 
+function createGiftButterflyElement(color = "rgba(177,151,211,.60)") {
+  const el = document.createElement("span");
+  el.className = "gift-butterfly";
+  el.style.setProperty("--bf-color", color);
+  el.style.setProperty("--bf-rot", "0deg");
+  el.innerHTML =
+    '<i class="wing left"></i>' +
+    '<i class="wing right"></i>' +
+    '<i class="bf-body"></i>';
+  return el;
+}
+
+function createGiftSparkles(preview, x, y, amount = 18) {
+  const layer = document.createElement("div");
+  layer.className = "gift-sparkle-layer";
+  preview.appendChild(layer);
+
+  for (let i = 0; i < amount; i++) {
+    const s = document.createElement("i");
+    s.className = "gift-sparkle";
+    const angle = (Math.PI * 2 * i) / amount + Math.random() * .35;
+    const distance = 30 + Math.random() * 75;
+    s.style.left = `${x}px`;
+    s.style.top = `${y}px`;
+    s.style.setProperty("--sx", `${Math.cos(angle) * distance}px`);
+    s.style.setProperty("--sy", `${Math.sin(angle) * distance}px`);
+    s.style.setProperty("--delay", `${Math.random() * .30}s`);
+    s.style.setProperty("--size", `${3 + Math.random() * 6}px`);
+    layer.appendChild(s);
+  }
+
+  setTimeout(() => layer.remove(), 1800);
+}
+
 function showGiftGrowthCelebration() {
   const dialog = $("#treeGrowthDialog");
   const preview = $("#treeGrowthPreview");
@@ -607,9 +641,27 @@ function showGiftGrowthCelebration() {
   treeClone.classList.add("tree-growth-canvas", "gift-growth-canvas");
   treeClone.querySelectorAll("[id]").forEach(el => el.removeAttribute("id"));
 
-  const butterflies = [...treeClone.querySelectorAll(".gift-butterfly")];
-  const newestButterfly = butterflies.at(-1);
-  newestButterfly?.classList.add("new-gift-butterfly", "gift-butterfly-waiting");
+  let butterflies = [...treeClone.querySelectorAll(".gift-butterfly")];
+  let newestButterfly = butterflies.at(-1);
+
+  // Sicherheitsnetz: selbst wenn die permanente Ebene noch nicht gerendert wurde,
+  // bekommt die Geschenk-Animation immer einen sichtbaren Schmetterling.
+  if (!newestButterfly) {
+    let layer = treeClone.querySelector(".tree-gift-butterfly-layer");
+    if (!layer) {
+      layer = document.createElement("div");
+      layer.className = "tree-gift-butterfly-layer";
+      treeClone.appendChild(layer);
+    }
+
+    newestButterfly = createGiftButterflyElement("rgba(177,151,211,.66)");
+    newestButterfly.style.left = "76%";
+    newestButterfly.style.top = "61%";
+    newestButterfly.style.setProperty("--bf-rot", "12deg");
+    layer.appendChild(newestButterfly);
+  }
+
+  newestButterfly.classList.add("new-gift-butterfly", "gift-butterfly-waiting");
 
   preview.querySelector(".tree-growth-canvas")?.remove();
   preview.querySelector(".flying-gift-butterfly")?.remove();
@@ -633,6 +685,9 @@ function showGiftGrowthCelebration() {
 
     const startX = previewRect.width * 0.50;
     const startY = Math.max(34, previewRect.height * 0.08);
+
+    // Sichtbarer Glitzer schon beim Auftauchen des großen Herzens.
+    createGiftSparkles(preview, startX, startY + 18, 22);
 
     if (!flyingHeart) return;
 
@@ -683,6 +738,7 @@ function showGiftGrowthCelebration() {
     });
 
     heartAnimation.finished.then(() => {
+      createGiftSparkles(preview, heartX, heartY, 26);
       if (text) text.textContent = "Und daraus fliegt ein kleiner Gruß weiter.";
 
       if (!newestButterfly) return;
@@ -729,6 +785,7 @@ function showGiftGrowthCelebration() {
       });
 
       butterflyAnimation.finished.then(() => {
+        createGiftSparkles(preview, butterflyX, butterflyY, 14);
         newestButterfly.classList.remove("gift-butterfly-waiting");
         newestButterfly.classList.add("gift-butterfly-arrived");
         flyer.remove();
@@ -750,7 +807,7 @@ function showGiftGrowthCelebration() {
     preview.querySelector(".flying-gift-butterfly")?.remove();
     if (flyingLeaf) flyingLeaf.style.display = "block";
     treeGrowthTimer = null;
-  }, 6500);
+  }, 7600);
 }
 
 function renderTreeAttention() {
@@ -1634,7 +1691,16 @@ async function sendCurrentTreeToForest({ force = false } = {}) {
         name: data.tree?.name || "Wochenbaum",
         completedAt: new Date().toISOString(),
         leaves: (data.learningLeaves || []).length,
-        roots: [...(data.roots || [])]
+        roots: structuredClone(data.roots || []),
+
+        // Ab 2.4h wird ein vollständiger Schnappschuss gespeichert.
+        // Dadurch kann der Baum später wirklich wieder aktiviert werden.
+        snapshot: {
+          tree: structuredClone(data.tree || {}),
+          learningLeaves: structuredClone(data.learningLeaves || []),
+          roots: structuredClone(data.roots || []),
+          tasks: structuredClone(data.tasks || [])
+        }
       });
 
       const tasks = (data.tasks || []).map(t => ({ ...t, done: false }));
@@ -1675,6 +1741,78 @@ if ($("#closeForest")) {
   $("#closeForest").onclick = () => $("#forestSection")?.classList.add("hidden");
 }
 
+async function restoreTreeFromForest(treeId) {
+  const archived = (state.forest || []).find(tree => tree.id === treeId);
+  if (!archived) return;
+
+  if (!archived.snapshot) {
+    alert("Dieser ältere Lernwald-Baum wurde noch ohne vollständigen Schnappschuss gespeichert. Seine Wurzeln sind vorhanden, aber Lernblätter und Aufgaben lassen sich nicht zuverlässig zurückholen.");
+    return;
+  }
+
+  const activeName = state.tree?.name || "aktueller Baum";
+  const ok = confirm(
+    `„${archived.name || "Dieser Baum"}“ wieder aktivieren?\n\n` +
+    `Der derzeit aktive Baum „${activeName}“ wird vorher automatisch sicher im Lernwald abgelegt.`
+  );
+  if (!ok) return;
+
+  try {
+    await runTransaction(db, async tx => {
+      const snap = await tx.get(spaceRef);
+      const data = snap.data();
+      const forest = [...(data.forest || [])];
+
+      const targetIndex = forest.findIndex(tree => tree.id === treeId);
+      if (targetIndex < 0) return;
+
+      const target = forest[targetIndex];
+      if (!target.snapshot) throw new Error("Für diesen Baum gibt es keinen vollständigen Schnappschuss.");
+
+      // Den derzeit aktiven Baum nicht verlieren:
+      const currentHasContent =
+        (data.learningLeaves || []).length > 0 ||
+        (data.roots || []).length > 0 ||
+        (data.tasks || []).some(task => task.done);
+
+      if (currentHasContent) {
+        forest.push({
+          id: crypto.randomUUID(),
+          name: data.tree?.name || "Zwischengespeicherter Baum",
+          completedAt: new Date().toISOString(),
+          leaves: (data.learningLeaves || []).length,
+          roots: structuredClone(data.roots || []),
+          paused: true,
+          snapshot: {
+            tree: structuredClone(data.tree || {}),
+            learningLeaves: structuredClone(data.learningLeaves || []),
+            roots: structuredClone(data.roots || []),
+            tasks: structuredClone(data.tasks || [])
+          }
+        });
+      }
+
+      // Wieder aktivierter Baum verschwindet aus dem Lernwald,
+      // weil er nun wieder der aktuelle Baum ist.
+      forest.splice(targetIndex, 1);
+
+      tx.update(spaceRef, {
+        forest,
+        tree: structuredClone(target.snapshot.tree || {}),
+        learningLeaves: structuredClone(target.snapshot.learningLeaves || []),
+        roots: structuredClone(target.snapshot.roots || []),
+        tasks: structuredClone(target.snapshot.tasks || []),
+        updatedAt: serverTimestamp()
+      });
+    });
+
+    $("#forestSection")?.classList.add("hidden");
+    alert("✓ Der Baum ist wieder aktiv.");
+  } catch (err) {
+    alert("Der Baum konnte nicht zurückgeholt werden: " + err.message);
+  }
+}
+
 function renderForest() {
   const box = $("#forestGrid");
   if (!box) return;
@@ -1688,6 +1826,7 @@ function renderForest() {
   }
 
   forest.forEach(tree => {
+    const canRestore = !!tree.snapshot;
     box.insertAdjacentHTML("beforeend", `
       <article class="forest-tree">
         <div class="tree-emoji">🌳</div>
@@ -1697,9 +1836,19 @@ function renderForest() {
             month: "long", year: "numeric"
           })}
         </div>
-        <small>${tree.roots?.length || 0} Wurzeln begleiten diesen Baum.</small>
+        <small>${tree.roots?.length || 0} Herzmomente begleiten diesen Baum.</small>
+        ${tree.paused ? '<span class="forest-paused-note">Zwischengespeichert</span>' : ""}
+        ${
+          canRestore
+            ? `<button type="button" class="forest-restore-btn" data-restore-tree="${escapeHtml(tree.id)}">↩ Baum wieder aktivieren</button>`
+            : `<span class="forest-old-note">Älterer Baum – nur Ansicht</span>`
+        }
       </article>
     `);
+  });
+
+  $$("[data-restore-tree]").forEach(btn => {
+    btn.onclick = () => restoreTreeFromForest(btn.dataset.restoreTree);
   });
 }
 
