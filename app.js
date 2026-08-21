@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5j Lernwald-Szene & Rückholen im Baumpfleger";
+const APP_VERSION = "2.5k Lernwald-Button & dezenter Baumname";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -2094,8 +2094,7 @@ async function archiveCurrentTreeToForest() {
       });
     });
 
-    $("#forestSection")?.classList.remove("hidden");
-    renderForest();
+    openForestView();
 
     // Kein technischer Alert mehr – der Baum ist direkt im Wald zu sehen.
   } catch (err) {
@@ -2151,12 +2150,41 @@ if ($("#finishTreeName")) {
   });
 }
 
+function openForestView() {
+  const forest = $("#forestSection");
+  if (!forest) return;
+
+  renderForest();
+  forest.classList.remove("hidden");
+
+  requestAnimationFrame(() => {
+    forest.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  });
+}
+
+function closeForestView() {
+  const forest = $("#forestSection");
+  if (!forest) return;
+
+  forest.classList.add("hidden");
+
+  requestAnimationFrame(() => {
+    $("#openForest")?.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+  });
+}
+
 if ($("#openForest")) {
-  $("#openForest").onclick = () => $("#forestSection")?.classList.remove("hidden");
+  $("#openForest").onclick = openForestView;
 }
 
 if ($("#closeForest")) {
-  $("#closeForest").onclick = () => $("#forestSection")?.classList.add("hidden");
+  $("#closeForest").onclick = closeForestView;
 }
 
 async function restoreTreeFromForest(treeId) {
