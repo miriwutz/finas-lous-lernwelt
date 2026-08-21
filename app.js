@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5ag Große Lücken deutlich gefüllt";
+const APP_VERSION = "2.5ah Nur kleine Lichtungen";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -2997,11 +2997,11 @@ function buildLargeForestLayout(count) {
   if (safeCount >= 100) {
     const bridgeTrees = [];
     const cols =
-      safeCount <= 250 ? 8 :
-      safeCount <= 500 ? 10 : 12;
+      safeCount <= 250 ? 10 :
+      safeCount <= 500 ? 12 : 14;
     const rows =
-      safeCount <= 250 ? 5 :
-      safeCount <= 500 ? 6 : 7;
+      safeCount <= 250 ? 6 :
+      safeCount <= 500 ? 7 : 8;
 
     const xMin = profile.marginX + 1.5;
     const xMax = 100 - profile.marginX - 1.5;
@@ -3019,11 +3019,11 @@ function buildLargeForestLayout(count) {
         const nearby = result.filter(p => {
           const dx = Math.abs(p.left - cx) / cellW;
           const dy = Math.abs(p.topPct - cy) / cellH;
-          return dx < .78 && dy < .72;
+          return dx < .88 && dy < .82;
         }).length;
 
         // Nur echte große Lücken auffüllen.
-        if (nearby <= 1) {
+        if (nearby <= 2) {
           const cellSeed =
             safeCount * 701 +
             gy * 101 +
@@ -3032,19 +3032,19 @@ function buildLargeForestLayout(count) {
           // Je nach Leere 2–4 Bäume, bei sehr großen Wäldern 3–5.
           const amount =
             safeCount <= 250
-              ? 2 + Math.floor(hash(cellSeed, 21) * 3)
-              : 3 + Math.floor(hash(cellSeed, 21) * 3);
+              ? 5 + Math.floor(hash(cellSeed, 21) * 4)
+              : 6 + Math.floor(hash(cellSeed, 21) * 4);
 
           for (let k = 0; k < amount; k++) {
             const seed = cellSeed * 31 + k * 173;
 
             let x =
               cx +
-              (hash(seed, 22) - .5) * cellW * 1.18;
+              (hash(seed, 22) - .5) * cellW * 1.55;
 
             let y =
               cy +
-              (hash(seed, 23) - .5) * cellH * 1.12;
+              (hash(seed, 23) - .5) * cellH * 1.48;
 
             x = Math.max(profile.marginX, Math.min(100 - profile.marginX, x));
             y = Math.max(profile.top, Math.min(profile.bottom, y));
@@ -3082,8 +3082,8 @@ function buildLargeForestLayout(count) {
 
     // Begrenzen, damit aus Lichtungen kein dichter Teppich wird.
     const maxExtra =
-      safeCount <= 250 ? 34 :
-      safeCount <= 500 ? 52 : 72;
+      safeCount <= 250 ? 82 :
+      safeCount <= 500 ? 118 : 160;
 
     result.push(...bridgeTrees.slice(0, maxExtra));
   }
