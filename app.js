@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.4l Formular & Archivsuche aufgeräumt";
+const APP_VERSION = "2.4m Schmetterlingsflug & Formular fein";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -724,6 +724,7 @@ function showGiftGrowthCelebration() {
   newestButterfly.classList.add("new-gift-butterfly", "gift-butterfly-waiting");
 
   preview.querySelector(".tree-growth-canvas")?.remove();
+  preview.querySelector(".flying-gift-butterfly-wrap")?.remove();
   preview.querySelector(".flying-gift-butterfly")?.remove();
   preview.appendChild(treeClone);
 
@@ -808,37 +809,44 @@ function showGiftGrowthCelebration() {
       const butterflyX = targetRect.left + targetRect.width / 2 - previewRect.left;
       const butterflyY = targetRect.top + targetRect.height / 2 - previewRect.top;
 
+      const flyerWrap = document.createElement("span");
+      flyerWrap.className = "flying-gift-butterfly-wrap";
+
       const flyer = createGiftButterflyElement(
         getComputedStyle(newestButterfly).getPropertyValue("--bf-color") ||
         "rgba(177,151,211,.68)"
       );
       flyer.classList.add("flying-gift-butterfly");
       flyer.style.setProperty("--bf-rot", "0deg");
-      flyer.style.left = `${heartX}px`;
-      flyer.style.top = `${heartY}px`;
-      preview.appendChild(flyer);
+
+      flyerWrap.appendChild(flyer);
+      preview.appendChild(flyerWrap);
 
       const frames = [];
-      const steps = 32;
+      const steps = 36;
 
       for (let i = 0; i <= steps; i++) {
         const t = i / steps;
         const x = heartX + (butterflyX - heartX) * t;
         const yBase = heartY + (butterflyY - heartY) * t;
-        const flutter = Math.sin(t * Math.PI * 5) * (1 - t) * 12;
-        const lift = Math.sin(Math.PI * t) * 30;
+
+        // sanfte, gut sichtbare Flugkurve
+        const lift = Math.sin(Math.PI * t) * 42;
+        const flutter = Math.sin(t * Math.PI * 5.5) * (1 - t) * 8;
         const y = yBase - lift + flutter;
 
         frames.push({
           offset:t,
-          opacity:t < .03 ? 0 : (t > .97 ? 0 : 1),
-          left:`${x}px`,
-          top:`${y}px`
+          opacity:t < .02 ? 0 : (t > .98 ? 0 : 1),
+          transform:
+            `translate(${x}px, ${y}px) translate(-50%,-50%) ` +
+            `rotate(${Math.sin(t * Math.PI * 4) * 7}deg) ` +
+            `scale(${1.18 - .18*t})`
         });
       }
 
-      const butterflyAnimation = flyer.animate(frames, {
-        duration:1900,
+      const butterflyAnimation = flyerWrap.animate(frames, {
+        duration:2100,
         easing:"linear",
         fill:"forwards"
       });
@@ -847,9 +855,9 @@ function showGiftGrowthCelebration() {
         createGiftSparkles(preview, butterflyX, butterflyY, 14);
         newestButterfly.classList.remove("gift-butterfly-waiting");
         newestButterfly.classList.add("gift-butterfly-arrived");
-        flyer.remove();
+        flyerWrap.remove();
         if (text) text.textContent = "Dieser Schmetterling bleibt als kleines Geschenk bei eurem Baum.";
-      }).catch(() => flyer.remove());
+      }).catch(() => flyerWrap.remove());
     }).catch(() => {});
   });
 
@@ -863,7 +871,8 @@ function showGiftGrowthCelebration() {
       flyingHeart.style.display = "none";
     }
 
-    preview.querySelector(".flying-gift-butterfly")?.remove();
+    preview.querySelector(".flying-gift-butterfly-wrap")?.remove();
+  preview.querySelector(".flying-gift-butterfly")?.remove();
     if (flyingLeaf) flyingLeaf.style.display = "block";
     treeGrowthTimer = null;
   }, 7600);
