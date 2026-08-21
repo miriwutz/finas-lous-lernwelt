@@ -7,7 +7,7 @@
 
   <title>Mein Lernwald</title>
 
-  <link rel="stylesheet" href="style.css?v=25i">
+  <link rel="stylesheet" href="style.css?v=25j">
 </head>
 
 <body>
@@ -305,10 +305,23 @@
           </button>
         </div>
 
-        <div
-          id="forestGrid"
-          class="forest-grid"
-        ></div>
+        <div class="forest-stage" aria-label="Euer Lernwald">
+          <div class="forest-haze forest-haze-one" aria-hidden="true"></div>
+          <div class="forest-haze forest-haze-two" aria-hidden="true"></div>
+
+          <span class="forest-decor forest-decor-flower" aria-hidden="true">🌼</span>
+          <span class="forest-decor forest-decor-mushroom" aria-hidden="true">🍄</span>
+          <span class="forest-decor forest-decor-grass" aria-hidden="true">🌿</span>
+
+          <div
+            id="forestGrid"
+            class="forest-grid"
+          ></div>
+
+          <div id="forestEmptyHint" class="forest-empty-hint hidden">
+            Hier ist noch Platz für euren ersten Baum.
+          </div>
+        </div>
 
       </section>
 
@@ -642,6 +655,19 @@
               Damit kannst du den Baum auch bewusst abschließen, wenn die automatische Freigabe nicht greift.
             </p>
 
+            <section class="admin-forest-panel">
+              <div class="admin-forest-heading">
+                <div>
+                  <h3>🌲 Bäume im Lernwald</h3>
+                  <p class="muted">
+                    Hier kannst du einen früheren Baum wieder zum aktuellen Wochenbaum machen.
+                  </p>
+                </div>
+              </div>
+
+              <div id="adminForestList" class="admin-forest-list"></div>
+            </section>
+
           </section>
 
         </div>
@@ -789,7 +815,7 @@
 
   <script
     type="module"
-    src="app.js?v=25i"
+    src="app.js?v=25j"
   ></script>
 
 </body>
