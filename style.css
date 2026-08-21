@@ -3417,3 +3417,144 @@ label:has(textarea){
     width:100% !important;
   }
 }
+
+/* =========================================================
+   2.4h – Geschenk wirklich sichtbar + Lernwald zurückholen
+   ========================================================= */
+
+/* Geschenkfenster: Baum noch etwas kleiner, damit die Animation Luft hat. */
+.gift-growth-canvas{
+  transform:translateY(-1%) scale(.74) !important;
+  transform-origin:center top !important;
+}
+
+/* Der fliegende Schmetterling darf nicht hinter dem Baum verschwinden. */
+.flying-gift-butterfly{
+  z-index:30 !important;
+  width:30px !important;
+  height:22px !important;
+  opacity:1 !important;
+}
+
+.flying-gift-butterfly .wing{
+  width:14px !important;
+  height:17px !important;
+  background:var(--bf-color) !important;
+  border:1px solid rgba(104,76,61,.25) !important;
+  box-shadow:0 0 8px rgba(255,238,184,.55);
+}
+
+.flying-gift-butterfly .bf-body{
+  left:14px !important;
+  top:5px !important;
+  height:12px !important;
+}
+
+/* Permanenter Geschenk-Schmetterling: fein, aber tatsächlich erkennbar. */
+.tree-gift-butterfly-layer .gift-butterfly{
+  z-index:15 !important;
+  opacity:.72 !important;
+}
+
+/* Sichtbarer, warmer Glitzer – ohne Bilddatei. */
+.gift-sparkle-layer{
+  position:absolute;
+  inset:0;
+  z-index:40;
+  pointer-events:none;
+  overflow:visible;
+}
+
+.gift-sparkle{
+  position:absolute;
+  display:block;
+  width:var(--size);
+  height:var(--size);
+  border-radius:50%;
+  background:rgba(255,245,184,.98);
+  box-shadow:
+    0 0 5px rgba(255,236,147,.95),
+    0 0 11px rgba(241,184,87,.72),
+    0 0 17px rgba(230,137,156,.40);
+  opacity:0;
+  animation:giftSparkleBurst24h 1.35s ease-out var(--delay) forwards;
+}
+
+.gift-sparkle::before,
+.gift-sparkle::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  background:rgba(255,250,218,.95);
+  transform:translate(-50%,-50%);
+  border-radius:99px;
+}
+
+.gift-sparkle::before{
+  width:1px;
+  height:220%;
+}
+
+.gift-sparkle::after{
+  width:220%;
+  height:1px;
+}
+
+@keyframes giftSparkleBurst24h{
+  0%{
+    opacity:0;
+    transform:translate(-50%,-50%) scale(.15);
+  }
+  18%{
+    opacity:1;
+  }
+  100%{
+    opacity:0;
+    transform:
+      translate(
+        calc(-50% + var(--sx)),
+        calc(-50% + var(--sy))
+      )
+      scale(.25)
+      rotate(100deg);
+  }
+}
+
+/* Lernwald: Zurückholen klar, aber nicht dominant. */
+.forest-tree{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+}
+
+.forest-restore-btn{
+  margin-top:8px;
+  border:1px solid rgba(111,145,100,.34);
+  border-radius:12px;
+  background:rgba(111,145,100,.11);
+  color:#4f6948;
+  padding:8px 11px;
+  font:inherit;
+  font-size:.84rem;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.forest-restore-btn:hover{
+  background:rgba(111,145,100,.18);
+}
+
+.forest-paused-note,
+.forest-old-note{
+  display:inline-block;
+  margin-top:4px;
+  font-size:.75rem;
+  color:#8d7769;
+}
+
+.forest-paused-note{
+  color:#6b865f;
+  font-weight:700;
+}
