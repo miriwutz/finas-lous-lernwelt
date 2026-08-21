@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5r Abschluss-Testmodus";
+const APP_VERSION = "2.5s Lernwald eigene Baumpositionen";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -2585,6 +2585,56 @@ function runGrowthPreview(kind) {
   }
 }
 
+
+function forestTreeLayout(index, count) {
+  // Jeder Baum erhält einen eigenen Platz.
+  // Die Reihen liegen perspektivisch hintereinander:
+  // hinten kleiner und höher, vorne größer und tiefer.
+  const columns =
+    count <= 5 ? count :
+    count <= 10 ? 5 :
+    count <= 20 ? 7 :
+    count <= 35 ? 9 : 10;
+
+  const rows = Math.max(1, Math.ceil(count / columns));
+  const row = Math.floor(index / columns);
+  const col = index % columns;
+  const itemsInRow = Math.min(columns, count - row * columns);
+
+  // Hinterste Reihe zuerst. Dadurch liegt die vorderste Reihe optisch vorne.
+  const depth = rows <= 1 ? 1 : row / (rows - 1);
+
+  // Innerhalb jeder Reihe gleichmäßig verteilen, aber nicht an den Rand kleben.
+  const leftMin = count <= 5 ? 8 : 3;
+  const leftMax = count <= 5 ? 86 : 91;
+  const step = itemsInRow <= 1 ? 0 : (leftMax - leftMin) / (itemsInRow - 1);
+  let left = itemsInRow <= 1 ? 47 : leftMin + col * step;
+
+  // Jede zweite Reihe leicht versetzen -> natürlicher Wald statt Raster.
+  if (row % 2 === 1 && itemsInRow > 2) {
+    left += step * 0.22;
+  }
+  left = Math.max(2, Math.min(92, left));
+
+  // Perspektive: hintere Reihen höher und kleiner.
+  // Bei wenigen Bäumen bleiben sie bewusst groß.
+  const baseScale =
+    count <= 5 ? 1.00 :
+    count <= 10 ? 0.88 :
+    count <= 20 ? 0.72 :
+    count <= 35 ? 0.60 : 0.52;
+
+  const scale = baseScale * (0.72 + depth * 0.28);
+  const bottom = 28 + (rows - 1 - row) * (count <= 20 ? 64 : 48);
+
+  return {
+    left,
+    bottom,
+    scale,
+    z: 20 + row
+  };
+}
+
 function renderForest() {
   const box = $("#forestGrid");
   const emptyHint = $("#forestEmptyHint");
@@ -2623,11 +2673,12 @@ function renderForest() {
         })
       : "";
 
-    const spotClass = `forest-tree-spot forest-tree-spot-${(i % 5) + 1}`;
+    const layout = forestTreeLayout(i, forest.length);
 
     box.insertAdjacentHTML("beforeend", `
       <article
-        class="${spotClass}"
+        class="forest-tree-spot"
+        style="left:${layout.left}%; bottom:${layout.bottom}px; --tree-scale:${layout.scale}; z-index:${layout.z};"
         tabindex="0"
         aria-label="${escapeHtml(tree.name || "Baum")} – Details anzeigen"
       >
