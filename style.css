@@ -6505,3 +6505,14 @@ label:has(textarea){
     rotate(var(--tree-tilt, 0deg)) !important;
   transform-origin:center bottom !important;
 }
+
+
+/* =========================================================
+   2.5ab – organischer Feinschliff
+   Perspektiv-/Renderlogik aus 2.5aa bleibt unangetastet.
+   ========================================================= */
+
+/* Sehr ferne Bäume dürfen minimal weicher wirken. */
+.forest-tree-depth-position{
+  will-change:transform;
+}
