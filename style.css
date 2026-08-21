@@ -3135,3 +3135,107 @@ label:has(textarea){
     width:100% !important;
   }
 }
+
+/* =========================================================
+   2.4f – Geschenk-Herzmoment: Baumfenster + Schmetterling
+   ========================================================= */
+
+/* Im Herzmoment-Fenster Baum merklich kleiner, damit unten und seitlich Luft bleibt. */
+.root-growth-canvas,
+.gift-growth-canvas{
+  transform:translateY(-3%) scale(.84) !important;
+  transform-origin:center top !important;
+}
+
+/* Hauptbaum: Schmetterlinge im freien Bereich unter/seitlich der Krone. */
+#treeCanvas{
+  position:relative;
+}
+
+.tree-gift-butterfly-layer{
+  position:absolute;
+  inset:0;
+  z-index:7;
+  pointer-events:none;
+  overflow:visible;
+}
+
+/* Etwas feiner und transparenter als bisher. */
+.gift-butterfly{
+  width:16px !important;
+  height:12px !important;
+  opacity:.62 !important;
+}
+
+.gift-butterfly .wing{
+  width:7px !important;
+  height:9px !important;
+  background:var(--bf-color) !important;
+}
+
+.gift-butterfly .bf-body{
+  left:7px !important;
+  width:2px !important;
+  height:7px !important;
+}
+
+/* Im Geschenkfenster ist der neueste Schmetterling zunächst weg. */
+.gift-growth-canvas .new-gift-butterfly.gift-butterfly-waiting{
+  opacity:0 !important;
+}
+
+/* Erst nach seinem Flug bleibt er sichtbar an seiner natürlichen Position. */
+.gift-growth-canvas .new-gift-butterfly.gift-butterfly-arrived{
+  animation:giftButterflyArrive24f .75s ease-out both !important;
+}
+
+@keyframes giftButterflyArrive24f{
+  0%{
+    opacity:0;
+    filter:drop-shadow(0 0 8px rgba(255,222,153,.65));
+  }
+  55%{
+    opacity:.82;
+    filter:drop-shadow(0 0 6px rgba(255,222,153,.42));
+  }
+  100%{
+    opacity:.62;
+    filter:none;
+  }
+}
+
+/* Fliegender Schmetterling im Dialog. */
+.flying-gift-butterfly{
+  position:absolute !important;
+  left:0 !important;
+  top:0 !important;
+  z-index:12 !important;
+  opacity:0;
+  pointer-events:none;
+  transform-origin:center;
+  filter:
+    drop-shadow(0 0 4px rgba(255,255,255,.90))
+    drop-shadow(0 0 8px rgba(230,189,98,.36));
+}
+
+.flying-gift-butterfly .wing{
+  animation:giftWingFlutter24f .18s ease-in-out infinite alternate;
+}
+
+@keyframes giftWingFlutter24f{
+  from{transform:rotate(-12deg) scaleX(.86)}
+  to{transform:rotate(12deg) scaleX(1.10)}
+}
+
+/* Die Seitenpositionen sollen frei bleiben und nicht mit dem Stamm konkurrieren. */
+.gift-growth-canvas .tree-gift-butterfly-layer{
+  z-index:8 !important;
+}
+
+/* Tablet: Baum weiterhin vollständig sichtbar. */
+@media(max-width:820px){
+  .root-growth-canvas,
+  .gift-growth-canvas{
+    transform:translateY(-2%) scale(.80) !important;
+  }
+}
