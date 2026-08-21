@@ -5171,7 +5171,6 @@ label:has(textarea){
   }
 }
 
-
 /* =========================================================
    2.5c – FIX: Wurzeln + Aufmerksamkeitsanzeige
    ========================================================= */
@@ -5204,3 +5203,45 @@ label:has(textarea){
 .tree-meadow-layer{ z-index:1 !important; }
 .tree-base-image{ z-index:5 !important; }
 .tree-leaf-overlay{ z-index:6 !important; }
+
+/* =========================================================
+   2.5d – statische Wurzeln sicher sichtbar
+   ========================================================= */
+
+#rootPngLayer .root-png.root-growth-piece.visible{
+  display:block !important;
+  visibility:visible !important;
+  opacity:var(--root-opacity) !important;
+  animation:none !important;
+}
+
+/* Die Wurzeln dürfen nicht vom Wiesen-Layer verschluckt werden. */
+#rootPngLayer{
+  z-index:3 !important;
+  overflow:visible !important;
+}
+
+.tree-meadow-layer{
+  z-index:1 !important;
+}
+
+.tree-base-image{
+  z-index:5 !important;
+}
+
+.tree-leaf-overlay,
+.tree-gift-butterfly-layer{
+  z-index:6 !important;
+}
+
+/* Aufmerksamkeit als bestehender Leistungsstand, nicht als "wartet"-Text */
+#treeAttention.tree-attention{
+  display:block !important;
+  margin:12px 0 10px !important;
+  padding:11px 13px !important;
+  border-radius:14px !important;
+  background:#fff4d5 !important;
+  color:#705629 !important;
+  font-size:.90rem !important;
+  line-height:1.4 !important;
+}
