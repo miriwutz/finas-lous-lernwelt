@@ -4508,3 +4508,150 @@ label:has(textarea){
     grid-column:1 / span 2 !important;
   }
 }
+
+/* =========================================================
+   2.4n – Ziel-Schmetterling erst NACH dem Flug sichtbar
+   + Geschenk-Auswahl als sauberes Toggle statt Standard-Checkbox
+   ========================================================= */
+
+/* Neuester Schmetterling im Geschenkfenster:
+   vor der Ankunft wirklich komplett unsichtbar. */
+.gift-growth-canvas
+.tree-gift-butterfly-layer
+.new-gift-butterfly.gift-butterfly-waiting{
+  opacity:0 !important;
+  visibility:hidden !important;
+  filter:none !important;
+}
+
+/* Erst wenn der Flug beendet ist, wird genau dieser sichtbar. */
+.gift-growth-canvas
+.tree-gift-butterfly-layer
+.new-gift-butterfly.gift-butterfly-arrived{
+  visibility:visible !important;
+  opacity:.70 !important;
+  animation:giftButterflyArrive24n .82s ease-out both !important;
+}
+
+@keyframes giftButterflyArrive24n{
+  0%{
+    opacity:0;
+    transform:translate(-50%,-50%) rotate(var(--bf-rot)) scale(.45);
+    filter:drop-shadow(0 0 10px rgba(255,235,154,.85));
+  }
+  55%{
+    opacity:.90;
+    transform:translate(-50%,-50%) rotate(var(--bf-rot)) scale(1.16);
+    filter:drop-shadow(0 0 7px rgba(255,235,154,.55));
+  }
+  100%{
+    opacity:.70;
+    transform:translate(-50%,-50%) rotate(var(--bf-rot)) scale(1);
+    filter:none;
+  }
+}
+
+/* Die allgemeine statische Schmetterlingsregel darf das Warten
+   des neuesten Schmetterlings nicht mehr überschreiben. */
+.gift-growth-canvas
+.tree-gift-butterfly-layer
+.gift-butterfly:not(.new-gift-butterfly){
+  opacity:.70 !important;
+  visibility:visible !important;
+}
+
+/* ---------------------------------------------------------
+   Geschenk-Auswahl:
+   keine enge Box, kein hässliches Browser-Checkbox-Kästchen.
+   Stattdessen ein kleines, passendes Toggle.
+   --------------------------------------------------------- */
+.heart-gift-toggle{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:8px !important;
+  width:auto !important;
+  min-height:40px !important;
+  margin:0 !important;
+  padding:0 0 6px !important;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  cursor:pointer !important;
+  color:var(--text) !important;
+  font-weight:800 !important;
+  white-space:nowrap !important;
+}
+
+.heart-gift-toggle input{
+  position:absolute !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+  width:1px !important;
+  height:1px !important;
+}
+
+.heart-gift-toggle span{
+  position:relative !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:7px !important;
+  min-height:32px !important;
+  padding-left:27px !important;
+  color:#6f594d !important;
+  font-size:.90rem !important;
+  transition:color .16s ease !important;
+}
+
+/* eigener runder Schalter */
+.heart-gift-toggle span::before{
+  content:"" !important;
+  position:absolute !important;
+  left:0 !important;
+  top:50% !important;
+  width:18px !important;
+  height:18px !important;
+  transform:translateY(-50%) !important;
+  border-radius:50% !important;
+  border:2px solid #d7b2a4 !important;
+  background:#fffdf9 !important;
+  box-shadow:inset 0 0 0 3px #fffdf9 !important;
+  transition:.16s ease !important;
+}
+
+.heart-gift-toggle input:checked + span{
+  color:var(--clay-dark) !important;
+}
+
+.heart-gift-toggle input:checked + span::before{
+  border-color:var(--clay) !important;
+  background:var(--clay) !important;
+  box-shadow:
+    inset 0 0 0 4px #fffdf9,
+    0 0 0 3px rgba(213,143,125,.13) !important;
+}
+
+/* Fokus für Tastatur */
+.heart-gift-toggle input:focus-visible + span::before{
+  outline:3px solid rgba(213,143,125,.22) !important;
+  outline-offset:2px !important;
+}
+
+/* kompakt in derselben Zeile */
+.heart-meta-primary{
+  grid-template-columns:105px 150px 150px 125px !important;
+  gap:10px !important;
+}
+
+.heart-gift-toggle{
+  width:150px !important;
+}
+
+@media(max-width:720px){
+  .heart-meta-primary{
+    grid-template-columns:105px 150px 1fr !important;
+  }
+
+  .heart-gift-toggle{
+    width:auto !important;
+  }
+}
