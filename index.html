@@ -216,6 +216,11 @@
     </select>
   </label>
 
+  <label>
+    Datum des Herzmoments
+    <input id="heartDate" type="date">
+  </label>
+
   <label id="heartNoteField">
   🌱 Was möchtest du dir merken?
 
@@ -422,36 +427,27 @@
               </button>
             </div>
 
-            <div class="admin-grid">
+            <div class="admin-grid admin-grid-collapsible">
 
-              <div>
-                <h3>🌸 Fina</h3>
+              <details class="admin-child-details" open>
+                <summary>🌸 Fina <span>Aufgaben ein-/ausklappen</span></summary>
+                <div class="admin-child-details-body">
+                  <div id="adminFinaTasks"></div>
+                  <button type="button" class="soft" data-add-task="fina">
+                    + Aufgabe
+                  </button>
+                </div>
+              </details>
 
-                <div id="adminFinaTasks"></div>
-
-                <button
-                  type="button"
-                  class="soft"
-                  data-add-task="fina"
-                >
-                  + Aufgabe
-                </button>
-              </div>
-
-
-              <div>
-                <h3>🌺 Lou</h3>
-
-                <div id="adminLouTasks"></div>
-
-                <button
-                  type="button"
-                  class="soft"
-                  data-add-task="lou"
-                >
-                  + Aufgabe
-                </button>
-              </div>
+              <details class="admin-child-details" open>
+                <summary>🌺 Lou <span>Aufgaben ein-/ausklappen</span></summary>
+                <div class="admin-child-details-body">
+                  <div id="adminLouTasks"></div>
+                  <button type="button" class="soft" data-add-task="lou">
+                    + Aufgabe
+                  </button>
+                </div>
+              </details>
 
             </div>
 
@@ -510,22 +506,25 @@
               Wann ist die Krone fertig?
 
               <select id="treeTargetInput">
-                <option value="12">
-                  nach 12 Lernblättern
-                </option>
-
-                <option value="16">
-                  nach 16 Lernblättern
-                </option>
-
-                <option value="20">
-                  nach 20 Lernblättern
-                </option>
-
-                <option value="24">
-                  nach 24 Lernblättern
-                </option>
+                <option value="12">nach 12 Lernblättern</option>
+                <option value="16">nach 16 Lernblättern</option>
+                <option value="20">nach 20 Lernblättern</option>
+                <option value="24">nach 24 Lernblättern</option>
+                <option value="30">nach 30 Lernblättern</option>
+                <option value="35">nach 35 Lernblättern</option>
+                <option value="40">nach 40 Lernblättern</option>
+                <option value="45">nach 45 Lernblättern</option>
+                <option value="50">nach 50 Lernblättern</option>
+                <option value="custom">selbst wählen …</option>
               </select>
+
+              <div id="treeTargetCustomWrap" class="tree-target-custom hidden">
+                <label>
+                  Eigene Anzahl Lernblätter
+                  <input id="treeTargetCustom" type="number" min="1" max="50" step="1" value="24">
+                </label>
+                <small>Zwischen 1 und 50 Lernblättern.</small>
+              </div>
             </label>
 
 
@@ -585,6 +584,18 @@
             >
               Baum-Einstellungen speichern
             </button>
+
+            <button
+              id="adminFinishTreeBtn"
+              type="button"
+              class="soft admin-finish-tree"
+            >
+              🌳 Diesen Baum jetzt in den Lernwald setzen
+            </button>
+
+            <p class="muted admin-finish-hint">
+              Damit kannst du den Baum auch bewusst abschließen, wenn die automatische Freigabe nicht greift.
+            </p>
 
           </section>
 
