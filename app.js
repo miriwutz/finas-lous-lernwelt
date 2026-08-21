@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "2.5ap Natürliche Waldbewohner";
+const APP_VERSION = "2.5aq Ohne Vögel";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -2401,7 +2401,7 @@ function forestMiniLeaves(tree) {
 
 const FOREST_COMPANIONS = [
   "🌿", "🌱", "🌱", "🌾", "🌼", "🌸", "🍄", "🍄",
-  "🐞", "🐌", "🐿️", "🐇", "🦔", "🦊", "🦋", "🐦",
+  "🐞", "🐌", "🐿️", "🐇", "🦔", "🦊", "🦋", 
   "🪲", "🐛", "🐝", "🦉"
 ];
 
@@ -3228,8 +3228,8 @@ function renderForest() {
   // 2.5ao: Bewohner und Pflanzen nach Tiefenzonen.
   // Bodenobjekte sitzen auf festen Bodenbändern und können nicht mehr schweben.
   if (forest.length >= 50) {
-    const backAnimals = ["🐦","🦉","🦋","🐦","🦋","🐦","🦉","🦋"];
-    const middleAnimals = ["🐿️","🐦","🦉","🦋","🐿️","🐦","🦋","🐿️"];
+    const backAnimals = ["🦉","🦋","🦉","🦋","🦋"];
+    const middleAnimals = ["🐿️","🦉","🦋","🐿️","🦋","🦉"];
     const frontAnimals = ["🐇","🦔","🦊","🐿️","🐌","🐞","🪲","🐇","🦔"];
     const middlePlants = ["🌱","🌿","🌼","🌱"];
     const frontPlants = ["🍄","🌼","🌱","🌿","🍄","🌸"];
