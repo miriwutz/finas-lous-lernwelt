@@ -4,7 +4,7 @@ import {
   ensureSpace, onSnapshot, updateDoc, runTransaction, serverTimestamp
 } from "./firebase.js";
 
-const APP_VERSION = "Lernwald Final – ohne Testfunktion";
+const APP_VERSION = "Lernwald Final";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -671,7 +671,6 @@ function showRootGrowthCelebration() {
     treeGrowthTimer = null;
   }, 6100);
 }
-
 
 
 const FLOWER_STEPS = [4,8,13,17,22,26,31,36,41,46,51,55,60,64,69,73,78,82,87,91,96];
@@ -2069,7 +2068,6 @@ function animateTreeIntoForest() {
 }
 
 async function archiveCurrentTreeToForest() {
-  forestTestCount = null;
   const dialog = $("#finishTreeDialog");
   const input = $("#finishTreeName");
 
@@ -2234,18 +2232,6 @@ if ($("#finishTreeName")) {
   });
 }
 
-$$("[data-forest-test]").forEach(btn => {
-  btn.onclick = () => setForestTestCount(Number(btn.dataset.forestTest));
-});
-
-if ($("#clearForestTest")) {
-  $("#clearForestTest").onclick = clearForestTestMode;
-}
-
-$$("[data-growth-test]").forEach(btn => {
-  btn.onclick = () => runGrowthPreview(btn.dataset.growthTest);
-});
-
 
 function openForestView() {
   const forest = $("#forestSection");
@@ -2397,8 +2383,6 @@ function forestMiniLeaves(tree) {
 }
 
 
-/* ---------- 2.5l: wachsender Lernwald ---------- */
-
 const FOREST_COMPANIONS = [
   "🌿", "🌱", "🌱", "🌾", "🌼", "🌸", "🍄", "🍄",
   "🐞", "🐌", "🐿️", "🐇", "🦔", "🦊", "🦋", 
@@ -2406,7 +2390,7 @@ const FOREST_COMPANIONS = [
 ];
 
 function forestZoomForCount(count) {
-  // 2.5y: no global compression. Perspective is created by actual landscape positions.
+  // no global compression. Perspective is created by actual landscape positions.
   return 1;
 }
 
@@ -2476,86 +2460,7 @@ function decorateForestScene(treeCount) {
 }
 
 
-let forestTestCount = null;
 
-
-
-
-
-
-
-function runGrowthPreview(kind) {
-  if (kind === "leaf") {
-    const leaf = {
-      id: `preview-leaf-${Date.now()}`,
-      text: "Testblatt",
-      color: "#d9b56f",
-      attentionSeconds: 0
-    };
-    const before = state.learningLeaves;
-    state.learningLeaves = [...before, leaf];
-    renderTree();
-    const newest = $$(".leaf").at(-1);
-    newest?.classList.add("leaf-new");
-    treeSparkleBurst(24);
-    treeGlowPulse();
-    setTimeout(() => {
-      state.learningLeaves = before;
-      renderTree();
-    }, 2600);
-    return;
-  }
-
-  if (kind === "root") {
-    const before = state.roots;
-    state.roots = [...before, {
-      id:`preview-root-${Date.now()}`,
-      text:"Test-Herzmoment",
-      isGift:false
-    }];
-    renderTree();
-    treeSparkleBurst(28);
-    treeGlowPulse();
-    setTimeout(() => {
-      state.roots = before;
-      renderTree();
-    }, 3000);
-    return;
-  }
-
-  if (kind === "gift") {
-    const before = state.roots;
-    state.roots = [...before, {
-      id:`preview-gift-${Date.now()}`,
-      text:"Test-Geschenk",
-      isGift:true,
-      recipient:"Test"
-    }];
-    renderTree();
-    const canvas = $("#treeCanvas");
-    const rect = canvas?.getBoundingClientRect();
-    if (rect) {
-      const b = document.createElement("span");
-      b.textContent = "🦋";
-      b.className = "growth-test-butterfly";
-      b.style.left = `${rect.left + 35}px`;
-      b.style.top = `${rect.top + 35}px`;
-      document.body.appendChild(b);
-      const anim = b.animate([
-        { transform:"translate(0,0) scale(.65)", opacity:0 },
-        { offset:.18, opacity:1 },
-        { transform:`translate(${rect.width*.58}px, ${rect.height*.52}px) scale(1)`, opacity:1 }
-      ], { duration:1900, easing:"cubic-bezier(.22,.72,.2,1)", fill:"forwards" });
-      anim.finished.finally(() => b.remove());
-    }
-    treeSparkleBurst(28);
-    treeGlowPulse();
-    setTimeout(() => {
-      state.roots = before;
-      renderTree();
-    }, 3000);
-  }
-}
 
 
 
@@ -2796,16 +2701,7 @@ function buildLargeForestLayout(count) {
   const hash = (n, salt) =>
     frac(Math.sin((n + 1) * (17.173 + salt * 13.271)) * 42758.3187);
 
-  /*
-    2.5ab:
-    Die funktionierende Perspektive aus 2.5aa bleibt unverändert.
-    Geändert wird nur die ORGANIK:
-    - keine sichtbaren Reihen
-    - lokale Baumgruppen statt gleichmäßiger Verteilung
-    - größere, unregelmäßige Lichtungen
-    - stärkere Y-Streuung innerhalb jeder Tiefenzone
-    - leichte Größenunterschiede auch bei ähnlicher Tiefe
-  */
+  
   const zones = [];
 
   for (let row = 0; row < profile.rows; row++) {
@@ -2971,19 +2867,7 @@ function buildLargeForestLayout(count) {
     result.push(...chosen.slice(0, countInRow));
   });
 
-  /*
-    2.5ag – große Leerflächen gezielt schließen.
-
-    Die normale Waldverteilung bleibt die Basis. Danach wird die Fläche
-    grob in Zellen geprüft. Ist eine größere Zelle praktisch leer, wird
-    dort ein kleiner "Brücken-Cluster" ergänzt.
-
-    Wichtig:
-    - keine komplette Rasterfüllung
-    - kleine Lichtungen bleiben erhalten
-    - nur auffällige große Lücken werden unterbrochen
-    - Perspektivgröße richtet sich weiter nach der Tiefe
-  */
+  
   if (safeCount >= 100) {
     const bridgeTrees = [];
     const cols =
@@ -3113,11 +2997,7 @@ function renderForest() {
   const emptyHint = $("#forestEmptyHint");
   if (!box) return;
 
-  const forest = (
-    forestTestCount === null
-      ? (state.forest || [])
-      : makeForestTestTrees(forestTestCount)
-  ).slice().reverse();
+  const forest = (state.forest || []).slice().reverse();
   box.innerHTML = "";
 
   emptyHint?.classList.toggle("hidden", forest.length > 0);
@@ -3194,7 +3074,7 @@ function renderForest() {
 
   decorateForestScene(forest.length);
 
-  // 2.5ao: Bewohner und Pflanzen nach Tiefenzonen.
+  // Bewohner und Pflanzen nach Tiefenzonen.
   // Bodenobjekte sitzen auf festen Bodenbändern und können nicht mehr schweben.
   if (forest.length >= 50) {
     const backAnimals = ["🦉","🦋","🦉","🦋","🦋"];
