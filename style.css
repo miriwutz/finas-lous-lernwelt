@@ -138,7 +138,7 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   gap: 10px;
   margin-top: 12px;
 }
-/* Lernwald 2.2 – kleinerer Baum, Aufmerksamkeit und Sonnenstrahl */
+
 
 #treeSvg{
   width:82%;
@@ -151,13 +151,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   position:relative;
 }
 
-.attention-row{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-top:9px;
-}
 
 .attention-toggle{
   display:inline-flex;
@@ -232,25 +225,8 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   box-shadow:none;
 }
 
-.attention-toggle:hover{
-  background:#f0dfb4;
-  border-color:#d5b76e;
-}
 
-.attention-toggle.running{
-  background:#f3dfae;
-  border-color:#d5b76e;
-  color:#604b24;
-}
 
-.attention-time{
-  color:#8b6826;
-  font-weight:800;
-  font-size:.9rem;
-  font-variant-numeric:tabular-nums;
-  white-space:nowrap;
-}
-/* Lernwald 2.2b – reduzierte Aufmerksamkeit und Zeitkorrektur */
 
 .attention-row{
   display:flex;
@@ -622,9 +598,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   }
 }
 
-/* =========================
-   NEUER LERNBAUM 2.3c
-   ========================= */
 
 #treeSvg{
   width:82%;
@@ -722,9 +695,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   stroke-width:3.1;
 }
 
-/* =========================
-   REGENBOGEN-WACHSTUM 2.3d
-   ========================= */
 
 #treeGrowthDialog{
   overflow:visible;
@@ -841,9 +811,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   }
 }
 
-/* =========================
-   BLÄTTER & WURZELN 2.3e
-   ========================= */
 
 /* Das fliegende Blatt wird jetzt per Web-Animation bewegt. */
 .flying-leaf{
@@ -972,9 +939,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   opacity:.64;
 }
 
-/* =========================
-   NATÜRLICHER BAUM 2.3f
-   ========================= */
 
 /* Äste und Wurzeln kommen aus derselben warmen Stamm-Farbfamilie. */
 .branch,
@@ -1156,9 +1120,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   }
 }
 
-/* =========================
-   HOMOGENE ÜBERGÄNGE 2.3g
-   ========================= */
 
 :root{
   --tree-bark:#936c50;
@@ -1168,11 +1129,7 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
 
 /* Äste und Wurzeln exakt dieselbe Grundfarbe.
    Keine getrennten Braunwerte mehr. */
-.branch,
-.twig,
-.root-main{
-  stroke:var(--tree-bark) !important;
-}
+
 
 /* An den Ansatzstellen etwas kräftiger und rund:
    dadurch verschwinden die sichtbaren "angesetzten" Übergänge. */
@@ -1231,9 +1188,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   stroke:var(--tree-bark) !important;
 }
 
-/* =========================
-   EBENEN & NATÜRLICHE KRONE 2.3h
-   ========================= */
 
 /* Äste und Wurzeln liegen im SVG nun wirklich hinter dem Stamm.
    Die Farben bleiben bewusst identisch. */
@@ -1330,9 +1284,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   font-style:italic;
 }
 
-/* =========================
-   WIESE & NATÜRLICHERE KRONE 2.3i
-   ========================= */
 
 .tree-meadow{
   fill:#cdd9a9;
@@ -1394,9 +1345,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   overflow:visible;
 }
 
-/* =========================
-   ORGANISCHER CHARAKTERBAUM 2.3j
-   ========================= */
 
 .tree-meadow{
   fill:url(#meadowGrad) !important;
@@ -1492,9 +1440,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   filter:drop-shadow(0 .65px .85px rgba(64,45,34,.05));
 }
 
-/* =========================
-   MODERNER LERNBAUM 2.3k
-   ========================= */
 
 .modern-meadow{
   fill:url(#modernMeadowGrad);
@@ -1600,9 +1545,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   }
 }
 
-/* =========================
-   PNG-LERNBAUM 2.3l
-   ========================= */
 
 .modern-tree-shape,
 .modern-branch,
@@ -1652,8 +1594,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   pointer-events:none;
 }
 
-.tree-root-overlay{ z-index:2; }
-.tree-leaf-overlay{ z-index:4; }
 
 .tree-meadow-layer{
   position:absolute;
@@ -1760,9 +1700,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   }
 }
 
-/* =========================================================
-   2.3m – organische Wurzeln + dezentere Lernblätter
-   ========================================================= */
 
 /* Die Wurzeln sind jetzt FLÄCHEN statt Striche:
    am Stamm kräftig, nach außen schmal auslaufend. */
@@ -1850,9 +1787,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   100% { opacity:.74; transform:scale(1); }
 }
 
-/* =========================================================
-   2.3n – sehr geschwungene Wurzeln + feinere Blätter
-   ========================================================= */
 
 #rootLayer .dynamic-root{
   stroke:none !important;
@@ -1940,9 +1874,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   100% { opacity:.72; transform:scale(1) rotate(0deg); }
 }
 
-/* =========================================================
-   2.3o – Baum höher + tiefer ansetzende natürliche Wurzeln
-   ========================================================= */
 
 /* Mehr Platz unter dem Stamm für echtes Wurzelwachstum.
    Nur das PNG wird angehoben; die Wurzelebene bleibt unten. */
@@ -1963,9 +1894,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   z-index:2;
 }
 
-.tree-base-image{
-  z-index:3;
-}
 
 #rootLayer .dynamic-root{
   stroke:none !important;
@@ -2003,9 +1931,7 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
 #rootLayer .root-shape-9{ opacity:.76; }
 #rootLayer .root-shape-10{ opacity:.88; }
 
-/* Blätter aus 2.3n grundsätzlich beibehalten:
-   fein, leicht transparent, unterschiedliche Winkel,
-   Adern nur subtil sichtbar. */
+
 #leafLayer .dynamic-leaf{
   opacity:.72;
 }
@@ -2023,9 +1949,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   transform:translateY(-6.5%);
 }
 
-/* =========================================================
-   2.3p – Wurzeln als transparente PNG-Ebenen
-   ========================================================= */
 
 /* Alte SVG-Wurzeltechnik vollständig abschalten. */
 .tree-root-overlay,
@@ -2096,14 +2019,10 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
 }
 
 /* Lernblätter weiterhin ganz vorne. */
-.tree-leaf-overlay{
-  z-index:4;
-}
+
 
 /* Die weich auslaufende Wiese bleibt ganz hinten. */
-.tree-meadow-layer{
-  z-index:1;
-}
+
 
 /* Auch im Wachstumsdialog funktionieren dieselben PNG-Wurzeln. */
 .tree-growth-canvas .tree-root-png-layer{
@@ -2118,9 +2037,7 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   z-index:4;
 }
 
-/* =========================================================
-   2.3q – feines Wurzelgeflecht aus 3 PNG-Grundgrafiken
-   ========================================================= */
+
 .tree-root-png-layer{
   position:absolute; inset:0 0 -5% 0; z-index:2;
   pointer-events:none; overflow:visible;
@@ -2157,9 +2074,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   .root-png.root-growth-piece{width:45%;height:29%;top:77%;}
 }
 
-/* =========================================================
-   2.3r – Wurzeln tiefer unter dem Stamm + Mitte korrigiert
-   ========================================================= */
 
 .root-png.root-growth-piece{
   top:82.5% !important;
@@ -2186,12 +2100,7 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   }
 }
 
-/* =========================================================
-   2.3s – Korrektur: Wurzelansatz direkt unter dem Stamm
-   ========================================================= */
 
-/* 2.3r lag mit 82.5% deutlich zu tief.
-   Der Ansatz sitzt jetzt wieder am Stammfuß; die PNGs wachsen nach unten. */
 .root-png.root-growth-piece{
   top:73.5% !important;
   width:34% !important;
@@ -2209,15 +2118,11 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
 
 /* Stamm weiterhin vor den Wurzeln: der obere PNG-Ansatz wird verdeckt
    und wirkt dadurch wie ein natürlicher Übergang aus dem Stammfuß. */
-.tree-base-image{
-  z-index:3 !important;
-}
+
 .tree-root-png-layer{
   z-index:2 !important;
 }
-.tree-meadow-layer{
-  z-index:1 !important;
-}
+
 
 /* Tablet proportional gleich halten. */
 @media (max-width:900px){
@@ -2228,25 +2133,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   }
 }
 
-/* =========================================================
-   2.3t – EXAKTE AUSRICHTUNG NACH DEN ROTEN HILFSLINIEN
-
-   Gemessen im Screenshot:
-   links  ≈ x 360
-   mitte  ≈ x 391
-   rechts ≈ x 415
-
-   Daraus ergibt sich für die Baumfläche:
-   links 44 %, mitte 50 %, rechts 55 %.
-   ========================================================= */
-
-.tree-root-png-layer{
-  position:absolute !important;
-  inset:0 !important;
-  z-index:2 !important;
-  overflow:hidden !important;
-  pointer-events:none !important;
-}
 
 /* Der obere Wurzelansatz kommt jetzt auf Höhe der drei roten Linien.
    Die Grafiken sind bewusst klein genug, um unter dem Baum Platz zu haben. */
@@ -2282,20 +2168,8 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
    RECHTS: sichtbarer Ansatz bei ca. 10.1 %
    Dadurch liegt nicht der Bildrahmen, sondern der echte Wurzelansatz
    auf der gewünschten roten Linie. */
-.root-png.root-middle{
-  --asset-shift:-51.2%;
-  --asset-origin:51.2%;
-}
 
-.root-png.root-left{
-  --asset-shift:-85%;
-  --asset-origin:85%;
-}
 
-.root-png.root-right{
-  --asset-shift:-10.1%;
-  --asset-origin:10.1%;
-}
 
 @keyframes rootGrowExact{
   0%{
@@ -2317,17 +2191,8 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
 }
 
 /* Baum vor den Ansätzen, damit der Übergang weich bleibt. */
-.tree-base-image{
-  z-index:3 !important;
-}
 
-.tree-leaf-overlay{
-  z-index:4 !important;
-}
 
-.tree-meadow-layer{
-  z-index:1 !important;
-}
 
 /* Auf kleineren Geräten proportional nur wenig kleiner. */
 @media(max-width:900px){
@@ -2337,9 +2202,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   }
 }
 
-/* =========================================================
-   2.3u – Wurzeln BREITER statt TIEFER
-   ========================================================= */
 
 .tree-root-png-layer{
   position:absolute !important;
@@ -2410,7 +2272,7 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
 
 .tree-base-image{ z-index:3 !important; }
 .tree-leaf-overlay{ z-index:4 !important; }
-.tree-meadow-layer{ z-index:1 !important; }
+
 
 @media(max-width:900px){
   .root-png.root-growth-piece{
@@ -2419,11 +2281,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   }
 }
 
-/* =========================================================
-   2.3v – Wachstum von der Mitte nach außen
-   1 Mitte, dann rechts/links im Wechsel.
-   Je weiter außen, desto stärker die Drehung bis fast 90°.
-   ========================================================= */
 
 .root-png.root-growth-piece{
   top:84.0% !important;
@@ -2457,9 +2314,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   .root-png.root-right{ height:13% !important; }
 }
 
-/* =========================================================
-   2.3w – sichtbares Wurzelwachstum + Herzanimation
-   ========================================================= */
 
 .root-png.root-growth-piece{
   top:84.0% !important;
@@ -2515,10 +2369,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   }
 }
 
-/* =========================================================
-   2.3x – Herz fliegt wirklich INS Baumherz,
-   danach wächst die neue Wurzel sichtbar.
-   ========================================================= */
 
 /* Herz langsamer, größer und klarer lesbar. */
 .flying-heart{
@@ -2625,9 +2475,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   }
 }
 
-/* =========================================================
-   2.3y – Herz exakt ins Stammherz + Wurzel wirklich sichtbar
-   ========================================================= */
 
 /* Für Herzmomente wird der komplette Baum im Dialog etwas höher
    und kleiner dargestellt. So entsteht UNTEN Platz für die Wurzeln. */
@@ -2726,10 +2573,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   }
 }
 
-/* =========================================================
-   2.3z – Herz weiter rechts + größer/glitzernd am Start
-   + neue Wurzel dunkler + ALLE Wurzeln sicher hinter Stamm
-   ========================================================= */
 
 /* Wurzelebene zwingend hinter dem PNG-Baum halten. */
 .tree-root-png-layer{
@@ -2750,9 +2593,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   z-index:5 !important;
 }
 
-.tree-leaf-overlay{
-  z-index:6 !important;
-}
 
 .tree-meadow-layer{
   z-index:0 !important;
@@ -2836,7 +2676,7 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
     0 0 20px rgba(225,123,146,.38) !important;
 }
 
-/* 2.4a */
+
 .root-growth-canvas .new-growth-root.root-growing-now{
  z-index:1!important; filter:brightness(.35) contrast(1.75) saturate(1.35)!important;
 }
@@ -2852,9 +2692,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
 
 .tree-tiny-flower{position:absolute;transform:translate(-50%,-50%);font-size:13px;line-height:1;color:rgba(218,139,157,.48);text-shadow:0 0 2px rgba(255,235,188,.45)}
 
-/* =========================================================
-   2.4b – Feinabstimmung
-   ========================================================= */
 
 /* Wurzel nicht mehr fast schwarz:
    klar sichtbar, aber farblich passend zum Stamm. */
@@ -2911,9 +2748,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   opacity:.44 !important;
 }
 
-/* =========================================================
-   2.4c – Datum / Einklappen / Baum manuell abschließen / Zielwahl
-   ========================================================= */
 
 .heart-form{
   align-items:end;
@@ -3001,9 +2835,7 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   }
 }
 
-/* =========================================================
-   2.4d – kompakte Planung + geschenkte Herzmomente
-   ========================================================= */
+
 .admin-child-details > summary{
   color:#5a4438;
   padding:13px 15px;
@@ -3049,9 +2881,6 @@ dialog::backdrop{background:rgba(44,35,30,.55)}
   background:rgba(101,75,60,.42);
 }
 
-/* =========================================================
-   2.4e – Herzmoment-Bereich kompakter und aufgeräumter
-   ========================================================= */
 
 /* Gesamten Eingabebereich ruhiger und dichter setzen */
 .heart-form{
@@ -3183,9 +3012,6 @@ label:has(textarea){
   }
 }
 
-/* =========================================================
-   2.4f – Geschenk-Herzmoment: Baumfenster + Schmetterling
-   ========================================================= */
 
 /* Im Herzmoment-Fenster Baum merklich kleiner, damit unten und seitlich Luft bleibt. */
 .root-growth-canvas,
@@ -3227,9 +3053,7 @@ label:has(textarea){
 }
 
 /* Im Geschenkfenster ist der neueste Schmetterling zunächst weg. */
-.gift-growth-canvas .new-gift-butterfly.gift-butterfly-waiting{
-  opacity:0 !important;
-}
+
 
 /* Erst nach seinem Flug bleibt er sichtbar an seiner natürlichen Position. */
 .gift-growth-canvas .new-gift-butterfly.gift-butterfly-arrived{
@@ -3287,9 +3111,6 @@ label:has(textarea){
   }
 }
 
-/* =========================================================
-   2.4g – Herzmomentbereich übersichtlich
-   ========================================================= */
 
 /* 9 Herzmoment-Karten: auf Desktop exakt in zwei Reihen (5 + 4). */
 .heart-grid{
@@ -3465,9 +3286,6 @@ label:has(textarea){
   }
 }
 
-/* =========================================================
-   2.4h – Geschenk wirklich sichtbar + Lernwald zurückholen
-   ========================================================= */
 
 /* Geschenkfenster: Baum noch etwas kleiner, damit die Animation Luft hat. */
 .gift-growth-canvas{
@@ -3606,9 +3424,6 @@ label:has(textarea){
   font-weight:700;
 }
 
-/* =========================================================
-   2.4i – Aufgabenarchiv kompakt + Suche
-   ========================================================= */
 
 .archive-search-row{
   display:grid;
@@ -3737,9 +3552,6 @@ label:has(textarea){
   }
 }
 
-/* =========================================================
-   2.4j – klare Herzmoment-Eingabe + magischer Baum
-   ========================================================= */
 
 /* Herzmoment-Karten ruhig und kompakt */
 .heart-grid{
@@ -4058,9 +3870,6 @@ label:has(textarea){
   }
 }
 
-/* =========================================================
-   2.4k – Reparatur Tabs / Wurzeln / Geschenkflug / Formular
-   ========================================================= */
 
 /* Tabs wieder eindeutig klickbar */
 #mamaPanel .tabs{
@@ -4145,12 +3954,6 @@ label:has(textarea){
   background:#fffaf5 !important;
 }
 
-.heart-gift-toggle input{
-  width:17px !important;
-  height:17px !important;
-  margin:0 !important;
-  flex:0 0 17px !important;
-}
 
 .heart-recipient-field{
   width:150px !important;
@@ -4179,11 +3982,6 @@ label:has(textarea){
   margin-top:7px !important;
 }
 
-.heart-action-row{
-  display:flex !important;
-  justify-content:flex-end !important;
-  margin-top:10px !important;
-}
 
 .heart-save-btn{
   width:auto !important;
@@ -4233,9 +4031,6 @@ label:has(textarea){
   }
 }
 
-/* =========================================================
-   2.4l – Herzmoment-Eingabe luftiger + Archivsuche sichtbar
-   ========================================================= */
 
 .heart-meta-primary{
   display:grid !important;
@@ -4269,12 +4064,6 @@ label:has(textarea){
   font-size:.90rem !important;
 }
 
-.heart-gift-toggle input{
-  width:17px !important;
-  height:17px !important;
-  margin:0 !important;
-  flex:0 0 17px !important;
-}
 
 .heart-recipient-field,
 .heart-recipient-field select{
@@ -4373,10 +4162,6 @@ label:has(textarea){
   }
 }
 
-/* =========================================================
-   2.4m – Schmetterling fliegt wirklich vom Baumherz weg
-   + Geschenkoption sauber ausgerichtet
-   ========================================================= */
 
 /* Geschenkzeile: genau eine ruhige Reihe.
    "Für wen?" bleibt rechts an der sinnvollen Position. */
@@ -4431,10 +4216,6 @@ label:has(textarea){
   flex:0 0 17px !important;
 }
 
-.heart-recipient-field,
-.heart-recipient-field select{
-  width:125px !important;
-}
 
 /* Wenn nicht verschenkt wird, bleibt rechts einfach freie Luft;
    Notizbereich beginnt trotzdem direkt darunter. */
@@ -4509,10 +4290,6 @@ label:has(textarea){
   }
 }
 
-/* =========================================================
-   2.4n – Ziel-Schmetterling erst NACH dem Flug sichtbar
-   + Geschenk-Auswahl als sauberes Toggle statt Standard-Checkbox
-   ========================================================= */
 
 /* Neuester Schmetterling im Geschenkfenster:
    vor der Ankunft wirklich komplett unsichtbar. */
@@ -4656,10 +4433,6 @@ label:has(textarea){
   }
 }
 
-/* =========================================================
-   2.4o – Verschenken-Schalter endlich sauber
-   Ziel: kompakter echter Toggle, keine Box, kein Kreis-Fremdkörper
-   ========================================================= */
 
 /* Zeile bleibt ruhig und kompakt */
 .heart-meta-primary{
@@ -4751,9 +4524,7 @@ label:has(textarea){
 }
 
 /* Aktiv: ruhiges Grün passend zur Seite */
-.heart-gift-toggle input:checked + span{
-  color:#56704e !important;
-}
+
 
 .heart-gift-toggle input:checked + span::before{
   background:#91aa82 !important;
@@ -4792,10 +4563,6 @@ label:has(textarea){
   }
 }
 
-/* =========================================================
-   2.4p – Herzmoment-Metazeile sauber ausrichten
-   Von wem? | Datum | Verschenken? | Für wen?
-   ========================================================= */
 
 .heart-meta-primary{
   display:grid !important;
@@ -4960,9 +4727,6 @@ label:has(textarea){
   }
 }
 
-/* =========================================================
-   2.4q – Verschenken weiter rechts + Empfänger wirklich weg
-   ========================================================= */
 
 /* Mehr Luft zwischen Datum und Verschenken */
 .heart-meta-primary{
@@ -5000,9 +4764,6 @@ label:has(textarea){
   }
 }
 
-/* =========================================================
-   2.5a – 50 natürlich verteilte Blätter + kleine Blümchen
-   ========================================================= */
 
 /* Blätter etwas feiner, leichter und natürlicher */
 #leafLayer .dynamic-leaf{
@@ -5073,10 +4834,6 @@ label:has(textarea){
   opacity:.85;
 }
 
-/* =========================================================
-   2.5b – rechter Wochenbaum-Infobereich kindgerechter
-   Aufmerksamkeit + Lernwald-Status bleiben unverändert
-   ========================================================= */
 
 .tree-kid-info{
   display:grid;
@@ -5171,9 +4928,6 @@ label:has(textarea){
   }
 }
 
-/* =========================================================
-   2.5c – FIX: Wurzeln + Aufmerksamkeitsanzeige
-   ========================================================= */
 
 #treeAttention.tree-attention{
   display:block !important;
@@ -5200,13 +4954,9 @@ label:has(textarea){
   z-index:2 !important;
 }
 
-.tree-meadow-layer{ z-index:1 !important; }
-.tree-base-image{ z-index:5 !important; }
+
 .tree-leaf-overlay{ z-index:6 !important; }
 
-/* =========================================================
-   2.5d – statische Wurzeln sicher sichtbar
-   ========================================================= */
 
 #rootPngLayer .root-png.root-growth-piece.visible{
   display:block !important;
@@ -5221,13 +4971,6 @@ label:has(textarea){
   overflow:visible !important;
 }
 
-.tree-meadow-layer{
-  z-index:1 !important;
-}
-
-.tree-base-image{
-  z-index:5 !important;
-}
 
 .tree-leaf-overlay,
 .tree-gift-butterfly-layer{
@@ -5246,9 +4989,6 @@ label:has(textarea){
   line-height:1.4 !important;
 }
 
-/* =========================================================
-   2.5e – Cache-Fix + robuste Sichtbarkeit
-   ========================================================= */
 
 #rootPngLayer{
   display:block !important;
@@ -5272,15 +5012,6 @@ label:has(textarea){
   z-index:1 !important;
 }
 
-#treeAttention{
-  display:block !important;
-  visibility:visible !important;
-  opacity:1 !important;
-}
-
-/* =========================================================
-   2.5f – finaler Wurzel-/Aufmerksamkeits-Fix
-   ========================================================= */
 
 #rootPngLayer{
   display:block !important;
@@ -5301,14 +5032,11 @@ label:has(textarea){
   opacity:1 !important;
 }
 
-/* 2.5g – Kernfix Wurzeln + Gesamt-Aufmerksamkeit */
+
 #rootPngLayer{display:block!important;visibility:visible!important;opacity:1!important;overflow:visible!important;z-index:4!important;}
 #rootPngLayer>img.root-png{display:block!important;visibility:visible!important;}
 #treeAttention{display:block!important;visibility:visible!important;opacity:1!important;}
 
-/* =========================================================
-   2.5i – Baum benennen, bevor er in den Lernwald zieht
-   ========================================================= */
 
 #finishTreeDialog{
   width:min(540px, calc(100vw - 28px));
@@ -5447,9 +5175,6 @@ label:has(textarea){
   }
 }
 
-/* =========================================================
-   2.5j – Lernwald als echte kleine Waldszene
-   ========================================================= */
 
 #forestSection{
   position:relative;
@@ -5761,10 +5486,6 @@ label:has(textarea){
   }
 }
 
-/* =========================================================
-   2.5k – Baumname im Lernwald sehr dezent
-   + Lernwald-Button scrollt wirklich zum Wald
-   ========================================================= */
 
 .forest-tree-name{
   display:block !important;
@@ -5805,9 +5526,6 @@ label:has(textarea){
   transform:translateY(1px);
 }
 
-/* =========================================================
-   2.5l – Lernwald wächst mit den Kindern
-   ========================================================= */
 
 #forestScene{
   --forest-zoom: 1;
@@ -5842,10 +5560,6 @@ label:has(textarea){
   opacity:.28 !important;
 }
 
-.forest-tree-spot:hover .forest-tree-name,
-.forest-tree-spot:focus-visible .forest-tree-name{
-  opacity:1 !important;
-}
 
 /* Zu jedem abgeschlossenen Baum kommt ein kleines Stück Waldleben hinzu. */
 .forest-companion{
@@ -5868,10 +5582,6 @@ label:has(textarea){
   transform:translate(-50%, -50%) scale(calc(var(--forest-zoom, 1) * 1.12));
 }
 
-/* =========================================================
-   2.5m – Lernwald: sichere Innenfläche
-   Kein Baum darf oben/seitlich abgeschnitten werden.
-   ========================================================= */
 
 #forestScene{
   position:relative !important;
@@ -5929,19 +5639,7 @@ label:has(textarea){
   display:block !important;
 }
 
-/* =========================================================
-   2.5n – FIX: Lernwald-Baum vollständig im sichtbaren Bereich
-   ========================================================= */
 
-/*
-  In 2.5l wurde der Baum zusätzlich um seine komplette Höhe nach oben
-  verschoben:
-      translate(-50%, -100%)
-  Das war der Grund, warum der Baum oben aus dem Wald herausragte.
-
-  Die bestehenden left-/bottom-Positionen sind bereits ausreichend.
-  Deshalb KEINE vertikale Verschiebung mehr.
-*/
 .forest-tree-spot{
   transform:scale(var(--forest-zoom, 1)) !important;
   transform-origin:50% 100% !important;
@@ -6017,9 +5715,6 @@ label:has(textarea){
   }
 }
 
-/* =========================================================
-   2.5p – kleine Blümchen zwischen den Blättern
-   ========================================================= */
 
 /*
   Die Blümchen erscheinen nicht zufällig, sondern an festgelegten,
@@ -6053,9 +5748,6 @@ label:has(textarea){
   opacity:.82;
 }
 
-/* =========================================================
-   2.5q – Lernwald wächst langfristig mit
-   ========================================================= */
 
 /* Die echte Waldfläche trägt die Zoomstufe für alle Bäume und Bewohner. */
 .forest-stage{
@@ -6112,23 +5804,8 @@ label:has(textarea){
   filter:drop-shadow(0 1px 1.5px rgba(82,60,44,.09)) !important;
 }
 
-/* =========================================================
-   2.5r – Abschluss-Testmodus (nur Baumpfleger)
-   ========================================================= */
 
 
-
-
-
-
-
-.growth-test-butterfly{
-  position:fixed;
-  z-index:100000;
-  font-size:24px;
-  pointer-events:none;
-  filter:drop-shadow(0 2px 3px rgba(73,53,42,.12));
-}
 
 /* Bei sehr großem Vorschauwald Namen stärker zurücknehmen. */
 .forest-stage[style*="0.55"] .forest-tree-name,
@@ -6141,9 +5818,6 @@ label:has(textarea){
   opacity:1 !important;
 }
 
-/* =========================================================
-   2.5s – Lernwald: echte individuelle Baumpositionen
-   ========================================================= */
 
 /* Keine Wiederholung von nur fünf Slots mehr.
    Jeder Baum bekommt left/bottom/scale direkt aus forestTreeLayout(). */
@@ -6164,9 +5838,6 @@ label:has(textarea){
   transition:opacity .2s ease;
 }
 
-/* =========================================================
-   2.5t – Lernwald organisch statt Raster
-   ========================================================= */
 
 /* Jeder Baum bekommt seine individuelle Perspektive + winzige Neigung. */
 .forest-tree-spot{
@@ -6193,10 +5864,6 @@ label:has(textarea){
   opacity:.18 !important;
 }
 
-.forest-tree-spot:hover .forest-tree-name,
-.forest-tree-spot:focus-visible .forest-tree-name{
-  opacity:1 !important;
-}
 
 /* Bewohner / Pflanzen ebenfalls ohne Rastergefühl. */
 .forest-companion{
@@ -6207,22 +5874,8 @@ label:has(textarea){
 }
 
 /* Die Szene bleibt innerhalb des Rahmens. */
-.forest-stage,
-.forest-grid{
-  overflow:hidden !important;
-}
 
-/* =========================================================
-   2.5u – natürliche Lichtung statt Baumreihe
-   ========================================================= */
 
-.forest-tree-spot{
-  transform:
-    translateX(-50%)
-    scale(var(--tree-scale, 1))
-    rotate(var(--tree-tilt, 0deg)) !important;
-  transform-origin:center bottom !important;
-}
 
 /* Die Namen sollen nicht selbst wie ein Raster wirken. */
 .forest-tree-name{
@@ -6242,14 +5895,6 @@ label:has(textarea){
 }
 
 /* Nichts darf aus dem sichtbaren Waldrahmen ragen. */
-.forest-stage,
-.forest-grid{
-  overflow:hidden !important;
-}
-
-/* =========================================================
-   2.5v – Lernwald-Stresstest 100 / 250 / 500 / 1000
-   ========================================================= */
 
 
 /* Ab 100 Bäumen wird der Wald zur Landschaft:
@@ -6278,10 +5923,6 @@ label:has(textarea){
 }
 
 
-/* =========================================================
-   2.5w – Lernwelt: echte Tiefenstaffelung / Vogelperspektive
-   ========================================================= */
-
 /* Die gesamte Waldhöhe darf jetzt genutzt werden. */
 .forest-stage,
 .forest-grid{
@@ -6290,13 +5931,7 @@ label:has(textarea){
 }
 
 /* Die Baumposition wird vollständig von der Perspektivlogik gesteuert. */
-.forest-tree-spot{
-  transform:
-    translateX(-50%)
-    scale(var(--tree-scale, 1))
-    rotate(var(--tree-tilt, 0deg)) !important;
-  transform-origin:center bottom !important;
-}
+
 
 /* Ab 250 Bäumen wird die Ansicht Landschaft statt Sammlung einzelner Bäume. */
 .forest-stage.forest-landscape .forest-tree-name{
@@ -6305,13 +5940,7 @@ label:has(textarea){
 
 /* Bewohner/Pflanzen bleiben in den Daten erhalten, aber die Kamera zeigt
    bei großer Entfernung nur noch einen sinnvollen Ausschnitt. */
-.forest-stage.forest-landscape .forest-companion:nth-of-type(2n){
-  display:none !important;
-}
 
-.forest-stage.forest-very-dense .forest-companion{
-  display:none !important;
-}
 
 .forest-stage.forest-very-dense .forest-companion:nth-of-type(5n){
   display:block !important;
@@ -6320,9 +5949,7 @@ label:has(textarea){
 }
 
 /* 1000 = echte Weltansicht: Details stark zurücknehmen. */
-.forest-stage.forest-world-view .forest-companion{
-  display:none !important;
-}
+
 
 /* Die Landschaft darf bei hoher Dichte optisch weicher werden,
    ohne die einzelnen gespeicherten Bäume zu verlieren. */
@@ -6331,22 +5958,7 @@ label:has(textarea){
 }
 
 
-/* =========================================================
-   2.5y – neue Landschaftslogik ab 21 Bäumen
-   ========================================================= */
 
-.forest-stage,
-.forest-grid{
-  overflow:hidden !important;
-}
-
-.forest-tree-spot{
-  transform:
-    translateX(-50%)
-    scale(var(--tree-scale, 1))
-    rotate(var(--tree-tilt, 0deg)) !important;
-  transform-origin:center bottom !important;
-}
 
 /* In der Landschaftsansicht sind Namen nur noch ein Detail auf Nachfrage. */
 .forest-stage.forest-dense .forest-tree-name,
@@ -6356,10 +5968,6 @@ label:has(textarea){
   display:block !important;
 }
 
-.forest-stage .forest-tree-spot:hover .forest-tree-name,
-.forest-stage .forest-tree-spot:focus-visible .forest-tree-name{
-  opacity:1 !important;
-}
 
 /* Tiere/Pflanzen dürfen die Landschaft nicht wieder zu einem unteren Emoji-Band machen. */
 .forest-stage.forest-dense .forest-companion{
@@ -6371,13 +5979,6 @@ label:has(textarea){
   opacity:.42 !important;
 }
 
-.forest-stage.forest-landscape .forest-companion:nth-of-type(2n){
-  display:none !important;
-}
-
-.forest-stage.forest-very-dense .forest-companion{
-  display:none !important;
-}
 
 .forest-stage.forest-very-dense .forest-companion:nth-of-type(5n){
   display:block !important;
@@ -6385,10 +5986,6 @@ label:has(textarea){
   transform:translate(-50%, -50%) scale(.52) !important;
 }
 
-
-/* =========================================================
-   2.5z – große Wälder: echte 2D-Flächenlogik
-   ========================================================= */
 
 .forest-stage,
 .forest-grid{
@@ -6437,10 +6034,6 @@ label:has(textarea){
 }
 
 
-/* =========================================================
-   2.5aa – entscheidender Renderkoordinaten-Fix
-   ========================================================= */
-
 /*
   Ab 50 Bäumen liefert die Landschaftslogik Y-Koordinaten als Prozent
   der sichtbaren Waldfläche. Diese werden jetzt tatsächlich als top:% gerendert.
@@ -6468,23 +6061,11 @@ label:has(textarea){
 }
 
 
-/* =========================================================
-   2.5ab – organischer Feinschliff
-   Perspektiv-/Renderlogik aus 2.5aa bleibt unangetastet.
-   ========================================================= */
-
 /* Sehr ferne Bäume dürfen minimal weicher wirken. */
 .forest-tree-depth-position{
   will-change:transform;
 }
 
-
-/* =========================================================
-   2.5ac – letzter Lernwald-Feinschliff
-   Perspektive aus 2.5aa bleibt unangetastet.
-   Lichtungen werden sanfter durchbrochen; vordere Baumketten
-   erhalten mehr Tiefenstreuung.
-   ========================================================= */
 
 /* Waldbewohner und Pflanzen sollen erkennbar bleiben,
    aber den Wald nicht optisch überladen. */
@@ -6495,11 +6076,6 @@ label:has(textarea){
   filter: saturate(.92);
 }
 
-
-/* =========================================================
-   2.5ad – sichtbare Waldbewohner & Pflanzen
-   Der Wald / die Perspektive selbst bleibt unverändert.
-   ========================================================= */
 
 .forest-world-detail{
   position:absolute;
@@ -6516,14 +6092,6 @@ label:has(textarea){
    bleiben aber klein genug, um kein Wimmelbild zu erzeugen. */
 
 
-/* =========================================================
-   2.5ae – finaler Wald-Feinschliff
-   - zusammenhängender Wald statt großer Waldinseln
-   - kleine Lichtungen bleiben
-   - Bewohner dezenter, Pflanzen häufiger als Tiere
-   - Perspektiv-Renderfix bleibt unangetastet
-   ========================================================= */
-
 .forest-world-detail{
   font-size:clamp(11px, 1.18vw, 18px);
 }
@@ -6538,40 +6106,12 @@ label:has(textarea){
 }
 
 
-/* =========================================================
-   2.5af – letzte Lichtungskorrektur
-   Keine Änderung an Perspektive, Größenstaffelung,
-   Speicherung oder Bewohnerlogik.
-   ========================================================= */
 
 
-/* =========================================================
-   2.5ag – große Lücken gezielt gefüllt
-   Perspektive, Speicherlogik und Bewohner bleiben unverändert.
-   ========================================================= */
 
 
-/* 2.5ah – große und mittlere Leerflächen werden deutlich stärker
-   unterbrochen. Ziel: nur noch kleine, organische Lichtungen. */
-
-/* 2.5ai – Lernwald-Bäume nur optisch +10 %.
-   Positionen, Verteilung, Perspektivverhältnis, Tiere/Pflanzen
-   und Speicherung bleiben unverändert. */
-
-/* 2.5aj – Lernwald-Bäume jetzt +12 % statt +10 %.
-   Sonst keine Änderungen. */
-
-/* 2.5ak – Lernwald-Bäume jetzt +18 % gegenüber der ursprünglichen Größe.
-   Sonst keine Änderungen. */
-
-/* 2.5al – Lernwald-Bäume jetzt +22 % gegenüber der ursprünglichen Größe.
-   Sonst keine Änderungen. */
 
 
-/* =========================================================
-   2.5am – Archiv nach Lernbäumen + sichtbarere Waldbewohner
-   Waldverteilung, Perspektive und Baumgröße (+22 %) unverändert.
-   ========================================================= */
 .archive-tree-group{
   margin:0 0 14px;
   border:1px solid rgba(145,108,73,.22);
@@ -6606,14 +6146,7 @@ label:has(textarea){
 .forest-world-detail-ground{filter:saturate(.94);}
 .forest-world-detail-plant{filter:saturate(.88);}
 
-/* 2.5an – ausschließlich Waldbewohner/Pflanzen:
-   deutlich häufiger und etwas besser sichtbar.
-   Archiv, Baumgröße (+22 %), Waldverteilung und Perspektive unverändert. */
 
-
-/* 2.5ao – Waldbewohner nach Tiefenzonen.
-   Bodenpflanzen/Pilze auf festen Bodenbändern; Tiere auch in Mittel-/Hintergrund.
-   Archiv, Baumgröße (+22 %), Waldverteilung und Perspektive unverändert. */
 .forest-world-detail-animal,
 .forest-world-detail-ground{
   position:absolute;
@@ -6627,17 +6160,11 @@ label:has(textarea){
   transform:translate(-50%,-100%) scale(var(--detail-scale,1));
 }
 
-/* 2.5ap – natürlichere Waldbewohner:
-   keine pinken/flamingoartigen Vogel-Symbole.
-   Vögel, Eulen und Schmetterlinge in den Baumzonen;
-   Bodenbewohner/Pflanzen bleiben auf Bodenhöhe.
-   Sonst keine Änderungen. */
-
-/* 2.5aq – Vogel-Emojis vollständig aus dem Lernwald entfernt.
-   Baumkronen: Eulen, Schmetterlinge, Eichhörnchen.
-   Boden: Fuchs, Igel, Hase, Schnecke, Käfer, Pilze und Pflanzen.
-   Waldlayout und Archiv unverändert. */
 
 /* Finale Einsatzversion:
    sichtbare Lernwald-Test-/Simulationsfunktion entfernt.
    Lernwald, Archiv, Speicherung und Waldbewohner unverändert. */
+
+/* Lernwald Final: bereinigte Einsatzbasis.
+   Keine beabsichtigte Änderung an Darstellung, Datenmodell, Archiv,
+   Baumlogik, Aufgaben oder Speicherung. */
